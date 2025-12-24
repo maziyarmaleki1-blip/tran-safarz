@@ -1,0 +1,86 @@
+import { MainLayout } from '@/components/layout/MainLayout';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+
+const Contact = () => {
+  const { t } = useLanguage();
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({ title: 'پیام ارسال شد', description: 'به زودی با شما تماس می‌گیریم' });
+  };
+
+  return (
+    <MainLayout>
+      <div className="bg-primary/5 py-12">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold text-center mb-2">{t('contact')}</h1>
+          <p className="text-muted-foreground text-center">سوالی دارید؟ با ما در تماس باشید</p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Contact Info */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">اطلاعات تماس</h2>
+            {[
+              { icon: 'phone', title: 'تلفن', value: '۰۲۱-۱۲۳۴۵۶۷۸' },
+              { icon: 'mail', title: 'ایمیل', value: 'info@safirrail.ir' },
+              { icon: 'location_on', title: 'آدرس', value: 'تهران، میدان آزادی، خیابان راه‌آهن' },
+              { icon: 'schedule', title: 'ساعات کاری', value: 'شنبه تا پنجشنبه ۸ صبح تا ۸ شب' },
+            ].map((item, i) => (
+              <Card key={i} className="p-4 flex items-center gap-4">
+                <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary">{item.icon}</span>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">{item.title}</p>
+                  <p className="font-medium">{item.value}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Contact Form */}
+          <Card className="p-6">
+            <h2 className="text-2xl font-bold mb-6">ارسال پیام</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{t('firstName')}</Label>
+                  <Input placeholder="نام" required />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('lastName')}</Label>
+                  <Input placeholder="نام خانوادگی" required />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>{t('email')}</Label>
+                <Input type="email" placeholder="email@example.com" required />
+              </div>
+              <div className="space-y-2">
+                <Label>موضوع</Label>
+                <Input placeholder="موضوع پیام" required />
+              </div>
+              <div className="space-y-2">
+                <Label>پیام</Label>
+                <Textarea placeholder="پیام خود را بنویسید..." rows={5} required />
+              </div>
+              <Button type="submit" className="w-full gradient-primary">ارسال پیام</Button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Contact;

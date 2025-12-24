@@ -1,23 +1,25 @@
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
 
 const NotFound = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
+    <MainLayout>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center size-20 rounded-full bg-muted mb-6">
+            <span className="material-symbols-outlined text-4xl text-muted-foreground">train</span>
+          </div>
+          <h1 className="mb-4 text-6xl font-bold text-primary">۴۰۴</h1>
+          <p className="mb-6 text-xl text-muted-foreground">صفحه مورد نظر یافت نشد</p>
+          <a href="/" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg gradient-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity">
+            <span className="material-symbols-outlined">home</span>
+            بازگشت به خانه
+          </a>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

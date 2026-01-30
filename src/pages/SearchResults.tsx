@@ -149,67 +149,84 @@ const SearchResults = () => {
               </div>
 
               {/* Train List */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {sortedTrains.map((train) => (
                   <div
                     key={train.id}
-                    className={`bg-card/80 backdrop-blur-md border rounded-xl transition-all cursor-pointer hover:shadow-md ${
+                    className={`bg-card/90 backdrop-blur-md border rounded-2xl transition-all cursor-pointer hover:shadow-lg ${
                       selectedTrains.includes(train.id) 
-                        ? 'border-primary ring-1 ring-primary/50' 
+                        ? 'border-primary ring-2 ring-primary/30' 
                         : 'border-border/50'
                     }`}
                     onClick={() => toggleTrain(train.id)}
                   >
-                    <div className="p-3 sm:p-4">
-                      <div className="flex items-center gap-3">
+                    <div className="p-4 sm:p-6">
+                      {/* Main Row */}
+                      <div className="flex items-center gap-4">
                         {/* Checkbox */}
                         <Checkbox 
                           checked={selectedTrains.includes(train.id)}
                           onCheckedChange={() => toggleTrain(train.id)}
                           onClick={(e) => e.stopPropagation()}
-                          className="shrink-0"
+                          className="shrink-0 size-5"
                         />
 
-                        {/* Train Icon & Info */}
-                        <div className="flex items-center gap-2 min-w-[90px]">
-                          <div className="size-9 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-                            <span className="material-symbols-outlined text-primary-foreground text-lg">train</span>
+                        {/* Departure - Right side in RTL */}
+                        <div className="text-center min-w-[100px]">
+                          <p className="text-xs text-muted-foreground mb-1">
+                            {language === 'fa' ? `از ${cities[from]}` : `From ${cities[from]}`}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {language === 'fa' ? 'زمان حرکت' : 'Departure'}
+                          </p>
+                          <p className="text-3xl sm:text-4xl font-bold text-foreground mt-1">{train.departure}</p>
+                        </div>
+
+                        {/* Center - Train Info with Timeline */}
+                        <div className="flex-1 flex flex-col items-center gap-2">
+                          {/* Timeline */}
+                          <div className="flex items-center w-full max-w-[200px]">
+                            <div className="size-3 rounded-full bg-muted-foreground/30" />
+                            <div className="flex-1 border-t-2 border-dashed border-muted-foreground/30" />
+                            <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center mx-2">
+                              <span className="material-symbols-outlined text-muted-foreground text-xl">train</span>
+                            </div>
+                            <div className="flex-1 border-t-2 border-dashed border-muted-foreground/30" />
+                            <div className="size-3 rounded-full bg-muted-foreground/30" />
                           </div>
-                          <div>
-                            <p className="font-bold text-sm">{train.name}</p>
-                            <p className="text-xs text-muted-foreground">{train.number}</p>
+                          
+                          {/* Train Details */}
+                          <div className="text-center space-y-1">
+                            <p className="text-sm font-medium text-foreground">
+                              {language === 'fa' ? 'عنوان سالن' : 'Salon'}: {train.name} {train.number}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {language === 'fa' ? 'ظرفیت کوپه' : 'Compartment'}: {train.compartmentType}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{train.duration}</p>
                           </div>
                         </div>
 
-                        {/* Compartment Type */}
-                        <Badge variant="secondary" className="text-xs shrink-0">
-                          {train.compartmentType}
-                        </Badge>
-
-                        {/* Time */}
-                        <div className="flex items-center gap-3 flex-1 justify-center">
-                          <div className="text-center">
-                            <p className="text-base sm:text-lg font-bold">{train.departure}</p>
-                            <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'حرکت' : 'Dep'}</p>
-                          </div>
-                          <div className="flex flex-col items-center gap-0.5">
-                            <span className="text-[10px] text-muted-foreground hidden sm:block">{train.duration}</span>
-                            <div className="w-12 sm:w-20 h-px bg-border relative">
-                              <div className="absolute top-1/2 left-0 -translate-y-1/2 size-1.5 rounded-full bg-primary" />
-                              <div className="absolute top-1/2 right-0 -translate-y-1/2 size-1.5 rounded-full bg-primary" />
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-base sm:text-lg font-bold">{train.arrival}</p>
-                            <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'ورود' : 'Arr'}</p>
-                          </div>
+                        {/* Arrival - Left side in RTL */}
+                        <div className="text-center min-w-[100px]">
+                          <p className="text-xs text-muted-foreground mb-1">
+                            {language === 'fa' ? `به ${cities[to]}` : `To ${cities[to]}`}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {language === 'fa' ? 'زمان ورود' : 'Arrival'}
+                          </p>
+                          <p className="text-3xl sm:text-4xl font-bold text-foreground mt-1">{train.arrival}</p>
                         </div>
 
                         {/* Price */}
-                        <div className="text-end min-w-[100px]">
-                          <p className="text-sm text-muted-foreground">{language === 'fa' ? 'هر بزرگسال' : 'Per adult'}</p>
-                          <p className="text-lg font-bold text-accent">{formatPrice(train.price)}</p>
-                          <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'تومان' : 'Toman'}</p>
+                        <div className="text-center min-w-[110px] bg-primary/5 rounded-xl p-3">
+                          <p className="text-xs text-muted-foreground mb-1">
+                            {language === 'fa' ? 'قیمت هر نفر' : 'Per person'}
+                          </p>
+                          <p className="text-xl sm:text-2xl font-bold text-accent">{formatPrice(train.price)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {language === 'fa' ? 'تومان' : 'Toman'}
+                          </p>
                         </div>
                       </div>
                     </div>

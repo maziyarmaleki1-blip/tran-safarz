@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { JalaliCalendar } from '@/components/ui/jalali-calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns-jalali';
 import { faIR } from 'date-fns-jalali/locale';
@@ -121,13 +121,11 @@ export function SearchBox() {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
+              <JalaliCalendar
                 mode="single"
                 selected={date}
                 onSelect={setDate}
                 disabled={(date) => date < new Date()}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
           </Popover>

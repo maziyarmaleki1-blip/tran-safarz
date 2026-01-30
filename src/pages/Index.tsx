@@ -1,6 +1,7 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SearchBox } from '@/components/search/SearchBox';
 import { useLanguage } from '@/contexts/LanguageContext';
+import heroImage from '@/assets/hero-train.jpg';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -12,7 +13,7 @@ const Index = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(135deg, rgba(20, 60, 120, 0.85) 0%, rgba(15, 40, 80, 0.9) 100%), url('https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=1920&q=80')`,
+            backgroundImage: `linear-gradient(135deg, rgba(20, 60, 120, 0.7) 0%, rgba(15, 40, 80, 0.8) 100%), url(${heroImage})`,
           }}
         />
 

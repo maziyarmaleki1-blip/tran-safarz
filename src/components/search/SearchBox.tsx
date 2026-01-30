@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar } from '@/components/ui/calendar';
+import PersianCalendar from '@/components/PersianCalendar';
 import {
   Select,
   SelectContent,
@@ -15,11 +17,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { JalaliCalendar } from '@/components/ui/jalali-calendar';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns-jalali';
-import { faIR } from 'date-fns-jalali/locale';
+import { format } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import { ArrowLeftRight } from 'lucide-react';
+import { formatPersianDate } from '@/lib/persianDate';
 
 const cities = [
   { value: 'tehran', labelFa: 'تهران', labelEn: 'Tehran' },
@@ -134,20 +136,31 @@ export function SearchBox() {
                   !date && 'text-muted-foreground'
                 )}
               >
-                {date ? (
-                  format(date, 'yyyy/MM/dd', { locale: faIR })
-                ) : (
-                  <span>{t('selectDate')}</span>
-                )}
+                {date 
+                  ? (language === 'fa' ? formatPersianDate(date) : format(date, "PP", { locale: enUS }))
+                  : <span>{t('selectDate')}</span>
+                }
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <JalaliCalendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                disabled={(date) => date < new Date()}
-              />
+              {language === 'fa' ? (
+                <PersianCalendar
+                  selected={date}
+                  onSelect={(d) => setDate(d)}
+                  disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                  mode="future"
+                />
+              ) : (
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                  locale={enUS}
+                  className={cn("p-3 pointer-events-auto")}
+                  disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                />
+              )}
             </PopoverContent>
           </Popover>
         </div>

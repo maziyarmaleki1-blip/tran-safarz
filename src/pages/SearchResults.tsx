@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SearchBox } from '@/components/search/SearchBox';
+import { FilterBox } from '@/components/search/FilterBox';
 import heroImage from '@/assets/hero-train.jpg';
 
 const trains = [
@@ -84,64 +85,72 @@ const SearchResults = () => {
             </div>
           </div>
 
-          {/* Train Cards - Compact */}
-          <div className="space-y-2">
-            {trains.map((train) => (
-              <div
-                key={train.id}
-                className={`bg-card/80 backdrop-blur-md border rounded-xl transition-all cursor-pointer hover:shadow-md ${
-                  selectedTrains.includes(train.id) 
-                    ? 'border-primary ring-1 ring-primary/50' 
-                    : 'border-border/50'
-                }`}
-                onClick={() => toggleTrain(train.id)}
-              >
-                <div className="p-3 sm:p-4">
-                  <div className="flex items-center gap-3">
-                    {/* Checkbox */}
-                    <Checkbox 
-                      checked={selectedTrains.includes(train.id)}
-                      onCheckedChange={() => toggleTrain(train.id)}
-                      onClick={(e) => e.stopPropagation()}
-                      className="shrink-0"
-                    />
+          {/* Main Layout: Results + Filter */}
+          <div className="flex gap-4">
+            {/* Train Cards - Main Content */}
+            <div className="flex-1 space-y-2">
+              {trains.map((train) => (
+                <div
+                  key={train.id}
+                  className={`bg-card/80 backdrop-blur-md border rounded-xl transition-all cursor-pointer hover:shadow-md ${
+                    selectedTrains.includes(train.id) 
+                      ? 'border-primary ring-1 ring-primary/50' 
+                      : 'border-border/50'
+                  }`}
+                  onClick={() => toggleTrain(train.id)}
+                >
+                  <div className="p-3 sm:p-4">
+                    <div className="flex items-center gap-3">
+                      {/* Checkbox */}
+                      <Checkbox 
+                        checked={selectedTrains.includes(train.id)}
+                        onCheckedChange={() => toggleTrain(train.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="shrink-0"
+                      />
 
-                    {/* Train Icon & Info */}
-                    <div className="flex items-center gap-2 min-w-[100px]">
-                      <div className="size-9 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary-foreground text-lg">train</span>
+                      {/* Train Icon & Info */}
+                      <div className="flex items-center gap-2 min-w-[100px]">
+                        <div className="size-9 rounded-lg gradient-primary flex items-center justify-center shrink-0">
+                          <span className="material-symbols-outlined text-primary-foreground text-lg">train</span>
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm">{train.name}</p>
+                          <p className="text-xs text-muted-foreground">{train.number}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-sm">{train.name}</p>
-                        <p className="text-xs text-muted-foreground">{train.number}</p>
-                      </div>
-                    </div>
 
-                    {/* Time */}
-                    <div className="flex items-center gap-4 flex-1 justify-center">
-                      <div className="text-center">
-                        <p className="text-lg font-bold">{train.departure}</p>
-                        <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'حرکت' : 'Dep'}</p>
+                      {/* Time */}
+                      <div className="flex items-center gap-4 flex-1 justify-center">
+                        <div className="text-center">
+                          <p className="text-lg font-bold">{train.departure}</p>
+                          <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'حرکت' : 'Dep'}</p>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <span className="material-symbols-outlined text-xs">schedule</span>
+                          <span className="hidden sm:inline">{train.duration}</span>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-lg font-bold">{train.arrival}</p>
+                          <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'ورود' : 'Arr'}</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <span className="material-symbols-outlined text-xs">schedule</span>
-                        <span className="hidden sm:inline">{train.duration}</span>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-lg font-bold">{train.arrival}</p>
-                        <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'ورود' : 'Arr'}</p>
-                      </div>
-                    </div>
 
-                    {/* Price */}
-                    <div className="text-end min-w-[90px]">
-                      <p className="text-lg font-bold text-accent">{formatPrice(train.price)}</p>
-                      <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'تومان' : 'Toman'}</p>
+                      {/* Price */}
+                      <div className="text-end min-w-[90px]">
+                        <p className="text-lg font-bold text-accent">{formatPrice(train.price)}</p>
+                        <p className="text-[10px] text-muted-foreground">{language === 'fa' ? 'تومان' : 'Toman'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Filter Box - Sidebar */}
+            <div className="hidden lg:block w-72 shrink-0">
+              <FilterBox />
+            </div>
           </div>
 
           {/* Submit Button - Fixed at bottom when items selected */}

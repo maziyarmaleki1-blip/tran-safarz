@@ -44,17 +44,52 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
     return `${hour.toString().padStart(2, '0')}:۰۰`;
   };
 
+  const notifyChange = (newFilters: Partial<FilterState>) => {
+    const filters: FilterState = {
+      priceRange,
+      departureTime,
+      duration,
+      compartmentTypes,
+      ...newFilters,
+    };
+    onFilterChange?.(filters);
+  };
+
+  const handlePriceChange = (value: [number, number]) => {
+    setPriceRange(value);
+    notifyChange({ priceRange: value });
+  };
+
+  const handleDepartureChange = (value: [number, number]) => {
+    setDepartureTime(value);
+    notifyChange({ departureTime: value });
+  };
+
+  const handleDurationChange = (value: [number, number]) => {
+    setDuration(value);
+    notifyChange({ duration: value });
+  };
+
   const toggleCompartment = (id: string) => {
-    setCompartmentTypes(prev =>
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-    );
+    const newTypes = compartmentTypes.includes(id)
+      ? compartmentTypes.filter(c => c !== id)
+      : [...compartmentTypes, id];
+    setCompartmentTypes(newTypes);
+    notifyChange({ compartmentTypes: newTypes });
   };
 
   const clearFilters = () => {
-    setPriceRange([440000, 2450000]);
-    setDepartureTime([0, 24]);
-    setDuration([0, 12]);
-    setCompartmentTypes([]);
+    const defaultFilters: FilterState = {
+      priceRange: [440000, 2450000],
+      departureTime: [0, 24],
+      duration: [0, 12],
+      compartmentTypes: [],
+    };
+    setPriceRange(defaultFilters.priceRange);
+    setDepartureTime(defaultFilters.departureTime);
+    setDuration(defaultFilters.duration);
+    setCompartmentTypes(defaultFilters.compartmentTypes);
+    onFilterChange?.(defaultFilters);
   };
 
   return (
@@ -87,7 +122,7 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
               min={100000}
               max={3000000}
               step={50000}
-              onValueChange={(value) => setPriceRange(value as [number, number])}
+              onValueChange={(value) => handlePriceChange(value as [number, number])}
               className="mb-3"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -108,7 +143,7 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
               min={0}
               max={24}
               step={1}
-              onValueChange={(value) => setDepartureTime(value as [number, number])}
+              onValueChange={(value) => handleDepartureChange(value as [number, number])}
               className="mb-3"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -129,7 +164,7 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
               min={0}
               max={15}
               step={1}
-              onValueChange={(value) => setDuration(value as [number, number])}
+              onValueChange={(value) => handleDurationChange(value as [number, number])}
               className="mb-3"
             />
             <div className="flex justify-between text-xs text-muted-foreground">

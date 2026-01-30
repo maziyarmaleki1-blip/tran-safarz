@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -182,14 +182,13 @@ export function SearchBox() {
         </Button>
       </div>
 
-      {/* Radio Options Row */}
+      {/* Checkbox Options Row */}
       <div className="flex flex-wrap items-center gap-6 mt-3 pt-3 border-t border-border/30">
         <div className="flex items-center gap-2">
-          <RadioGroupItem
-            value="privateCompartment"
+          <Checkbox
             id="privateCompartment"
             checked={privateCompartment}
-            onClick={() => setPrivateCompartment(!privateCompartment)}
+            onCheckedChange={(checked) => setPrivateCompartment(checked === true)}
             className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
           />
           <label htmlFor="privateCompartment" className="text-xs font-medium cursor-pointer">
@@ -198,11 +197,10 @@ export function SearchBox() {
         </div>
 
         <div className="flex items-center gap-2">
-          <RadioGroupItem
-            value="foreignNational"
+          <Checkbox
             id="foreignNational"
             checked={foreignNational}
-            onClick={() => setForeignNational(!foreignNational)}
+            onCheckedChange={(checked) => setForeignNational(checked === true)}
             className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
           />
           <label htmlFor="foreignNational" className="text-xs font-medium cursor-pointer">

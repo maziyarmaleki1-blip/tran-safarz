@@ -77,6 +77,34 @@ const translations: Translations = {
   withdraw: { fa: 'برداشت', en: 'Withdraw' },
   transactions: { fa: 'تراکنش‌ها', en: 'Transactions' },
   
+  // Payment
+  payment: { fa: 'پرداخت', en: 'Payment' },
+  ticketDetails: { fa: 'جزئیات بلیط', en: 'Ticket Details' },
+  paymentMethod: { fa: 'روش پرداخت', en: 'Payment Method' },
+  cardPayment: { fa: 'پرداخت کارت بانکی', en: 'Bank Card Payment' },
+  cardPaymentDesc: { fa: 'پرداخت از طریق درگاه بانکی', en: 'Pay via bank gateway' },
+  walletPayment: { fa: 'کیف پول', en: 'Wallet' },
+  walletPaymentDesc: { fa: 'پرداخت از موجودی کیف پول', en: 'Pay from wallet balance' },
+  priceSummary: { fa: 'خلاصه قیمت', en: 'Price Summary' },
+  ticketPrice: { fa: 'قیمت بلیط', en: 'Ticket Price' },
+  passengerCount: { fa: 'تعداد مسافر', en: 'Passenger Count' },
+  tax: { fa: 'مالیات', en: 'Tax' },
+  free: { fa: 'رایگان', en: 'Free' },
+  totalPrice: { fa: 'مبلغ قابل پرداخت', en: 'Total Price' },
+  payNow: { fa: 'پرداخت', en: 'Pay Now' },
+  processing: { fa: 'در حال پردازش...', en: 'Processing...' },
+  securePayment: { fa: 'پرداخت امن با رمزنگاری SSL', en: 'Secure payment with SSL encryption' },
+  
+  // Confirmation
+  paymentSuccess: { fa: 'پرداخت موفق', en: 'Payment Successful' },
+  paymentSuccessDesc: { fa: 'بلیط شما با موفقیت صادر شد', en: 'Your ticket has been issued successfully' },
+  trackingCode: { fa: 'کد رهگیری', en: 'Tracking Code' },
+  trackingCodeNote: { fa: 'این کد را برای پیگیری رزرو نگه دارید', en: 'Keep this code for tracking your reservation' },
+  printTicket: { fa: 'چاپ بلیط', en: 'Print Ticket' },
+  downloadTicket: { fa: 'دانلود بلیط', en: 'Download Ticket' },
+  goToDashboard: { fa: 'رفتن به داشبورد', en: 'Go to Dashboard' },
+  confirmationNote: { fa: 'اطلاعات بلیط به شماره موبایل شما پیامک خواهد شد', en: 'Ticket details will be sent to your mobile' },
+  
   // Cities
   tehran: { fa: 'تهران', en: 'Tehran' },
   mashhad: { fa: 'مشهد', en: 'Mashhad' },

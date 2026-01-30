@@ -31,7 +31,8 @@ const Booking = () => {
   };
 
   const handleSubmit = () => {
-    navigate('/payment');
+    const trainId = searchParams.get('train') || '1';
+    navigate(`/payment?train=${trainId}&from=${from}&to=${to}&passengers=${passengers}`);
   };
 
   return (

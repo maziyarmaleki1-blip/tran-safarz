@@ -85,8 +85,13 @@ const SearchResults = () => {
             </div>
           </div>
 
-          {/* Main Layout: Results + Filter */}
-          <div className="flex gap-4">
+          {/* Main Layout: Filter + Results (RTL: filter on right) */}
+          <div className="flex flex-row-reverse gap-4">
+            {/* Filter Box - Sidebar (appears on right in RTL) */}
+            <div className="hidden lg:block w-72 shrink-0">
+              <FilterBox />
+            </div>
+
             {/* Train Cards - Main Content */}
             <div className="flex-1 space-y-2">
               {trains.map((train) => (

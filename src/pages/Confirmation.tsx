@@ -3,6 +3,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { SmsStatus } from '@/components/confirmation/SmsStatus';
 
 const trains: Record<number, { name: string; number: string; departure: string; arrival: string; duration: string; price: number }> = {
   1: { name: 'فدک', number: '301', departure: '06:00', arrival: '16:30', duration: '10:30', price: 250000 },
@@ -65,6 +66,9 @@ const Confirmation = () => {
           </div>
           <p className="text-xs text-muted-foreground mt-2">{t('trackingCodeNote')}</p>
         </Card>
+
+        {/* SMS Status */}
+        <SmsStatus />
 
         {/* Ticket Details */}
         <Card className="p-6 mb-6">

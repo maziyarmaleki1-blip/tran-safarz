@@ -37,20 +37,68 @@ const SearchResults = () => {
 
   return (
     <MainLayout>
-      <div className="bg-primary/5 py-6 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="gap-1">
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
-              {t('back')}
-            </Button>
-            <div className="flex items-center gap-2 text-lg font-semibold">
-              <span className="material-symbols-outlined text-primary">train</span>
-              <span>{cities[from]}</span>
-              <span className="material-symbols-outlined text-muted-foreground">arrow_back</span>
-              <span>{cities[to]}</span>
+      {/* Hero Header Section */}
+      <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 py-8 overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Back Button */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/')} 
+            className="mb-4 text-white/80 hover:text-white hover:bg-white/10 gap-2"
+          >
+            <span className="material-symbols-outlined text-lg">arrow_forward</span>
+            {t('back')}
+          </Button>
+
+          {/* Route Info Card */}
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* Origin - Destination */}
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col items-center">
+                  <div className="size-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-2xl">location_on</span>
+                  </div>
+                  <span className="text-white font-bold text-lg mt-2">{cities[from]}</span>
+                  <span className="text-white/60 text-xs">{t('origin')}</span>
+                </div>
+
+                <div className="flex-1 flex items-center gap-2 px-4">
+                  <div className="h-0.5 flex-1 bg-white/30 rounded-full relative">
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 size-2 rounded-full bg-white" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 size-2 rounded-full bg-accent" />
+                  </div>
+                  <div className="size-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-white">train</span>
+                  </div>
+                  <div className="h-0.5 flex-1 bg-white/30 rounded-full" />
+                </div>
+
+                <div className="flex flex-col items-center">
+                  <div className="size-12 rounded-full bg-accent/80 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-2xl">flag</span>
+                  </div>
+                  <span className="text-white font-bold text-lg mt-2">{cities[to]}</span>
+                  <span className="text-white/60 text-xs">{t('destination')}</span>
+                </div>
+              </div>
+
+              {/* Passengers Badge */}
+              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3 self-start md:self-center">
+                <span className="material-symbols-outlined text-white">group</span>
+                <div>
+                  <span className="text-white font-bold text-lg">{passengers}</span>
+                  <span className="text-white/70 text-sm mr-1">{t('passenger')}</span>
+                </div>
+              </div>
             </div>
-            <span className="text-muted-foreground text-sm">({passengers} {t('passenger')})</span>
           </div>
         </div>
       </div>

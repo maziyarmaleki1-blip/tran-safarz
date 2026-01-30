@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { SearchBox } from '@/components/search/SearchBox';
 
 const trains = [
   { id: 1, name: 'فدک', number: '301', departure: '06:00', arrival: '16:30', duration: '10:30', price: 250000, seats: 45 },
@@ -20,7 +21,7 @@ const cities: Record<string, string> = {
 };
 
 const SearchResults = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [selectedTrain, setSelectedTrain] = useState<number | null>(null);
@@ -37,82 +38,31 @@ const SearchResults = () => {
 
   return (
     <MainLayout>
-      {/* Hero Header Section */}
-      <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 py-8 overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-        </div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          {/* Back Button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/')} 
-            className="mb-4 text-white/80 hover:text-white hover:bg-white/10 gap-2"
-          >
-            <span className="material-symbols-outlined text-lg">arrow_forward</span>
-            {t('back')}
-          </Button>
-
-          {/* Route Info Card */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              {/* Origin - Destination */}
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="size-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-white text-2xl">location_on</span>
-                  </div>
-                  <span className="text-white font-bold text-lg mt-2">{cities[from]}</span>
-                  <span className="text-white/60 text-xs">{t('origin')}</span>
-                </div>
-
-                <div className="flex-1 flex items-center gap-2 px-4">
-                  <div className="h-0.5 flex-1 bg-white/30 rounded-full relative">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 size-2 rounded-full bg-white" />
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 size-2 rounded-full bg-accent" />
-                  </div>
-                  <div className="size-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-white">train</span>
-                  </div>
-                  <div className="h-0.5 flex-1 bg-white/30 rounded-full" />
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <div className="size-12 rounded-full bg-accent/80 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-white text-2xl">flag</span>
-                  </div>
-                  <span className="text-white font-bold text-lg mt-2">{cities[to]}</span>
-                  <span className="text-white/60 text-xs">{t('destination')}</span>
-                </div>
-              </div>
-
-              {/* Passengers Badge */}
-              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3 self-start md:self-center">
-                <span className="material-symbols-outlined text-white">group</span>
-                <div>
-                  <span className="text-white font-bold text-lg">{passengers}</span>
-                  <span className="text-white/70 text-sm mr-1">{t('passenger')}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Search Box Section */}
+      <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 py-8">
+        <div className="container mx-auto px-4">
+          <SearchBox />
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">{t('searchResults')}</h1>
+        {/* Header with Title and Route Badge */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <h1 className="text-2xl font-bold">{t('searchResults')}</h1>
+          <div className="bg-muted rounded-lg px-4 py-2 flex items-center gap-2">
+            <span className="font-semibold">{cities[from]}</span>
+            <span className="material-symbols-outlined text-primary">arrow_back</span>
+            <span className="font-semibold">{cities[to]}</span>
+          </div>
+        </div>
 
         <div className="space-y-4">
-          {trains.map((train) => (
+          {trains.map((train, index) => (
             <Card
               key={train.id}
-              className={`p-4 sm:p-6 transition-all cursor-pointer hover:shadow-lg ${
+              className={`p-4 sm:p-6 transition-all cursor-pointer hover:shadow-lg overflow-hidden ${
                 selectedTrain === train.id ? 'ring-2 ring-primary' : ''
-              }`}
+              } ${index === 0 ? 'bg-gradient-to-l from-primary/10 via-primary/5 to-transparent' : ''}`}
               onClick={() => setSelectedTrain(train.id)}
             >
               <div className="flex flex-col lg:flex-row lg:items-center gap-4">
@@ -122,8 +72,8 @@ const SearchResults = () => {
                     <span className="material-symbols-outlined text-primary-foreground">train</span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">قطار {train.name}</h3>
-                    <p className="text-sm text-muted-foreground">شماره {train.number}</p>
+                    <h3 className="font-bold text-lg">{train.name}</h3>
+                    <p className="text-sm text-muted-foreground">{language === 'fa' ? 'شماره قطار:' : 'Train No:'} {train.number}</p>
                   </div>
                 </div>
 
@@ -131,7 +81,7 @@ const SearchResults = () => {
                 <div className="flex items-center gap-6 flex-1 justify-center">
                   <div className="text-center">
                     <p className="text-2xl font-bold">{train.departure}</p>
-                    <p className="text-xs text-muted-foreground">{t('departure')}</p>
+                    <p className="text-xs text-muted-foreground">{language === 'fa' ? 'حرکت' : 'Departure'}</p>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -145,25 +95,25 @@ const SearchResults = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold">{train.arrival}</p>
-                    <p className="text-xs text-muted-foreground">{t('arrival')}</p>
+                    <p className="text-xs text-muted-foreground">{language === 'fa' ? 'ورود' : 'Arrival'}</p>
                   </div>
-                </div>
-
-                {/* Seats */}
-                <div className="text-center px-4">
-                  <p className="text-lg font-semibold text-success">{train.seats}</p>
-                  <p className="text-xs text-muted-foreground">{t('availableSeats')}</p>
                 </div>
 
                 {/* Price & Action */}
                 <div className="flex items-center gap-4 lg:flex-col lg:items-end">
                   <div className="text-start lg:text-end">
-                    <p className="text-2xl font-bold text-primary">{formatPrice(train.price)}</p>
-                    <p className="text-xs text-muted-foreground">{t('toman')}</p>
+                    <p className="text-2xl font-bold text-accent">{formatPrice(train.price)}</p>
+                    <p className="text-xs text-muted-foreground">{language === 'fa' ? 'تومان' : 'Toman'}</p>
                   </div>
-                  <Button onClick={() => handleSelect(train.id)} className="gradient-primary gap-1">
-                    {t('selectTrain')}
-                    <span className="material-symbols-outlined text-lg">arrow_back</span>
+                  <Button 
+                    variant="outline" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(train.id);
+                    }} 
+                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  >
+                    {language === 'fa' ? 'انتخاب' : 'Select'}
                   </Button>
                 </div>
               </div>

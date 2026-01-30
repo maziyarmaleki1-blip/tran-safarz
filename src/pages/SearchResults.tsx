@@ -85,8 +85,13 @@ const SearchResults = () => {
             </div>
           </div>
 
-          {/* Main Layout: Filter on right (RTL natural flow) */}
+          {/* Main Layout: In RTL, first element appears on right */}
           <div className="flex gap-4">
+            {/* Filter Box - Sidebar (First = Right in RTL) */}
+            <div className="hidden lg:block w-72 shrink-0">
+              <FilterBox />
+            </div>
+
             {/* Train Cards - Main Content */}
             <div className="flex-1 space-y-2">
               {trains.map((train) => (
@@ -145,11 +150,6 @@ const SearchResults = () => {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Filter Box - Sidebar (Right side) */}
-            <div className="hidden lg:block w-72 shrink-0">
-              <FilterBox />
             </div>
           </div>
 

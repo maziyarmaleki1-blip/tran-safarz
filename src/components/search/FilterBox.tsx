@@ -19,20 +19,12 @@ export interface FilterState {
   departureTime: [number, number];
   duration: [number, number];
   compartmentTypes: string[];
-  stops: number[];
 }
 
 const compartmentOptions = [
   { id: 'اتوبوسی', label: 'اتوبوسی' },
   { id: '6نفره', label: '۶ نفره' },
   { id: '4نفره', label: '۴ نفره' },
-];
-
-const stopOptions = [
-  { id: 0, label: '۰' },
-  { id: 1, label: '۱' },
-  { id: 2, label: '۲' },
-  { id: 3, label: '۳+' },
 ];
 
 export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
@@ -43,7 +35,6 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
   const [departureTime, setDepartureTime] = useState<[number, number]>([0, 24]);
   const [duration, setDuration] = useState<[number, number]>([0, 12]);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
-  const [stops, setStops] = useState<number[]>([]);
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fa-IR');
@@ -59,18 +50,11 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
     );
   };
 
-  const toggleStop = (id: number) => {
-    setStops(prev =>
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    );
-  };
-
   const clearFilters = () => {
     setPriceRange([440000, 2450000]);
     setDepartureTime([0, 24]);
     setDuration([0, 12]);
     setCompartmentTypes([]);
-    setStops([]);
   };
 
   return (
@@ -178,28 +162,6 @@ export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
           </AccordionContent>
         </AccordionItem>
 
-        {/* Number of Stops */}
-        <AccordionItem value="stops" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline">
-            {isRtl ? 'تعداد توقف' : 'Number of Stops'}
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            <div className="space-y-2">
-              {stopOptions.map((option) => (
-                <label
-                  key={option.id}
-                  className="flex items-center gap-2 cursor-pointer text-sm"
-                >
-                  <Checkbox
-                    checked={stops.includes(option.id)}
-                    onCheckedChange={() => toggleStop(option.id)}
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
       </Accordion>
     </div>
   );

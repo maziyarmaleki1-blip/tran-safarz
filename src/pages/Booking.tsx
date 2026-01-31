@@ -2,7 +2,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PassengerForm, { PassengerData, UserCredentials } from '@/components/PassengerForm';
-import bookingBg from '@/assets/booking-bg.jpg';
+import heroTrain from '@/assets/hero-train.jpg';
 
 const Booking = () => {
   const { language } = useLanguage();
@@ -33,7 +33,7 @@ const Booking = () => {
         className="min-h-screen relative"
         dir={direction}
         style={{
-          backgroundImage: `url(${bookingBg})`,
+          backgroundImage: `url(${heroTrain})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center bottom',
           backgroundRepeat: 'no-repeat',

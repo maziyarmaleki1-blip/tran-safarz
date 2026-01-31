@@ -293,16 +293,16 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto" dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Main Glass Card */}
-      <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto animate-fade-in" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Main Glass Card - Glassmorphism */}
+      <div className="bg-white/70 backdrop-blur-2xl rounded-2xl shadow-2xl overflow-hidden border border-white/40">
         
         {/* Header Section */}
-        <div className="px-8 py-5 border-b border-gray-100">
+        <div className="px-8 py-5 border-b border-white/30 bg-white/30">
           <div className="flex items-center justify-between">
             <button 
               onClick={onBack}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors text-sm hover-scale"
             >
               <BackArrow className="size-4" />
               <span>{isRTL ? 'بازگشت' : 'Back'}</span>
@@ -317,15 +317,12 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
         <div className="px-8 py-6">
           {passengers.map((passenger, index) => (
             <div key={index} className="mb-6 last:mb-0">
-              {/* Passenger Row with Accent Line */}
-              <div className={cn("flex gap-4", isRTL ? "flex-row-reverse" : "flex-row")}>
-                {/* Accent Line */}
-                <div className="w-1 bg-gradient-to-b from-orange-400 to-orange-500 rounded-full" />
-                
+              {/* Passenger Row with Accent Line on RIGHT for RTL */}
+              <div className="flex gap-4">
                 {/* Passenger Content */}
                 <div className="flex-1">
-                  {/* Passenger Label */}
-                  <div className={cn("flex mb-4", isRTL ? "justify-end" : "justify-start")}>
+                  {/* Passenger Label - Always Right */}
+                  <div className="flex justify-end mb-4">
                     <span className="text-orange-500 font-semibold text-sm">
                       {isRTL ? `مسافر ${index + 1}` : `Passenger ${index + 1}`}
                     </span>
@@ -336,36 +333,27 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                     {passengerFields.map((field) => renderPassengerField(field, index, passenger))}
                   </div>
                 </div>
+
+                {/* Accent Line - RIGHT side */}
+                <div className="w-1 bg-gradient-to-b from-orange-400 to-orange-500 rounded-full" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Account Creation Section */}
-        <div className="px-8 py-6 border-t border-gray-100">
-          <div className={cn("flex gap-4", isRTL ? "flex-row-reverse" : "flex-row")}>
-            {/* Accent Line */}
-            <div className="w-1 bg-gradient-to-b from-sky-400 to-sky-500 rounded-full" />
-            
+        <div className="px-8 py-6 border-t border-white/30 bg-white/20">
+          <div className="flex gap-4">
             {/* Account Content */}
             <div className="flex-1">
-              {/* Info Note */}
-              <div className={cn("flex items-center gap-2 mb-4 text-gray-500", isRTL ? "justify-end" : "justify-start")}>
-                {isRTL ? (
-                  <>
-                    <p className="text-sm">
-                      با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود
-                    </p>
-                    <Info className="size-4 text-sky-500" />
-                  </>
-                ) : (
-                  <>
-                    <Info className="size-4 text-sky-500" />
-                    <p className="text-sm">
-                      An account will be created for you upon reservation
-                    </p>
-                  </>
-                )}
+              {/* Info Note - Always Right */}
+              <div className="flex items-center gap-2 mb-4 text-gray-600 justify-end">
+                <p className="text-sm">
+                  {isRTL 
+                    ? 'با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود'
+                    : 'An account will be created for you upon reservation'}
+                </p>
+                <Info className="size-4 text-sky-500" />
               </div>
 
               {/* Credentials Form - 4 Column Grid */}
@@ -373,6 +361,9 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                 {accountFields.map((field) => renderAccountField(field))}
               </div>
             </div>
+
+            {/* Accent Line - RIGHT side */}
+            <div className="w-1 bg-gradient-to-b from-sky-400 to-sky-500 rounded-full" />
           </div>
         </div>
 

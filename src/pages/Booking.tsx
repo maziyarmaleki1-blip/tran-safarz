@@ -1,21 +1,13 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import PassengerForm, { PassengerData, UserCredentials } from '@/components/PassengerForm';
-import { ArrowRight } from 'lucide-react';
-
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+import bookingBg from '@/assets/booking-bg.jpg';
 
 const Booking = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const isRTL = language === 'fa';
   
   const passengers = parseInt(searchParams.get('passengers') || '1');
   const from = searchParams.get('from') || '';
@@ -23,10 +15,8 @@ const Booking = () => {
   const trainId = searchParams.get('train') || searchParams.get('trains') || '1';
 
   const handleSubmit = (passengerData: PassengerData[], credentials: UserCredentials) => {
-    // Store passenger data in sessionStorage for payment page
     sessionStorage.setItem('passengerData', JSON.stringify(passengerData));
     sessionStorage.setItem('userCredentials', JSON.stringify(credentials));
-    
     navigate(`/payment?train=${trainId}&from=${from}&to=${to}&passengers=${passengers}`);
   };
 
@@ -36,10 +26,21 @@ const Booking = () => {
 
   return (
     <MainLayout>
-      {/* Full-width background with scenic image effect */}
-      <div className="min-h-screen bg-gradient-to-b from-sky-100 via-sky-50 to-background">
-        <div className="container mx-auto px-4 py-12 max-w-4xl">
-          {/* Passenger Form Component */}
+      {/* Full-screen background with train image */}
+      <div 
+        className="min-h-screen relative"
+        style={{
+          backgroundImage: `url(${bookingBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center bottom',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        {/* Sky gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-200/60 via-sky-100/40 to-transparent pointer-events-none" />
+        
+        {/* Content */}
+        <div className="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center min-h-[calc(100vh-80px)]">
           <PassengerForm
             passengerCount={passengers}
             foreignNational={false}

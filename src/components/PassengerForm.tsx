@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { ArrowRight, Info, Calendar } from 'lucide-react';
+import { ArrowRight, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { formatPersianDate } from '@/lib/persianDate';
@@ -40,7 +40,6 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
 }) => {
   const { language } = useLanguage();
   const { toast } = useToast();
-  const isRTL = language === 'fa';
 
   const [passengers, setPassengers] = useState<PassengerData[]>(
     Array(passengerCount).fill(null).map(() => ({
@@ -118,177 +117,173 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     setDatePickerOpen(newStates);
   };
 
-  // Glassmorphism styles
-  const glassCard = "relative bg-white/70 dark:bg-card/60 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)]";
-  const inputStyle = "h-11 bg-primary/5 border-0 rounded-lg placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-primary/30";
-  const labelStyle = "text-sm font-medium text-muted-foreground mb-2 block";
+  // Styles matching the reference exactly
+  const inputStyle = "h-10 bg-sky-50/80 border border-sky-100 rounded-md text-sm placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:border-primary/30";
 
   return (
-    <div className="space-y-6">
-      {/* Main Glass Card */}
-      <div className={cn(glassCard, "p-6 sm:p-8")}>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-xl font-bold text-foreground">مشخصات مسافر</h2>
-          <button 
-            onClick={onBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <span>بازگشت</span>
-            <ArrowRight className="size-4" />
-          </button>
-        </div>
+    <div className="w-full max-w-4xl mx-auto">
+      {/* Single Glass Card Container */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.12)] border border-white/60 overflow-hidden">
+        
+        {/* Top Section - Passenger Info */}
+        <div className="p-6 pb-5">
+          {/* Header Row */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-foreground">مشخصات مسافر</h2>
+            <button 
+              onClick={onBack}
+              className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm"
+            >
+              <span>بازگشت</span>
+              <ArrowRight className="size-4" />
+            </button>
+          </div>
 
-        {/* Passenger Forms */}
-        {passengers.map((passenger, index) => (
-          <div key={index} className="mb-6 last:mb-0">
-            {/* Passenger Label */}
-            <div className="flex items-center justify-end mb-4">
-              <span className="text-primary font-semibold">مسافر {index + 1}</span>
-            </div>
-
-            {/* Form Fields - Horizontal Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* First Name */}
-              <div>
-                <label className={labelStyle}>نام</label>
-                <Input
-                  placeholder="نام"
-                  value={passenger.firstName}
-                  onChange={(e) => updatePassenger(index, 'firstName', e.target.value)}
-                  className={inputStyle}
-                />
+          {/* Passengers */}
+          {passengers.map((passenger, index) => (
+            <div key={index} className="mb-5 last:mb-0">
+              {/* Passenger Label - Right aligned */}
+              <div className="flex justify-end mb-3">
+                <span className="text-primary font-semibold text-sm">مسافر {index + 1}</span>
               </div>
 
-              {/* Last Name */}
-              <div>
-                <label className={labelStyle}>نام خانوادگی</label>
-                <Input
-                  placeholder="نام خانوادگی"
-                  value={passenger.lastName}
-                  onChange={(e) => updatePassenger(index, 'lastName', e.target.value)}
-                  className={inputStyle}
-                />
-              </div>
+              {/* 4-Column Form Row */}
+              <div className="grid grid-cols-4 gap-3">
+                {/* Column 1: نام (rightmost in RTL) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground block text-right">نام</label>
+                  <Input
+                    value={passenger.firstName}
+                    onChange={(e) => updatePassenger(index, 'firstName', e.target.value)}
+                    className={inputStyle}
+                  />
+                </div>
 
-              {/* National ID */}
-              <div>
-                <label className={labelStyle}>{foreignNational ? 'شماره پاسپورت' : 'کد ملی'}</label>
-                <Input
-                  placeholder={foreignNational ? 'شماره پاسپورت' : 'کد ملی ۱۰ رقمی'}
-                  value={passenger.nationalId}
-                  onChange={(e) => updatePassenger(index, 'nationalId', e.target.value)}
-                  className={inputStyle}
-                  maxLength={foreignNational ? 20 : 10}
-                />
-              </div>
+                {/* Column 2: نام خانوادگی */}
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground block text-right">نام خانوادگی</label>
+                  <Input
+                    value={passenger.lastName}
+                    onChange={(e) => updatePassenger(index, 'lastName', e.target.value)}
+                    className={inputStyle}
+                  />
+                </div>
 
-              {/* Birth Date */}
-              <div>
-                <label className={labelStyle}>تاریخ تولد</label>
-                <Popover 
-                  open={datePickerOpen[index]} 
-                  onOpenChange={(open) => toggleDatePicker(index, open)}
-                >
-                  <PopoverTrigger asChild>
-                    <button
-                      type="button"
-                      className={cn(
-                        "w-full h-11 px-3 flex items-center justify-between text-right rounded-lg",
-                        "bg-primary/5 hover:bg-primary/10 transition-colors",
-                        !passenger.birthDate && "text-muted-foreground/60"
-                      )}
-                    >
-                      <Calendar className="size-4 opacity-50" />
-                      <span>
+                {/* Column 3: کد ملی */}
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground block text-right">
+                    {foreignNational ? 'شماره پاسپورت' : 'کد ملی'}
+                  </label>
+                  <Input
+                    value={passenger.nationalId}
+                    onChange={(e) => updatePassenger(index, 'nationalId', e.target.value)}
+                    className={inputStyle}
+                    maxLength={foreignNational ? 20 : 10}
+                  />
+                </div>
+
+                {/* Column 4: تاریخ تولد (leftmost in RTL) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground block text-right">تاریخ تولد</label>
+                  <Popover 
+                    open={datePickerOpen[index]} 
+                    onOpenChange={(open) => toggleDatePicker(index, open)}
+                  >
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "w-full h-10 px-3 flex items-center justify-end text-right rounded-md text-sm",
+                          "bg-sky-50/80 border border-sky-100 hover:bg-sky-100/50 transition-colors",
+                          !passenger.birthDate && "text-muted-foreground/50"
+                        )}
+                      >
                         {passenger.birthDate 
                           ? formatPersianDate(passenger.birthDate)
                           : 'انتخاب تاریخ'
                         }
-                      </span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <PersianCalendar
-                      selected={passenger.birthDate || undefined}
-                      onSelect={(date) => {
-                        updatePassenger(index, 'birthDate', date);
-                        toggleDatePicker(index, false);
-                      }}
-                      mode="past"
-                      disabled={(date) => date > new Date()}
-                    />
-                  </PopoverContent>
-                </Popover>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                      <PersianCalendar
+                        selected={passenger.birthDate || undefined}
+                        onSelect={(date) => {
+                          updatePassenger(index, 'birthDate', date);
+                          toggleDatePicker(index, false);
+                        }}
+                        mode="past"
+                        disabled={(date) => date > new Date()}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
+
+              {/* Divider between passengers */}
+              {index < passengers.length - 1 && (
+                <div className="mt-5 border-t border-border/20" />
+              )}
             </div>
-
-            {/* Divider between passengers */}
-            {index < passengers.length - 1 && (
-              <div className="mt-6 border-t border-border/30" />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Account Creation Glass Card */}
-      <div className={cn(glassCard, "p-6 sm:p-8")}>
-        {/* Info Note */}
-        <div className="flex items-center justify-end gap-2 mb-6 text-muted-foreground">
-          <span className="text-sm">با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود</span>
-          <Info className="size-4" />
+          ))}
         </div>
 
-        {/* Credentials Form */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-          {/* Mobile */}
-          <div>
-            <label className={labelStyle}>شماره موبایل</label>
-            <Input
-              type="tel"
-              placeholder="09xxxxxxxxx"
-              value={credentials.mobile}
-              onChange={(e) => setCredentials({ ...credentials, mobile: e.target.value })}
-              className={inputStyle}
-              dir="ltr"
-              maxLength={11}
-            />
+        {/* Bottom Section - Account Info */}
+        <div className="bg-gradient-to-b from-white/40 to-white/70 border-t border-white/50 p-6 pt-5">
+          {/* Info Note - Right aligned */}
+          <div className="flex items-center justify-end gap-2 mb-4">
+            <span className="text-xs text-muted-foreground">با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود</span>
+            <Info className="size-3.5 text-muted-foreground" />
           </div>
 
-          {/* Password */}
-          <div>
-            <label className={labelStyle}>رمز عبور</label>
-            <Input
-              type="password"
-              placeholder="حداقل ۶ کاراکتر"
-              value={credentials.password}
-              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              className={inputStyle}
-              dir="ltr"
-            />
-          </div>
+          {/* 4-Column Credentials Row */}
+          <div className="grid grid-cols-4 gap-3 items-end">
+            {/* Column 1: شماره موبایل (rightmost in RTL) */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground block text-right">شماره موبایل</label>
+              <Input
+                type="tel"
+                placeholder="09xxxxxxxxx"
+                value={credentials.mobile}
+                onChange={(e) => setCredentials({ ...credentials, mobile: e.target.value })}
+                className={inputStyle}
+                dir="ltr"
+                maxLength={11}
+              />
+            </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label className={labelStyle}>تکرار رمز عبور</label>
-            <Input
-              type="password"
-              placeholder="تکرار رمز عبور"
-              value={credentials.confirmPassword}
-              onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
-              className={inputStyle}
-              dir="ltr"
-            />
-          </div>
+            {/* Column 2: رمز عبور */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground block text-right">رمز عبور</label>
+              <Input
+                type="password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                className={inputStyle}
+                dir="ltr"
+              />
+            </div>
 
-          {/* Submit Button */}
-          <div>
-            <Button
-              onClick={handleSubmit}
-              className="w-full h-11 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg shadow-lg shadow-emerald-500/25 transition-all"
-            >
-              تکمیل رزرو
-            </Button>
+            {/* Column 3: تکرار رمز عبور */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground block text-right">تکرار رمز عبور</label>
+              <Input
+                type="password"
+                value={credentials.confirmPassword}
+                onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
+                className={inputStyle}
+                dir="ltr"
+              />
+            </div>
+
+            {/* Column 4: Submit Button (leftmost in RTL) */}
+            <div>
+              <Button
+                onClick={handleSubmit}
+                className="w-full h-10 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-md shadow-md shadow-emerald-500/20 transition-all"
+              >
+                تکمیل رزرو
+              </Button>
+            </div>
           </div>
         </div>
       </div>

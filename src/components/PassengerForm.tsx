@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import PersianCalendar from '@/components/PersianCalendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { ArrowRight, ArrowLeft, Info, Calendar, User, CreditCard, Phone, Lock } from 'lucide-react';
+import { ArrowRight, Info, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { formatPersianDate } from '@/lib/persianDate';
-import { Card } from '@/components/ui/card';
 
 export interface PassengerData {
   firstName: string;
@@ -40,11 +38,10 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   onSubmit,
   onBack,
 }) => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const { toast } = useToast();
   const isRTL = language === 'fa';
 
-  // Initialize passengers array
   const [passengers, setPassengers] = useState<PassengerData[]>(
     Array(passengerCount).fill(null).map(() => ({
       firstName: '',
@@ -54,14 +51,12 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     }))
   );
 
-  // User credentials for account creation
   const [credentials, setCredentials] = useState<UserCredentials & { confirmPassword: string }>({
     mobile: '',
     password: '',
     confirmPassword: '',
   });
 
-  // Date picker open states
   const [datePickerOpen, setDatePickerOpen] = useState<boolean[]>(
     Array(passengerCount).fill(false)
   );
@@ -73,104 +68,47 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   };
 
   const validateForm = (): boolean => {
-    // Validate passengers
     for (let i = 0; i < passengers.length; i++) {
       const p = passengers[i];
       if (!p.firstName.trim()) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? `نام مسافر ${i + 1} را وارد کنید` : `Enter first name for passenger ${i + 1}`,
-          variant: 'destructive',
-        });
+        toast({ title: 'خطا', description: `نام مسافر ${i + 1} را وارد کنید`, variant: 'destructive' });
         return false;
       }
       if (!p.lastName.trim()) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? `نام خانوادگی مسافر ${i + 1} را وارد کنید` : `Enter last name for passenger ${i + 1}`,
-          variant: 'destructive',
-        });
+        toast({ title: 'خطا', description: `نام خانوادگی مسافر ${i + 1} را وارد کنید`, variant: 'destructive' });
         return false;
       }
       if (!p.nationalId.trim()) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL 
-            ? `${foreignNational ? 'شماره پاسپورت' : 'کد ملی'} مسافر ${i + 1} را وارد کنید` 
-            : `Enter ${foreignNational ? 'passport number' : 'national ID'} for passenger ${i + 1}`,
-          variant: 'destructive',
-        });
+        toast({ title: 'خطا', description: `کد ملی مسافر ${i + 1} را وارد کنید`, variant: 'destructive' });
         return false;
       }
       if (!foreignNational && p.nationalId.length !== 10) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? `کد ملی مسافر ${i + 1} باید ۱۰ رقم باشد` : `National ID for passenger ${i + 1} must be 10 digits`,
-          variant: 'destructive',
-        });
+        toast({ title: 'خطا', description: `کد ملی مسافر ${i + 1} باید ۱۰ رقم باشد`, variant: 'destructive' });
         return false;
       }
       if (!p.birthDate) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? `تاریخ تولد مسافر ${i + 1} را وارد کنید` : `Enter birth date for passenger ${i + 1}`,
-          variant: 'destructive',
-        });
+        toast({ title: 'خطا', description: `تاریخ تولد مسافر ${i + 1} را وارد کنید`, variant: 'destructive' });
         return false;
       }
     }
-
-    // Validate credentials
-    if (!credentials.mobile.trim()) {
-      toast({
-        title: isRTL ? 'خطا' : 'Error',
-        description: isRTL ? 'شماره موبایل را وارد کنید' : 'Enter mobile number',
-        variant: 'destructive',
-      });
+    if (!credentials.mobile.trim() || !/^09\d{9}$/.test(credentials.mobile)) {
+      toast({ title: 'خطا', description: 'شماره موبایل معتبر نیست', variant: 'destructive' });
       return false;
     }
-    if (!/^09\d{9}$/.test(credentials.mobile)) {
-      toast({
-        title: isRTL ? 'خطا' : 'Error',
-        description: isRTL ? 'شماره موبایل معتبر نیست' : 'Invalid mobile number',
-        variant: 'destructive',
-      });
-      return false;
-    }
-    if (!credentials.password) {
-      toast({
-        title: isRTL ? 'خطا' : 'Error',
-        description: isRTL ? 'رمز عبور را وارد کنید' : 'Enter password',
-        variant: 'destructive',
-      });
-      return false;
-    }
-    if (credentials.password.length < 6) {
-      toast({
-        title: isRTL ? 'خطا' : 'Error',
-        description: isRTL ? 'رمز عبور باید حداقل ۶ کاراکتر باشد' : 'Password must be at least 6 characters',
-        variant: 'destructive',
-      });
+    if (!credentials.password || credentials.password.length < 6) {
+      toast({ title: 'خطا', description: 'رمز عبور باید حداقل ۶ کاراکتر باشد', variant: 'destructive' });
       return false;
     }
     if (credentials.password !== credentials.confirmPassword) {
-      toast({
-        title: isRTL ? 'خطا' : 'Error',
-        description: isRTL ? 'رمز عبور و تکرار آن مطابقت ندارند' : 'Passwords do not match',
-        variant: 'destructive',
-      });
+      toast({ title: 'خطا', description: 'رمز عبور و تکرار آن مطابقت ندارند', variant: 'destructive' });
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = () => {
     if (validateForm()) {
-      onSubmit(passengers, {
-        mobile: credentials.mobile,
-        password: credentials.password,
-      });
+      onSubmit(passengers, { mobile: credentials.mobile, password: credentials.password });
     }
   };
 
@@ -180,210 +118,179 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     setDatePickerOpen(newStates);
   };
 
+  // Glassmorphism styles
+  const glassCard = "relative bg-white/70 dark:bg-card/60 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)]";
+  const inputStyle = "h-11 bg-primary/5 border-0 rounded-lg placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-primary/30";
+  const labelStyle = "text-sm font-medium text-muted-foreground mb-2 block";
+
   return (
     <div className="space-y-6">
-      {/* Passenger Forms */}
-      {passengers.map((passenger, index) => (
-        <Card key={index} className="p-5 sm:p-6 bg-card/80 backdrop-blur-sm border-border/50">
-          <div className="flex items-center gap-3 mb-5 pb-4 border-b border-border/50">
-            <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <User className="size-5 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-bold text-foreground">
-                {isRTL ? `مسافر ${index + 1}` : `Passenger ${index + 1}`}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {isRTL ? 'اطلاعات هویتی' : 'Identity information'}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* First Name */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                {isRTL ? 'نام' : 'First Name'} <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                placeholder={isRTL ? 'نام به فارسی' : 'First name'}
-                value={passenger.firstName}
-                onChange={(e) => updatePassenger(index, 'firstName', e.target.value)}
-                className="h-11"
-              />
-            </div>
-
-            {/* Last Name */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                {isRTL ? 'نام خانوادگی' : 'Last Name'} <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                placeholder={isRTL ? 'نام خانوادگی به فارسی' : 'Last name'}
-                value={passenger.lastName}
-                onChange={(e) => updatePassenger(index, 'lastName', e.target.value)}
-                className="h-11"
-              />
-            </div>
-
-            {/* National ID / Passport */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium flex items-center gap-2">
-                <CreditCard className="size-4 text-muted-foreground" />
-                {foreignNational 
-                  ? (isRTL ? 'شماره پاسپورت' : 'Passport Number')
-                  : (isRTL ? 'کد ملی' : 'National ID')
-                } <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                placeholder={foreignNational 
-                  ? (isRTL ? 'شماره پاسپورت' : 'Passport number')
-                  : (isRTL ? 'کد ملی ۱۰ رقمی' : '10-digit national ID')
-                }
-                value={passenger.nationalId}
-                onChange={(e) => updatePassenger(index, 'nationalId', e.target.value)}
-                className="h-11"
-                maxLength={foreignNational ? 20 : 10}
-              />
-            </div>
-
-            {/* Birth Date */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium flex items-center gap-2">
-                <Calendar className="size-4 text-muted-foreground" />
-                {isRTL ? 'تاریخ تولد' : 'Birth Date'} <span className="text-destructive">*</span>
-              </Label>
-              <Popover 
-                open={datePickerOpen[index]} 
-                onOpenChange={(open) => toggleDatePicker(index, open)}
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full h-11 justify-start text-right font-normal",
-                      !passenger.birthDate && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="size-4 ml-2 opacity-50" />
-                    {passenger.birthDate 
-                      ? (isRTL ? formatPersianDate(passenger.birthDate) : passenger.birthDate.toLocaleDateString())
-                      : (isRTL ? 'انتخاب تاریخ' : 'Select date')
-                    }
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <PersianCalendar
-                    selected={passenger.birthDate || undefined}
-                    onSelect={(date) => {
-                      updatePassenger(index, 'birthDate', date);
-                      toggleDatePicker(index, false);
-                    }}
-                    mode="past"
-                    disabled={(date) => date > new Date()}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-
-          {/* Info note */}
-          <div className="mt-4 p-3 rounded-lg bg-muted/50 flex items-start gap-2">
-            <Info className="size-4 text-muted-foreground mt-0.5 shrink-0" />
-            <p className="text-xs text-muted-foreground">
-              {isRTL 
-                ? 'اطلاعات مسافر باید دقیقاً مطابق با مدارک هویتی باشد.'
-                : 'Passenger information must match identity documents exactly.'
-              }
-            </p>
-          </div>
-        </Card>
-      ))}
-
-      {/* Account Creation Section */}
-      <Card className="p-5 sm:p-6 bg-card/80 backdrop-blur-sm border-border/50">
-        <div className="flex items-center gap-3 mb-5 pb-4 border-b border-border/50">
-          <div className="size-10 rounded-xl bg-secondary/50 flex items-center justify-center">
-            <Lock className="size-5 text-foreground" />
-          </div>
-          <div>
-            <h3 className="font-bold text-foreground">
-              {isRTL ? 'اطلاعات حساب کاربری' : 'Account Information'}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {isRTL ? 'برای پیگیری سفارش و دریافت بلیط' : 'For order tracking and ticket delivery'}
-            </p>
-          </div>
+      {/* Main Glass Card */}
+      <div className={cn(glassCard, "p-6 sm:p-8")}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-bold text-foreground">مشخصات مسافر</h2>
+          <button 
+            onClick={onBack}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span>بازگشت</span>
+            <ArrowRight className="size-4" />
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Passenger Forms */}
+        {passengers.map((passenger, index) => (
+          <div key={index} className="mb-6 last:mb-0">
+            {/* Passenger Label */}
+            <div className="flex items-center justify-end mb-4">
+              <span className="text-primary font-semibold">مسافر {index + 1}</span>
+            </div>
+
+            {/* Form Fields - Horizontal Layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* First Name */}
+              <div>
+                <label className={labelStyle}>نام</label>
+                <Input
+                  placeholder="نام"
+                  value={passenger.firstName}
+                  onChange={(e) => updatePassenger(index, 'firstName', e.target.value)}
+                  className={inputStyle}
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label className={labelStyle}>نام خانوادگی</label>
+                <Input
+                  placeholder="نام خانوادگی"
+                  value={passenger.lastName}
+                  onChange={(e) => updatePassenger(index, 'lastName', e.target.value)}
+                  className={inputStyle}
+                />
+              </div>
+
+              {/* National ID */}
+              <div>
+                <label className={labelStyle}>{foreignNational ? 'شماره پاسپورت' : 'کد ملی'}</label>
+                <Input
+                  placeholder={foreignNational ? 'شماره پاسپورت' : 'کد ملی ۱۰ رقمی'}
+                  value={passenger.nationalId}
+                  onChange={(e) => updatePassenger(index, 'nationalId', e.target.value)}
+                  className={inputStyle}
+                  maxLength={foreignNational ? 20 : 10}
+                />
+              </div>
+
+              {/* Birth Date */}
+              <div>
+                <label className={labelStyle}>تاریخ تولد</label>
+                <Popover 
+                  open={datePickerOpen[index]} 
+                  onOpenChange={(open) => toggleDatePicker(index, open)}
+                >
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        "w-full h-11 px-3 flex items-center justify-between text-right rounded-lg",
+                        "bg-primary/5 hover:bg-primary/10 transition-colors",
+                        !passenger.birthDate && "text-muted-foreground/60"
+                      )}
+                    >
+                      <Calendar className="size-4 opacity-50" />
+                      <span>
+                        {passenger.birthDate 
+                          ? formatPersianDate(passenger.birthDate)
+                          : 'انتخاب تاریخ'
+                        }
+                      </span>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <PersianCalendar
+                      selected={passenger.birthDate || undefined}
+                      onSelect={(date) => {
+                        updatePassenger(index, 'birthDate', date);
+                        toggleDatePicker(index, false);
+                      }}
+                      mode="past"
+                      disabled={(date) => date > new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            {/* Divider between passengers */}
+            {index < passengers.length - 1 && (
+              <div className="mt-6 border-t border-border/30" />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Account Creation Glass Card */}
+      <div className={cn(glassCard, "p-6 sm:p-8")}>
+        {/* Info Note */}
+        <div className="flex items-center justify-end gap-2 mb-6 text-muted-foreground">
+          <span className="text-sm">با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود</span>
+          <Info className="size-4" />
+        </div>
+
+        {/* Credentials Form */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           {/* Mobile */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium flex items-center gap-2">
-              <Phone className="size-4 text-muted-foreground" />
-              {isRTL ? 'شماره موبایل' : 'Mobile Number'} <span className="text-destructive">*</span>
-            </Label>
+          <div>
+            <label className={labelStyle}>شماره موبایل</label>
             <Input
               type="tel"
-              placeholder={isRTL ? '۰۹۱۲۳۴۵۶۷۸۹' : '09123456789'}
+              placeholder="09xxxxxxxxx"
               value={credentials.mobile}
               onChange={(e) => setCredentials({ ...credentials, mobile: e.target.value })}
-              className="h-11"
+              className={inputStyle}
               dir="ltr"
               maxLength={11}
             />
           </div>
 
           {/* Password */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium flex items-center gap-2">
-              <Lock className="size-4 text-muted-foreground" />
-              {isRTL ? 'رمز عبور' : 'Password'} <span className="text-destructive">*</span>
-            </Label>
+          <div>
+            <label className={labelStyle}>رمز عبور</label>
             <Input
               type="password"
-              placeholder={isRTL ? 'حداقل ۶ کاراکتر' : 'At least 6 characters'}
+              placeholder="حداقل ۶ کاراکتر"
               value={credentials.password}
               onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              className="h-11"
+              className={inputStyle}
               dir="ltr"
             />
           </div>
 
           {/* Confirm Password */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              {isRTL ? 'تکرار رمز عبور' : 'Confirm Password'} <span className="text-destructive">*</span>
-            </Label>
+          <div>
+            <label className={labelStyle}>تکرار رمز عبور</label>
             <Input
               type="password"
-              placeholder={isRTL ? 'تکرار رمز عبور' : 'Repeat password'}
+              placeholder="تکرار رمز عبور"
               value={credentials.confirmPassword}
               onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
-              className="h-11"
+              className={inputStyle}
               dir="ltr"
             />
           </div>
-        </div>
-      </Card>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-2">
-        <Button
-          variant="outline"
-          onClick={onBack}
-          className="h-12 gap-2 order-2 sm:order-1"
-        >
-          {isRTL ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}
-          {isRTL ? 'بازگشت' : 'Back'}
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          className="h-12 flex-1 gap-2 gradient-primary text-lg order-1 sm:order-2"
-        >
-          {isRTL ? 'ادامه و پرداخت' : 'Continue to Payment'}
-          {isRTL ? <ArrowLeft className="size-4" /> : <ArrowRight className="size-4" />}
-        </Button>
+          {/* Submit Button */}
+          <div>
+            <Button
+              onClick={handleSubmit}
+              className="w-full h-11 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg shadow-lg shadow-emerald-500/25 transition-all"
+            >
+              تکمیل رزرو
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -36,41 +36,17 @@ const Booking = () => {
 
   return (
     <MainLayout>
-      <div className="bg-primary/5 py-6 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={handleBack} className="gap-1">
-              <ArrowRight className="size-4" />
-              {t('back')}
-            </Button>
-            <h1 className="text-xl font-bold">{t('passengerInfo')}</h1>
-          </div>
+      {/* Full-width background with scenic image effect */}
+      <div className="min-h-screen bg-gradient-to-b from-sky-100 via-sky-50 to-background">
+        <div className="container mx-auto px-4 py-12 max-w-4xl">
+          {/* Passenger Form Component */}
+          <PassengerForm
+            passengerCount={passengers}
+            foreignNational={false}
+            onSubmit={handleSubmit}
+            onBack={handleBack}
+          />
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
-        {/* Route Summary */}
-        <Card className="p-4 mb-6 flex items-center gap-4 bg-card/80 backdrop-blur-sm">
-          <div className="size-10 rounded-lg gradient-primary flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary-foreground">train</span>
-          </div>
-          <div className="flex items-center gap-2 font-medium">
-            <span>{cities[from] || from}</span>
-            <span className="material-symbols-outlined text-muted-foreground">arrow_back</span>
-            <span>{cities[to] || to}</span>
-          </div>
-          <div className="mr-auto text-sm text-muted-foreground">
-            {isRTL ? `${passengers} مسافر` : `${passengers} passenger(s)`}
-          </div>
-        </Card>
-
-        {/* Passenger Form Component */}
-        <PassengerForm
-          passengerCount={passengers}
-          foreignNational={false}
-          onSubmit={handleSubmit}
-          onBack={handleBack}
-        />
       </div>
     </MainLayout>
   );

@@ -183,6 +183,10 @@
     @apply bg-white/80 dark:bg-card/80 backdrop-blur-md;
   }
 
+  .glass-card {
+    @apply bg-background/80 backdrop-blur-xl rounded-2xl border border-border/50 shadow-xl;
+  }
+
   .shadow-soft {
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
   }
@@ -190,4 +194,13 @@
   .shadow-glow {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
   }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

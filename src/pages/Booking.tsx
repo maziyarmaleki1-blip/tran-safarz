@@ -13,6 +13,7 @@ const Booking = () => {
   const from = searchParams.get('from') || '';
   const to = searchParams.get('to') || '';
   const trainId = searchParams.get('train') || searchParams.get('trains') || '1';
+  const foreignNational = searchParams.get('foreign') === 'true';
 
   const handleSubmit = (passengerData: PassengerData[], credentials: UserCredentials) => {
     sessionStorage.setItem('passengerData', JSON.stringify(passengerData));
@@ -26,7 +27,7 @@ const Booking = () => {
 
   return (
     <MainLayout>
-      {/* Full-screen background with train image */}
+      {/* Full-screen background with train scenic image */}
       <div 
         className="min-h-screen relative"
         style={{
@@ -34,16 +35,17 @@ const Booking = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center bottom',
           backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
         }}
       >
-        {/* Sky gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-200/60 via-sky-100/40 to-transparent pointer-events-none" />
+        {/* Sky gradient overlay for better readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-200/70 via-sky-100/50 to-transparent pointer-events-none" />
         
         {/* Content */}
-        <div className="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center min-h-[calc(100vh-80px)]">
+        <div className="relative z-10 container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-80px)]">
           <PassengerForm
             passengerCount={passengers}
-            foreignNational={false}
+            foreignNational={foreignNational}
             onSubmit={handleSubmit}
             onBack={handleBack}
           />

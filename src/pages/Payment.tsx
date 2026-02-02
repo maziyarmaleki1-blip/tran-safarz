@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import heroImage from '@/assets/hero-train.jpg';
 
 const trains: Record<number, { name: string; number: string; departure: string; arrival: string; duration: string; price: number }> = {
   1: { name: 'فدک', number: '301', departure: '06:00', arrival: '16:30', duration: '10:30', price: 250000 },
@@ -48,23 +49,38 @@ const Payment = () => {
 
   return (
     <MainLayout>
-      <div className="bg-primary/5 py-6 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1">
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
-              {t('back')}
-            </Button>
-            <h1 className="text-xl font-bold">{t('payment')}</h1>
+      {/* Fixed Full-Screen Background */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/90" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="bg-card/80 backdrop-blur-md py-6 border-b border-border/50">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1">
+                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                {t('back')}
+              </Button>
+              <h1 className="text-xl font-bold">{t('payment')}</h1>
+            </div>
           </div>
         </div>
-      </div>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Ticket Details */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-6">
+            <Card className="p-6 bg-card/95 backdrop-blur-md border-border/50">
               <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">confirmation_number</span>
                 {t('ticketDetails')}
@@ -117,7 +133,7 @@ const Payment = () => {
             </Card>
 
             {/* Payment Methods */}
-            <Card className="p-6">
+            <Card className="p-6 bg-card/95 backdrop-blur-md border-border/50">
               <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">payments</span>
                 {t('paymentMethod')}
@@ -151,7 +167,7 @@ const Payment = () => {
 
           {/* Price Summary */}
           <div className="lg:col-span-1">
-            <Card className="p-6 sticky top-4">
+            <Card className="p-6 sticky top-4 bg-card/95 backdrop-blur-md border-border/50">
               <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">receipt</span>
                 {t('priceSummary')}
@@ -204,6 +220,7 @@ const Payment = () => {
               </p>
             </Card>
           </div>
+        </div>
         </div>
       </div>
     </MainLayout>

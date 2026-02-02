@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SmsStatus } from '@/components/confirmation/SmsStatus';
+import heroImage from '@/assets/hero-train.jpg';
 
 const trains: Record<number, { name: string; number: string; departure: string; arrival: string; duration: string; price: number }> = {
   1: { name: 'فدک', number: '301', departure: '06:00', arrival: '16:30', duration: '10:30', price: 250000 },
@@ -40,7 +41,21 @@ const Confirmation = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      {/* Fixed Full-Screen Background */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/90" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-4 py-8 max-w-2xl">
         {/* Success Header */}
         <div className="text-center mb-8">
           <div className="size-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
@@ -51,7 +66,7 @@ const Confirmation = () => {
         </div>
 
         {/* Tracking Code */}
-        <Card className="p-6 mb-6 text-center bg-primary/5 border-primary/20">
+        <Card className="p-6 mb-6 text-center bg-card/95 backdrop-blur-md border-primary/20">
           <p className="text-sm text-muted-foreground mb-2">{t('trackingCode')}</p>
           <div className="flex items-center justify-center gap-3">
             <p className="text-3xl font-bold tracking-widest text-primary">{trackingCode}</p>
@@ -71,7 +86,7 @@ const Confirmation = () => {
         <SmsStatus />
 
         {/* Ticket Details */}
-        <Card className="p-6 mb-6">
+        <Card className="p-6 mb-6 bg-card/95 backdrop-blur-md border-border/50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-lg flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">confirmation_number</span>

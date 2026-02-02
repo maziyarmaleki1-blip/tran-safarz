@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import heroImage from '@/assets/hero-train.jpg';
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -18,12 +19,27 @@ const Contact = () => {
 
   return (
     <MainLayout>
-      <div className="bg-primary/5 py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-center mb-2">{t('contact')}</h1>
-          <p className="text-muted-foreground text-center">سوالی دارید؟ با ما در تماس باشید</p>
-        </div>
+      {/* Fixed Full-Screen Background */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/90" />
       </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="bg-card/80 backdrop-blur-md py-12 border-b border-border/50">
+          <div className="container mx-auto px-4">
+            <h1 className="text-3xl font-bold text-center mb-2">{t('contact')}</h1>
+            <p className="text-muted-foreground text-center">سوالی دارید؟ با ما در تماس باشید</p>
+          </div>
+        </div>
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -36,7 +52,7 @@ const Contact = () => {
               { icon: 'location_on', title: 'آدرس', value: 'تهران، میدان آزادی، خیابان راه‌آهن' },
               { icon: 'schedule', title: 'ساعات کاری', value: 'شنبه تا پنجشنبه ۸ صبح تا ۸ شب' },
             ].map((item, i) => (
-              <Card key={i} className="p-4 flex items-center gap-4">
+              <Card key={i} className="p-4 flex items-center gap-4 bg-card/95 backdrop-blur-md border-border/50">
                 <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center">
                   <span className="material-symbols-outlined text-primary">{item.icon}</span>
                 </div>
@@ -49,7 +65,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <Card className="p-6">
+          <Card className="p-6 bg-card/95 backdrop-blur-md border-border/50">
             <h2 className="text-2xl font-bold mb-6">ارسال پیام</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -77,6 +93,7 @@ const Contact = () => {
               <Button type="submit" className="w-full gradient-primary">ارسال پیام</Button>
             </form>
           </Card>
+        </div>
         </div>
       </div>
     </MainLayout>

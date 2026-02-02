@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import PersianCalendar from '@/components/PersianCalendar';
+import { TripTypeTabs, TripType } from './TripTypeTabs';
+import { PassengerSelector, PassengerCount } from './PassengerSelector';
 import {
   Select,
   SelectContent,
@@ -39,23 +41,37 @@ const cities = [
 export function SearchBox() {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const [tripType, setTripType] = useState<TripType>('one-way');
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [date, setDate] = useState<Date>();
-  const [passengers, setPassengers] = useState('1');
+  const [departureDate, setDepartureDate] = useState<Date>();
+  const [returnDate, setReturnDate] = useState<Date>();
+  const [passengers, setPassengers] = useState<PassengerCount>({
+    adults: 1,
+    children: 0,
+    passengerType: 'regular',
+  });
   const [privateCompartment, setPrivateCompartment] = useState(false);
   const [foreignNational, setForeignNational] = useState(false);
 
   const handleSearch = () => {
-    if (origin && destination && date) {
+    if (origin && destination && departureDate) {
+      const totalPassengers = passengers.adults + passengers.children;
       const searchParams = new URLSearchParams({
         from: origin,
         to: destination,
-        date: date.toISOString(),
-        passengers,
+        date: departureDate.toISOString(),
+        passengers: totalPassengers.toString(),
+        adults: passengers.adults.toString(),
+        children: passengers.children.toString(),
+        passengerType: passengers.passengerType,
+        tripType,
         privateCompartment: privateCompartment.toString(),
         foreignNational: foreignNational.toString(),
       });
+      if (tripType === 'round-trip' && returnDate) {
+        searchParams.set('returnDate', returnDate.toISOString());
+      }
       navigate(`/search?${searchParams.toString()}`);
     }
   };
@@ -69,8 +85,18 @@ export function SearchBox() {
   const getCityLabel = (city: typeof cities[0]) => 
     language === 'fa' ? city.labelFa : city.labelEn;
 
+  const dateLabels = {
+    fa: { departure: 'تاریخ رفت', return: 'تاریخ برگشت' },
+    en: { departure: 'Departure', return: 'Return' },
+  };
+
   return (
     <div className="bg-card/95 backdrop-blur-md rounded-2xl p-4 shadow-soft border border-border w-full max-w-6xl mx-auto">
+      {/* Trip Type Tabs */}
+      <div className="flex justify-center mb-4">
+        <TripTypeTabs value={tripType} onChange={setTripType} />
+      </div>
+
       {/* Main Search Row */}
       <div className="flex flex-wrap items-end gap-2">
         {/* Origin */}
@@ -122,10 +148,10 @@ export function SearchBox() {
           </Select>
         </div>
 
-        {/* Date */}
-        <div className="flex-1 min-w-[130px]">
+        {/* Departure Date */}
+        <div className={cn("min-w-[130px]", tripType === 'round-trip' ? 'flex-1' : 'flex-1')}>
           <label className="block text-xs font-medium text-muted-foreground mb-1">
-            {t('date')}
+            {dateLabels[language].departure}
           </label>
           <Popover>
             <PopoverTrigger asChild>
@@ -133,11 +159,11 @@ export function SearchBox() {
                 variant="outline"
                 className={cn(
                   'w-full h-10 justify-start text-start font-normal bg-background/50 text-sm',
-                  !date && 'text-muted-foreground'
+                  !departureDate && 'text-muted-foreground'
                 )}
               >
-                {date 
-                  ? (language === 'fa' ? formatPersianDate(date) : format(date, "PP", { locale: enUS }))
+                {departureDate 
+                  ? (language === 'fa' ? formatPersianDate(departureDate) : format(departureDate, "PP", { locale: enUS }))
                   : <span>{t('selectDate')}</span>
                 }
               </Button>
@@ -145,16 +171,16 @@ export function SearchBox() {
             <PopoverContent className="w-auto p-0" align="start">
               {language === 'fa' ? (
                 <PersianCalendar
-                  selected={date}
-                  onSelect={(d) => setDate(d)}
+                  selected={departureDate}
+                  onSelect={(d) => setDepartureDate(d)}
                   disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
                   mode="future"
                 />
               ) : (
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={departureDate}
+                  onSelect={setDepartureDate}
                   initialFocus
                   locale={enUS}
                   className={cn("p-3 pointer-events-auto")}
@@ -165,30 +191,64 @@ export function SearchBox() {
           </Popover>
         </div>
 
+        {/* Return Date (only for round-trip) */}
+        {tripType === 'round-trip' && (
+          <div className="flex-1 min-w-[130px]">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
+              {dateLabels[language].return}
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'w-full h-10 justify-start text-start font-normal bg-background/50 text-sm',
+                    !returnDate && 'text-muted-foreground'
+                  )}
+                >
+                  {returnDate 
+                    ? (language === 'fa' ? formatPersianDate(returnDate) : format(returnDate, "PP", { locale: enUS }))
+                    : <span>{t('selectDate')}</span>
+                  }
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                {language === 'fa' ? (
+                  <PersianCalendar
+                    selected={returnDate}
+                    onSelect={(d) => setReturnDate(d)}
+                    disabled={(d) => d < (departureDate || new Date(new Date().setHours(0, 0, 0, 0)))}
+                    mode="future"
+                  />
+                ) : (
+                  <Calendar
+                    mode="single"
+                    selected={returnDate}
+                    onSelect={setReturnDate}
+                    initialFocus
+                    locale={enUS}
+                    className={cn("p-3 pointer-events-auto")}
+                    disabled={(d) => d < (departureDate || new Date(new Date().setHours(0, 0, 0, 0)))}
+                  />
+                )}
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
+
         {/* Passengers */}
-        <div className="w-20">
+        <div className="w-32">
           <label className="block text-xs font-medium text-muted-foreground mb-1">
             {t('passengers')}
           </label>
-          <Select value={passengers} onValueChange={setPassengers}>
-            <SelectTrigger className="h-10 bg-background/50 text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[1, 2, 3, 4, 5, 6].map((num) => (
-                <SelectItem key={num} value={num.toString()}>
-                  {num}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <PassengerSelector value={passengers} onChange={setPassengers} />
         </div>
 
         {/* Search Button */}
         <Button
           onClick={handleSearch}
           className="h-10 px-6 shrink-0 gradient-primary hover:opacity-90 transition-opacity font-semibold gap-2"
-          disabled={!origin || !destination || !date}
+          disabled={!origin || !destination || !departureDate}
         >
           <span className="material-symbols-outlined text-lg">search</span>
           {t('search')}

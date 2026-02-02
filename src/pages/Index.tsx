@@ -8,16 +8,22 @@ const Index = () => {
 
   return (
     <MainLayout>
-      {/* Hero Section */}
-      <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `linear-gradient(135deg, rgba(20, 60, 120, 0.7) 0%, rgba(15, 40, 80, 0.8) 100%), url(${heroImage})`,
-          }}
-        />
+      {/* Fixed Full-Screen Background */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/90" />
+      </div>
 
-        <div className="relative z-10 container mx-auto px-4 py-20">
+      {/* Hero Section */}
+      <section className="relative z-10 min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="container mx-auto px-4 py-20">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center justify-center size-20 rounded-2xl gradient-gold shadow-lg mb-6">
               <span className="material-symbols-outlined icon-filled text-4xl text-primary-foreground">train</span>
@@ -29,7 +35,6 @@ const Index = () => {
           </div>
           <SearchBox />
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
       {/* Features */}

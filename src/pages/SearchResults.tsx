@@ -82,7 +82,7 @@ const SearchResults = () => {
 
   return (
     <MainLayout>
-      {/* Fixed Background */}
+      {/* Fixed Full-Screen Background */}
       <div 
         className="fixed inset-0 z-0"
         style={{
@@ -92,7 +92,7 @@ const SearchResults = () => {
           backgroundAttachment: 'fixed',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/50 to-background/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/90" />
       </div>
 
       {/* Content */}

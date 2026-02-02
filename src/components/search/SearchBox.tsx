@@ -97,59 +97,64 @@ export function SearchBox() {
         <TripTypeTabs value={tripType} onChange={setTripType} />
       </div>
 
-      {/* Main Search Row */}
-      <div className="flex flex-wrap items-end gap-2">
-        {/* Origin */}
-        <div className="flex-1 min-w-[120px]">
-          <label className="block text-xs font-medium text-muted-foreground mb-1">
-            {t('origin')}
-          </label>
-          <Select value={origin} onValueChange={setOrigin}>
-            <SelectTrigger className="h-10 bg-background/50 text-sm">
-              <SelectValue placeholder={t('selectCity')} />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.map((city) => (
-                <SelectItem key={city.value} value={city.value}>
-                  {getCityLabel(city)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Main Search - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-end gap-3">
+        {/* Origin & Destination Row */}
+        <div className="col-span-1 sm:col-span-2 lg:contents">
+          <div className="flex items-end gap-2 sm:col-span-2 lg:contents">
+            {/* Origin */}
+            <div className="flex-1 lg:flex-1 lg:min-w-[120px]">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
+                {t('origin')}
+              </label>
+              <Select value={origin} onValueChange={setOrigin}>
+                <SelectTrigger className="h-10 bg-background/50 text-sm">
+                  <SelectValue placeholder={t('selectCity')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map((city) => (
+                    <SelectItem key={city.value} value={city.value}>
+                      {getCityLabel(city)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Swap Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 rounded-full hover:bg-primary/10 shrink-0"
-          onClick={handleSwapCities}
-          type="button"
-        >
-          <ArrowLeftRight className="w-4 h-4 text-primary" />
-        </Button>
+            {/* Swap Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full hover:bg-primary/10 shrink-0"
+              onClick={handleSwapCities}
+              type="button"
+            >
+              <ArrowLeftRight className="w-4 h-4 text-primary" />
+            </Button>
 
-        {/* Destination */}
-        <div className="flex-1 min-w-[120px]">
-          <label className="block text-xs font-medium text-muted-foreground mb-1">
-            {t('destination')}
-          </label>
-          <Select value={destination} onValueChange={setDestination}>
-            <SelectTrigger className="h-10 bg-background/50 text-sm">
-              <SelectValue placeholder={t('selectCity')} />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.filter(c => c.value !== origin).map((city) => (
-                <SelectItem key={city.value} value={city.value}>
-                  {getCityLabel(city)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {/* Destination */}
+            <div className="flex-1 lg:flex-1 lg:min-w-[120px]">
+              <label className="block text-xs font-medium text-muted-foreground mb-1">
+                {t('destination')}
+              </label>
+              <Select value={destination} onValueChange={setDestination}>
+                <SelectTrigger className="h-10 bg-background/50 text-sm">
+                  <SelectValue placeholder={t('selectCity')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.filter(c => c.value !== origin).map((city) => (
+                    <SelectItem key={city.value} value={city.value}>
+                      {getCityLabel(city)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
         {/* Departure Date */}
-        <div className={cn("min-w-[130px]", tripType === 'round-trip' ? 'flex-1' : 'flex-1')}>
+        <div className="col-span-1 lg:flex-1 lg:min-w-[130px]">
           <label className="block text-xs font-medium text-muted-foreground mb-1">
             {dateLabels[language].departure}
           </label>
@@ -193,7 +198,7 @@ export function SearchBox() {
 
         {/* Return Date (only for round-trip) */}
         {tripType === 'round-trip' && (
-          <div className="flex-1 min-w-[130px]">
+          <div className="col-span-1 lg:flex-1 lg:min-w-[130px]">
             <label className="block text-xs font-medium text-muted-foreground mb-1">
               {dateLabels[language].return}
             </label>
@@ -237,7 +242,7 @@ export function SearchBox() {
         )}
 
         {/* Passengers */}
-        <div className="w-32">
+        <div className="col-span-1 lg:w-32">
           <label className="block text-xs font-medium text-muted-foreground mb-1">
             {t('passengers')}
           </label>
@@ -245,18 +250,20 @@ export function SearchBox() {
         </div>
 
         {/* Search Button */}
-        <Button
-          onClick={handleSearch}
-          className="h-10 px-6 shrink-0 gradient-primary hover:opacity-90 transition-opacity font-semibold gap-2"
-          disabled={!origin || !destination || !departureDate}
-        >
-          <span className="material-symbols-outlined text-lg">search</span>
-          {t('search')}
-        </Button>
+        <div className="col-span-1 sm:col-span-2 lg:col-auto">
+          <Button
+            onClick={handleSearch}
+            className="w-full lg:w-auto h-10 px-6 shrink-0 gradient-primary hover:opacity-90 transition-opacity font-semibold gap-2"
+            disabled={!origin || !destination || !departureDate}
+          >
+            <span className="material-symbols-outlined text-lg">search</span>
+            {t('search')}
+          </Button>
+        </div>
       </div>
 
       {/* Checkbox Options Row */}
-      <div className="flex flex-wrap items-center gap-6 mt-3 pt-3 border-t border-border/30">
+      <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-3 pt-3 border-t border-border/30">
         <div className="flex items-center gap-2">
           <Checkbox
             id="privateCompartment"

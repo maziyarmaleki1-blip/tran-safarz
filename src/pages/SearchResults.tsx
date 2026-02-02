@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SearchBox } from '@/components/search/SearchBox';
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import heroImage from '@/assets/hero-train.jpg';
 
 const trains = [
@@ -33,6 +34,7 @@ const SearchResults = () => {
     duration: [0, 12],
     compartmentTypes: [],
   });
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
   const from = searchParams.get('from') || '';
   const to = searchParams.get('to') || '';
@@ -98,7 +100,7 @@ const SearchResults = () => {
       {/* Content */}
       <div className="relative z-10 min-h-screen">
         {/* Search Box Section */}
-        <div className="py-6">
+        <div className="py-4 lg:py-6">
           <div className="container mx-auto px-4">
             <SearchBox />
           </div>
@@ -106,20 +108,37 @@ const SearchResults = () => {
 
         <div className="container mx-auto px-4 py-4">
           {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <h1 className="text-xl font-bold text-foreground drop-shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h1 className="text-lg lg:text-xl font-bold text-foreground drop-shadow-sm">
               {language === 'fa' ? 'قطارهای موجود' : 'Available Trains'}
             </h1>
-            <div className="bg-card/80 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2 shadow-soft border border-border/50 text-sm">
-              <span className="font-semibold">{cities[from]}</span>
-              <span className="text-primary">←</span>
-              <span className="font-semibold">{cities[to]}</span>
+            <div className="flex items-center gap-2">
+              {/* Mobile Filter Button */}
+              <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="lg:hidden gap-2 bg-card/80 backdrop-blur-md">
+                    <span className="material-symbols-outlined text-lg">tune</span>
+                    {language === 'fa' ? 'فیلتر' : 'Filter'}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-80 p-0">
+                  <div className="p-4">
+                    <FilterBox onFilterChange={handleFilterChange} />
+                  </div>
+                </SheetContent>
+              </Sheet>
+              
+              <div className="bg-card/80 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2 shadow-soft border border-border/50 text-xs sm:text-sm">
+                <span className="font-semibold">{cities[from]}</span>
+                <span className="text-primary">←</span>
+                <span className="font-semibold">{cities[to]}</span>
+              </div>
             </div>
           </div>
 
           {/* Main Layout: In RTL, first element appears on right */}
           <div className="flex gap-4">
-            {/* Filter Box - Sidebar (First = Right in RTL) */}
+            {/* Filter Box - Sidebar (First = Right in RTL) - Desktop Only */}
             <div className="hidden lg:block w-72 shrink-0">
               <FilterBox onFilterChange={handleFilterChange} />
             </div>
@@ -146,9 +165,54 @@ const SearchResults = () => {
                       }`}
                       onClick={() => toggleTrain(train.id)}
                     >
-                      <div className="p-4 sm:p-6">
-                        {/* Main Row */}
-                        <div className="flex items-center gap-4">
+                      <div className="p-4">
+                        {/* Mobile Layout */}
+                        <div className="flex flex-col gap-4 sm:hidden">
+                          {/* Top Row: Checkbox + Train Name + Price */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Checkbox 
+                                checked={selectedTrains.includes(train.id)}
+                                onCheckedChange={() => toggleTrain(train.id)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="shrink-0 size-5"
+                              />
+                              <div>
+                                <p className="font-semibold text-sm">{train.name} {train.number}</p>
+                                <p className="text-xs text-muted-foreground">{train.compartmentType}</p>
+                              </div>
+                            </div>
+                            <div className="text-left">
+                              <p className="text-lg font-bold text-accent">{formatPrice(train.price)}</p>
+                              <p className="text-xs text-muted-foreground">{language === 'fa' ? 'تومان' : 'Toman'}</p>
+                            </div>
+                          </div>
+
+                          {/* Bottom Row: Times */}
+                          <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3">
+                            <div className="text-center">
+                              <p className="text-xl font-bold">{train.departure}</p>
+                              <p className="text-xs text-muted-foreground">{cities[from]}</p>
+                            </div>
+                            <div className="flex flex-col items-center gap-1">
+                              <div className="flex items-center">
+                                <div className="size-2 rounded-full bg-muted-foreground/30" />
+                                <div className="w-8 border-t border-dashed border-muted-foreground/30" />
+                                <span className="material-symbols-outlined text-muted-foreground text-sm">train</span>
+                                <div className="w-8 border-t border-dashed border-muted-foreground/30" />
+                                <div className="size-2 rounded-full bg-muted-foreground/30" />
+                              </div>
+                              <p className="text-xs text-muted-foreground">{train.duration}</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-xl font-bold">{train.arrival}</p>
+                              <p className="text-xs text-muted-foreground">{cities[to]}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Desktop Layout */}
+                        <div className="hidden sm:flex items-center gap-4">
                           {/* Checkbox */}
                           <Checkbox 
                             checked={selectedTrains.includes(train.id)}
@@ -158,14 +222,14 @@ const SearchResults = () => {
                           />
 
                           {/* Departure - Right side in RTL */}
-                          <div className="text-center min-w-[100px]">
+                          <div className="text-center min-w-[80px] lg:min-w-[100px]">
                             <p className="text-xs text-muted-foreground mb-1">
                               {language === 'fa' ? `از ${cities[from]}` : `From ${cities[from]}`}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               {language === 'fa' ? 'زمان حرکت' : 'Departure'}
                             </p>
-                            <p className="text-3xl sm:text-4xl font-bold text-foreground mt-1">{train.departure}</p>
+                            <p className="text-2xl lg:text-4xl font-bold text-foreground mt-1">{train.departure}</p>
                           </div>
 
                           {/* Center - Train Info with Timeline */}
@@ -174,19 +238,19 @@ const SearchResults = () => {
                             <div className="flex items-center w-full max-w-[200px]">
                               <div className="size-3 rounded-full bg-muted-foreground/30" />
                               <div className="flex-1 border-t-2 border-dashed border-muted-foreground/30" />
-                              <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center mx-2">
-                                <span className="material-symbols-outlined text-muted-foreground text-xl">train</span>
+                              <div className="size-8 lg:size-10 rounded-full bg-muted/50 flex items-center justify-center mx-2">
+                                <span className="material-symbols-outlined text-muted-foreground text-lg lg:text-xl">train</span>
                               </div>
                               <div className="flex-1 border-t-2 border-dashed border-muted-foreground/30" />
                               <div className="size-3 rounded-full bg-muted-foreground/30" />
                             </div>
                             
                             {/* Train Details */}
-                            <div className="text-center space-y-1">
-                              <p className="text-sm font-medium text-foreground">
+                            <div className="text-center space-y-0.5 lg:space-y-1">
+                              <p className="text-xs lg:text-sm font-medium text-foreground">
                                 {language === 'fa' ? 'عنوان سالن' : 'Salon'}: {train.name} {train.number}
                               </p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs lg:text-sm text-muted-foreground">
                                 {language === 'fa' ? 'ظرفیت کوپه' : 'Compartment'}: {train.compartmentType}
                               </p>
                               <p className="text-xs text-muted-foreground">{train.duration}</p>
@@ -194,22 +258,22 @@ const SearchResults = () => {
                           </div>
 
                           {/* Arrival - Left side in RTL */}
-                          <div className="text-center min-w-[100px]">
+                          <div className="text-center min-w-[80px] lg:min-w-[100px]">
                             <p className="text-xs text-muted-foreground mb-1">
                               {language === 'fa' ? `به ${cities[to]}` : `To ${cities[to]}`}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               {language === 'fa' ? 'زمان ورود' : 'Arrival'}
                             </p>
-                            <p className="text-3xl sm:text-4xl font-bold text-foreground mt-1">{train.arrival}</p>
+                            <p className="text-2xl lg:text-4xl font-bold text-foreground mt-1">{train.arrival}</p>
                           </div>
 
                           {/* Price */}
-                          <div className="text-center min-w-[110px] bg-primary/5 rounded-xl p-3">
+                          <div className="text-center min-w-[90px] lg:min-w-[110px] bg-primary/5 rounded-xl p-2 lg:p-3">
                             <p className="text-xs text-muted-foreground mb-1">
                               {language === 'fa' ? 'قیمت هر نفر' : 'Per person'}
                             </p>
-                            <p className="text-xl sm:text-2xl font-bold text-accent">{formatPrice(train.price)}</p>
+                            <p className="text-lg lg:text-2xl font-bold text-accent">{formatPrice(train.price)}</p>
                             <p className="text-xs text-muted-foreground">
                               {language === 'fa' ? 'تومان' : 'Toman'}
                             </p>
@@ -228,7 +292,7 @@ const SearchResults = () => {
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
               <Button 
                 onClick={handleSubmit}
-                className="gradient-primary hover:opacity-90 px-8 py-3 rounded-full shadow-lg text-base font-semibold gap-2"
+                className="gradient-primary hover:opacity-90 px-6 sm:px-8 py-3 rounded-full shadow-lg text-sm sm:text-base font-semibold gap-2"
               >
                 <span className="material-symbols-outlined">check_circle</span>
                 {language === 'fa' 

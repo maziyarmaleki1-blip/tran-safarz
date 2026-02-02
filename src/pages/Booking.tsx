@@ -28,23 +28,22 @@ const Booking = () => {
 
   return (
     <MainLayout>
-      {/* Full-screen background with train scenic image */}
+      {/* Fixed Full-Screen Background */}
       <div 
-        className="min-h-screen relative"
-        dir={direction}
+        className="fixed inset-0 z-0"
         style={{
           backgroundImage: `url(${heroTrain})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center bottom',
-          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
         }}
       >
-        {/* Sky gradient overlay for better readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-200/80 via-sky-100/60 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/90" />
+      </div>
         
-        {/* Content */}
-        <div className="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center min-h-[calc(100vh-80px)]">
+      {/* Content */}
+      <div className="relative z-10 min-h-screen" dir={direction}>
+        <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[calc(100vh-80px)]">
           <PassengerForm
             passengerCount={passengers}
             foreignNational={foreignNational}

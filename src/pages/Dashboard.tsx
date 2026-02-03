@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 
 const menuItems = [
@@ -30,7 +32,31 @@ const transactions = [
 const Dashboard = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('reservations');
+
+  // Redirect to login if not authenticated
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+          <p className="text-muted-foreground">در حال بارگذاری...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -71,10 +97,13 @@ const Dashboard = () => {
           ))}
         </nav>
         <div className="p-4 border-t border-sidebar-border">
-          <Link to="/" className="flex items-center gap-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground">
+          <button 
+            onClick={handleSignOut}
+            className="flex items-center gap-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground w-full"
+          >
             <span className="material-symbols-outlined text-lg">logout</span>
             خروج از حساب
-          </Link>
+          </button>
         </div>
       </aside>
 

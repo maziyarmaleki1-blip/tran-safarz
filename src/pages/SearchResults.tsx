@@ -5,7 +5,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
 import { TrainRow } from '@/components/search/TrainRow';
-import { SortOptions, SortOption } from '@/components/search/SortOptions';
 import { DateNavigation } from '@/components/search/DateNavigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -31,7 +30,6 @@ const SearchResults = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOption>('default');
   const [currentDate, setCurrentDate] = useState('سه شنبه ۱۴۰۴/۱۱/۱۴');
   
   const [filters, setFilters] = useState<FilterState>({
@@ -59,19 +57,7 @@ const SearchResults = () => {
     return true;
   });
 
-  // Apply sorting
-  const sortedTrains = [...filteredTrains].sort((a, b) => {
-    switch (sortOption) {
-      case 'departure':
-        return a.departureHour - b.departureHour;
-      case 'cheapest':
-        return a.price - b.price;
-      case 'expensive':
-        return b.price - a.price;
-      default:
-        return 0;
-    }
-  });
+  const sortedTrains = filteredTrains;
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -129,12 +115,7 @@ const SearchResults = () => {
               />
             </div>
 
-            {/* Sort Options */}
-            <div className="mt-4 pt-4 border-t border-border/50">
-              <SortOptions activeSort={sortOption} onSortChange={setSortOption} />
-            </div>
-
-            {/* Notice Banner */}
+              {/* Notice Banner */}
             <div className="mt-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
               <p className="text-xs text-amber-800 dark:text-amber-200 text-center">
                 {language === 'fa' 

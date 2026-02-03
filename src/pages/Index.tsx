@@ -38,23 +38,25 @@ const Index = () => {
       </section>
 
       {/* Features */}
-      <section className="relative z-10 py-20 bg-background">
+      <section className="relative z-10 py-10">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">چرا سفیر ریل؟</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { icon: 'speed', title: 'رزرو سریع', desc: 'در کمتر از ۲ دقیقه بلیط رزرو کنید' },
-              { icon: 'verified_user', title: 'پرداخت امن', desc: 'تراکنش‌های امن با درگاه‌های بانکی' },
-              { icon: 'support_agent', title: 'پشتیبانی ۲۴/۷', desc: 'تیم پشتیبانی همیشه در خدمت شماست' },
-            ].map((f, i) => (
-              <div key={i} className="bg-card rounded-xl p-6 text-center shadow-soft border border-border">
-                <div className="inline-flex items-center justify-center size-14 rounded-xl gradient-primary mb-4">
-                  <span className="material-symbols-outlined text-2xl text-primary-foreground">{f.icon}</span>
+          <div className="glass-card p-8">
+            <h2 className="text-3xl font-bold text-center mb-8">چرا سفیر ریل؟</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { icon: 'speed', title: 'رزرو سریع', desc: 'در کمتر از ۲ دقیقه بلیط رزرو کنید' },
+                { icon: 'verified_user', title: 'پرداخت امن', desc: 'تراکنش‌های امن با درگاه‌های بانکی' },
+                { icon: 'support_agent', title: 'پشتیبانی ۲۴/۷', desc: 'تیم پشتیبانی همیشه در خدمت شماست' },
+              ].map((f, i) => (
+                <div key={i} className="bg-white/50 dark:bg-card/50 rounded-xl p-6 text-center border border-white/20">
+                  <div className="inline-flex items-center justify-center size-14 rounded-xl gradient-primary mb-4">
+                    <span className="material-symbols-outlined text-2xl text-primary-foreground">{f.icon}</span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{f.title}</h3>
+                  <p className="text-muted-foreground">{f.desc}</p>
                 </div>
-                <h3 className="text-xl font-bold mb-2">{f.title}</h3>
-                <p className="text-muted-foreground">{f.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>

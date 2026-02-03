@@ -38,8 +38,6 @@ const SearchResults = () => {
     priceRange: [440000, 2450000],
     departureTimeSlots: [],
     compartmentTypes: [],
-    availableOnly: false,
-    discountOnly: false,
   });
 
   const from = searchParams.get('from') || 'tehran';
@@ -57,9 +55,6 @@ const SearchResults = () => {
       });
       if (!matchesSlot) return false;
     }
-    
-    // Filter by availability
-    if (filters.availableOnly && train.status === 'sold_out') return false;
     
     return true;
   });

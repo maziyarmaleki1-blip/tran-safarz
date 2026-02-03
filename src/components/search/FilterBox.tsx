@@ -20,8 +20,6 @@ export interface FilterState {
   priceRange: [number, number];
   departureTimeSlots: string[];
   compartmentTypes: string[];
-  availableOnly: boolean;
-  discountOnly: boolean;
 }
 
 const compartmentOptions = [
@@ -31,10 +29,11 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-6', label: '۰', sublabel: '۶', icon: '🌙' },
-  { id: '6-12', label: '۶', sublabel: '۱۲', icon: '🌅' },
-  { id: '12-18', label: '۱۲', sublabel: '۱۸', icon: '☀️' },
-  { id: '18-24', label: '۱۸', sublabel: '۲۴', icon: '🌆' },
+  { id: '0-24', label: '۰', sublabel: '۲۴' },
+  { id: '0-6', label: '۰', sublabel: '۶' },
+  { id: '6-12', label: '۶', sublabel: '۱۲' },
+  { id: '12-18', label: '۱۲', sublabel: '۱۸' },
+  { id: '18-24', label: '۱۸', sublabel: '۲۴' },
 ];
 
 export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
@@ -44,8 +43,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const [priceRange, setPriceRange] = useState<[number, number]>([440000, 2450000]);
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>([]);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
-  const [availableOnly, setAvailableOnly] = useState(false);
-  const [discountOnly, setDiscountOnly] = useState(false);
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fa-IR');
@@ -56,8 +53,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
       priceRange,
       departureTimeSlots,
       compartmentTypes,
-      availableOnly,
-      discountOnly,
       ...newFilters,
     };
     onFilterChange?.(filters);
@@ -84,29 +79,15 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
     notifyChange({ compartmentTypes: newTypes });
   };
 
-  const handleAvailableChange = (checked: boolean) => {
-    setAvailableOnly(checked);
-    notifyChange({ availableOnly: checked });
-  };
-
-  const handleDiscountChange = (checked: boolean) => {
-    setDiscountOnly(checked);
-    notifyChange({ discountOnly: checked });
-  };
-
   const clearFilters = () => {
     const defaultFilters: FilterState = {
       priceRange: [440000, 2450000],
       departureTimeSlots: [],
       compartmentTypes: [],
-      availableOnly: false,
-      discountOnly: false,
     };
     setPriceRange(defaultFilters.priceRange);
     setDepartureTimeSlots(defaultFilters.departureTimeSlots);
     setCompartmentTypes(defaultFilters.compartmentTypes);
-    setAvailableOnly(defaultFilters.availableOnly);
-    setDiscountOnly(defaultFilters.discountOnly);
     onFilterChange?.(defaultFilters);
   };
 
@@ -128,25 +109,30 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
         </Button>
       </div>
 
-      {/* Quick Filters */}
-      <div className="space-y-3 mb-4 pb-4 border-b border-dashed border-border/50">
-        <label className="flex items-center justify-between cursor-pointer text-sm">
-          <span>{isRtl ? 'قطارهای قابل فروش' : 'Available Trains'}</span>
-          <Checkbox
-            checked={availableOnly}
-            onCheckedChange={(checked) => handleAvailableChange(checked as boolean)}
-          />
-        </label>
-        <label className="flex items-center justify-between cursor-pointer text-sm">
-          <span>{isRtl ? 'قطارهای تخفیف‌دار' : 'Discounted Trains'}</span>
-          <Checkbox
-            checked={discountOnly}
-            onCheckedChange={(checked) => handleDiscountChange(checked as boolean)}
-          />
-        </label>
-      </div>
+      <Accordion type="multiple" defaultValue={['compartment', 'departure', 'price']} className="space-y-1">
+        {/* Compartment Type - First */}
+        <AccordionItem value="compartment" className="border-none">
+          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
+            {isRtl ? 'نوع سالن' : 'Compartment Type'}
+          </AccordionTrigger>
+          <AccordionContent className="pt-2 pb-4">
+            <div className="space-y-3">
+              {compartmentOptions.map((option) => (
+                <label
+                  key={option.id}
+                  className="flex items-center justify-between cursor-pointer text-sm"
+                >
+                  <span>{option.label}</span>
+                  <Checkbox
+                    checked={compartmentTypes.includes(option.id)}
+                    onCheckedChange={() => toggleCompartment(option.id)}
+                  />
+                </label>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
 
-      <Accordion type="multiple" defaultValue={['departure', 'price', 'compartment']} className="space-y-1">
         {/* Departure Time Slots */}
         <AccordionItem value="departure" className="border-none">
           <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
@@ -156,7 +142,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
             <p className="text-xs text-muted-foreground mb-3">
               {isRtl ? 'بازه زمانی حضور در ایستگاه قطار' : 'Time range at station'}
             </p>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-5 gap-2">
               {timeSlotOptions.map((slot) => (
                 <button
                   key={slot.id}
@@ -191,32 +177,9 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
               onValueChange={(value) => handlePriceChange(value as [number, number])}
               className="mb-3"
             />
-            <div className="flex justify-between text-base font-semibold text-foreground">
+            <div className="flex justify-between text-base font-semibold text-foreground" dir="ltr">
               <span>{formatPrice(priceRange[0])}</span>
               <span>{formatPrice(priceRange[1])}</span>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Compartment Type */}
-        <AccordionItem value="compartment" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
-            {isRtl ? 'نوع سالن' : 'Compartment Type'}
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            <div className="space-y-3">
-              {compartmentOptions.map((option) => (
-                <label
-                  key={option.id}
-                  className="flex items-center justify-between cursor-pointer text-sm"
-                >
-                  <span>{option.label}</span>
-                  <Checkbox
-                    checked={compartmentTypes.includes(option.id)}
-                    onCheckedChange={() => toggleCompartment(option.id)}
-                  />
-                </label>
-              ))}
             </div>
           </AccordionContent>
         </AccordionItem>

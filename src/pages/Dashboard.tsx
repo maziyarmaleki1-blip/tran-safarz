@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { useReservations } from '@/hooks/useReservations';
+import { useTransactions } from '@/hooks/useTransactions';
 import { Link } from 'react-router-dom';
+import { ReservationsTab } from '@/components/dashboard/ReservationsTab';
+import { ProfileTab } from '@/components/dashboard/ProfileTab';
+import { SecurityTab } from '@/components/dashboard/SecurityTab';
+import { WalletTab } from '@/components/dashboard/WalletTab';
 
 const menuItems = [
   { id: 'reservations', icon: 'confirmation_number', label: 'رزروها' },
@@ -17,27 +17,21 @@ const menuItems = [
   { id: 'wallet', icon: 'account_balance_wallet', label: 'کیف پول' },
 ];
 
-const reservations = [
-  { id: 'RES-1402-001', route: 'تهران → مشهد', date: '۱۴۰۲/۱۰/۱۵', status: 'confirmed' },
-  { id: 'RES-1402-002', route: 'اصفهان → شیراز', date: '۱۴۰۲/۱۰/۲۰', status: 'pending' },
-  { id: 'RES-1402-003', route: 'تبریز → تهران', date: '۱۴۰۲/۰۹/۰۵', status: 'cancelled' },
-];
-
-const transactions = [
-  { id: 1, type: 'deposit', amount: 500000, date: '۱۴۰۲/۱۰/۱۰', desc: 'واریز آنلاین' },
-  { id: 2, type: 'withdraw', amount: -250000, date: '۱۴۰۲/۱۰/۱۲', desc: 'خرید بلیط' },
-  { id: 3, type: 'deposit', amount: 300000, date: '۱۴۰۲/۱۰/۱۴', desc: 'واریز آنلاین' },
-];
-
 const Dashboard = () => {
-  const { t } = useLanguage();
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, loading, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
+  const { profile, loading: profileLoading, updateProfile } = useProfile();
+  const { reservations, loading: reservationsLoading } = useReservations();
+  const { transactions, loading: transactionsLoading } = useTransactions();
   const [activeTab, setActiveTab] = useState('reservations');
 
-  // Redirect to login if not authenticated
-  if (loading) {
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
+
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <div className="flex flex-col items-center gap-3">
@@ -49,23 +43,12 @@ const Dashboard = () => {
   }
 
   if (!user) {
-    navigate('/login');
     return null;
   }
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
-  };
-
-  const getStatusBadge = (status: string) => {
-    const styles = {
-      confirmed: 'bg-success/10 text-success border-success/20',
-      pending: 'bg-gold/10 text-gold-dark border-gold/20',
-      cancelled: 'bg-destructive/10 text-destructive border-destructive/20',
-    };
-    const labels = { confirmed: 'تأیید شده', pending: 'در انتظار', cancelled: 'لغو شده' };
-    return <Badge variant="outline" className={styles[status as keyof typeof styles]}>{labels[status as keyof typeof labels]}</Badge>;
   };
 
   return (
@@ -131,134 +114,23 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 lg:mr-64 p-6 pt-20 lg:pt-6">
         <div className="max-w-4xl mx-auto">
-          {/* Reservations Tab */}
           {activeTab === 'reservations' && (
-            <div className="space-y-4">
-              <h1 className="text-2xl font-bold mb-6">رزروهای من</h1>
-              {reservations.map((res) => (
-                <Card key={res.id} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-primary">confirmation_number</span>
-                  </div>
-                  <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-                    <div><span className="text-muted-foreground">شماره: </span>{res.id}</div>
-                    <div><span className="text-muted-foreground">مسیر: </span>{res.route}</div>
-                    <div><span className="text-muted-foreground">تاریخ: </span>{res.date}</div>
-                    <div>{getStatusBadge(res.status)}</div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <ReservationsTab reservations={reservations} loading={reservationsLoading} />
           )}
 
-          {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <div className="space-y-6">
-              <h1 className="text-2xl font-bold">پروفایل کاربری</h1>
-              <Card className="p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t('firstName')}</Label>
-                    <Input defaultValue="علی" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('lastName')}</Label>
-                    <Input defaultValue="محمدی" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('mobile')}</Label>
-                    <Input defaultValue="۰۹۱۲۳۴۵۶۷۸۹" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('email')}</Label>
-                    <Input defaultValue="ali@example.com" />
-                  </div>
-                </div>
-                <Button className="mt-6 gradient-primary" onClick={() => toast({ title: 'تغییرات ذخیره شد' })}>
-                  {t('saveChanges')}
-                </Button>
-              </Card>
-            </div>
+            <ProfileTab profile={profile} loading={profileLoading} onUpdate={updateProfile} />
           )}
 
-          {/* Security Tab */}
-          {activeTab === 'security' && (
-            <div className="space-y-6">
-              <h1 className="text-2xl font-bold">{t('changePassword')}</h1>
-              <Card className="p-6">
-                <div className="space-y-4 max-w-md">
-                  <div className="space-y-2">
-                    <Label>{t('currentPassword')}</Label>
-                    <Input type="password" placeholder="••••••••" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('newPassword')}</Label>
-                    <Input type="password" placeholder="••••••••" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('confirmPassword')}</Label>
-                    <Input type="password" placeholder="••••••••" />
-                  </div>
-                  <Button className="gradient-primary" onClick={() => toast({ title: 'رمز عبور تغییر کرد' })}>
-                    {t('changePassword')}
-                  </Button>
-                </div>
-              </Card>
-            </div>
-          )}
+          {activeTab === 'security' && <SecurityTab />}
 
-          {/* Wallet Tab */}
           {activeTab === 'wallet' && (
-            <div className="space-y-6">
-              <h1 className="text-2xl font-bold">{t('wallet')}</h1>
-              
-              {/* Balance Card */}
-              <Card className="p-6 gradient-primary text-primary-foreground">
-                <p className="text-sm opacity-80">{t('balance')}</p>
-                <p className="text-4xl font-bold mt-1">۵۵۰,۰۰۰ <span className="text-lg">{t('toman')}</span></p>
-              </Card>
-
-              {/* Quick Deposit */}
-              <Card className="p-6">
-                <h3 className="font-bold mb-4">{t('deposit')}</h3>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {[50000, 100000, 200000, 500000].map((amount) => (
-                    <Button key={amount} variant="outline" size="sm">
-                      {amount.toLocaleString('fa-IR')} تومان
-                    </Button>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input placeholder="مبلغ دلخواه" className="max-w-[200px]" />
-                  <Button className="gradient-primary">{t('deposit')}</Button>
-                </div>
-              </Card>
-
-              {/* Transactions */}
-              <Card className="p-6">
-                <h3 className="font-bold mb-4">{t('transactions')}</h3>
-                <div className="space-y-3">
-                  {transactions.map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                      <div className="flex items-center gap-3">
-                        <div className={`size-8 rounded-full flex items-center justify-center ${tx.type === 'deposit' ? 'bg-success/10' : 'bg-destructive/10'}`}>
-                          <span className={`material-symbols-outlined text-sm ${tx.type === 'deposit' ? 'text-success' : 'text-destructive'}`}>
-                            {tx.type === 'deposit' ? 'add' : 'remove'}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">{tx.desc}</p>
-                          <p className="text-xs text-muted-foreground">{tx.date}</p>
-                        </div>
-                      </div>
-                      <span className={`font-bold ${tx.amount > 0 ? 'text-success' : 'text-destructive'}`}>
-                        {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString('fa-IR')}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </div>
+            <WalletTab 
+              profile={profile} 
+              transactions={transactions} 
+              loadingProfile={profileLoading}
+              loadingTransactions={transactionsLoading}
+            />
           )}
         </div>
       </main>

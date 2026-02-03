@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          balance: number | null
           created_at: string
           email: string | null
           first_name: string | null
@@ -25,6 +26,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          balance?: number | null
           created_at?: string
           email?: string | null
           first_name?: string | null
@@ -34,6 +36,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          balance?: number | null
           created_at?: string
           email?: string | null
           first_name?: string | null
@@ -41,6 +44,90 @@ export type Database = {
           last_name?: string | null
           phone_number?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reservations: {
+        Row: {
+          created_at: string
+          departure_date: string
+          departure_time: string | null
+          destination: string
+          id: string
+          origin: string
+          passenger_count: number | null
+          passengers: Json | null
+          reservation_code: string
+          status: string
+          total_price: number
+          train_name: string | null
+          updated_at: string
+          user_id: string
+          wagon_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          departure_date: string
+          departure_time?: string | null
+          destination: string
+          id?: string
+          origin: string
+          passenger_count?: number | null
+          passengers?: Json | null
+          reservation_code: string
+          status?: string
+          total_price: number
+          train_name?: string | null
+          updated_at?: string
+          user_id: string
+          wagon_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          departure_date?: string
+          departure_time?: string | null
+          destination?: string
+          id?: string
+          origin?: string
+          passenger_count?: number | null
+          passengers?: Json | null
+          reservation_code?: string
+          status?: string
+          total_price?: number
+          train_name?: string | null
+          updated_at?: string
+          user_id?: string
+          wagon_type?: string | null
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }

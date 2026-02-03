@@ -36,9 +36,10 @@ const SearchResults = () => {
   
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
-    departureTime: [0, 24],
-    duration: [0, 12],
+    departureTimeSlots: [],
     compartmentTypes: [],
+    availableOnly: false,
+    discountOnly: false,
   });
 
   const from = searchParams.get('from') || 'tehran';
@@ -47,9 +48,19 @@ const SearchResults = () => {
   // Apply filters
   const filteredTrains = trains.filter(train => {
     if (train.price < filters.priceRange[0] || train.price > filters.priceRange[1]) return false;
-    if (train.departureHour < filters.departureTime[0] || train.departureHour > filters.departureTime[1]) return false;
-    const durationHours = train.durationMinutes / 60;
-    if (durationHours < filters.duration[0] || durationHours > filters.duration[1]) return false;
+    
+    // Filter by time slots
+    if (filters.departureTimeSlots.length > 0) {
+      const matchesSlot = filters.departureTimeSlots.some(slot => {
+        const [start, end] = slot.split('-').map(Number);
+        return train.departureHour >= start && train.departureHour < end;
+      });
+      if (!matchesSlot) return false;
+    }
+    
+    // Filter by availability
+    if (filters.availableOnly && train.status === 'sold_out') return false;
+    
     return true;
   });
 

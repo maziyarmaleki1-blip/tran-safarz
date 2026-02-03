@@ -15,10 +15,10 @@ export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNaviga
       <Button
         variant="outline"
         size="sm"
-        onClick={onNextDay}
+        onClick={onPrevDay}
         className="bg-card/80 hover:bg-card text-xs"
       >
-        {language === 'fa' ? 'روز بعد' : 'Next Day'}
+        {language === 'fa' ? 'روز قبل' : 'Previous Day'}
       </Button>
       
       <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-lg px-4 py-2">
@@ -28,10 +28,10 @@ export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNaviga
       <Button
         variant="outline"
         size="sm"
-        onClick={onPrevDay}
+        onClick={onNextDay}
         className="bg-card/80 hover:bg-card text-xs"
       >
-        {language === 'fa' ? 'روز قبل' : 'Previous Day'}
+        {language === 'fa' ? 'روز بعد' : 'Next Day'}
       </Button>
     </div>
   );

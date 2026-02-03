@@ -253,10 +253,10 @@ export function SearchBox() {
         <div className="col-span-1 sm:col-span-2 lg:col-auto">
           <Button
             onClick={handleSearch}
-            className="w-full lg:w-auto h-10 px-6 shrink-0 gradient-primary hover:opacity-90 transition-opacity font-semibold gap-2"
+            className="w-full lg:w-auto h-11 px-8 shrink-0 gradient-primary hover:opacity-90 transition-opacity font-semibold gap-2 text-base"
             disabled={!origin || !destination || !departureDate}
           >
-            <span className="material-symbols-outlined text-lg">search</span>
+            <span className="material-symbols-outlined text-xl">search</span>
             {t('search')}
           </Button>
         </div>

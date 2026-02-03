@@ -5,7 +5,7 @@ export function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-sidebar text-sidebar-foreground mt-auto">
+    <footer className="relative z-10 bg-sidebar text-sidebar-foreground mt-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}

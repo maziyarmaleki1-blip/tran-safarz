@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { supabase } from '@/integrations/supabase/client';
 
 export function Header() {
   const { t, language, setLanguage } = useLanguage();
@@ -20,14 +21,42 @@ export function Header() {
   const { user, loading, signOut } = useAuth();
   const { profile } = useProfile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isStaff, setIsStaff] = useState(false);
 
-  const navLinks = [
+  useEffect(() => {
+    if (user) {
+      checkStaffRole();
+    } else {
+      setIsStaff(false);
+    }
+  }, [user]);
+
+  const checkStaffRole = async () => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+      
+      const roles = data?.map(r => r.role) || [];
+      setIsStaff(roles.includes('admin') || roles.includes('employee'));
+    } catch (error) {
+      console.error('Error checking staff role:', error);
+    }
+  };
+
+  const baseNavLinks = [
     { href: '/', label: t('home') },
     { href: '/rules', label: t('rules') },
     { href: '/contact', label: t('contact') },
     { href: '/dashboard', label: t('dashboard') },
-    { href: '/admin', label: 'مدیریت' },
   ];
+
+  // Only show admin link to staff members
+  const navLinks = isStaff
+    ? [...baseNavLinks, { href: '/admin', label: 'مدیریت' }]
+    : baseNavLinks;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -111,6 +140,14 @@ export function Header() {
                         {t('dashboard')}
                       </Link>
                     </DropdownMenuItem>
+                    {isStaff && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+                          مدیریت
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                       <span className="material-symbols-outlined text-lg">logout</span>

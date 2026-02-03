@@ -1,20 +1,24 @@
 import { useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { SearchBox } from '@/components/search/SearchBox';
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
+import { TrainRow } from '@/components/search/TrainRow';
+import { SortOptions, SortOption } from '@/components/search/SortOptions';
+import { DateNavigation } from '@/components/search/DateNavigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-train.jpg';
 
 const trains = [
-  { id: 1, name: 'غزال', number: '378', departure: '06:26', departureHour: 6, arrival: '13:08', duration: '۷ ساعت ۳۷ دقیقه', durationMinutes: 457, price: 1603370, compartmentType: '۴ تخته', compartmentId: '4نفره' },
-  { id: 2, name: 'غزال', number: '827', departure: '08:46', departureHour: 8, arrival: '16:12', duration: '۸ ساعت ۵۱ دقیقه', durationMinutes: 531, price: 1435648, compartmentType: '۶ تخته', compartmentId: '6نفره' },
-  { id: 3, name: 'غزال', number: '881', departure: '09:30', departureHour: 9, arrival: '14:36', duration: '۵ ساعت ۱۹ دقیقه', durationMinutes: 319, price: 1310465, compartmentType: 'اتوبوسی', compartmentId: 'اتوبوسی' },
-  { id: 4, name: 'سبز', number: '304', departure: '20:00', departureHour: 20, arrival: '06:15', duration: '۱۰ ساعت ۱۵ دقیقه', durationMinutes: 615, price: 980000, compartmentType: '۴ تخته', compartmentId: '4نفره' },
-  { id: 5, name: 'نور', number: '305', departure: '22:30', departureHour: 22, arrival: '08:45', duration: '۱۰ ساعت ۱۵ دقیقه', durationMinutes: 615, price: 1150000, compartmentType: '۶ تخته', compartmentId: '6نفره' },
+  { id: 1, name: 'اکونومی پلاس', number: '۵۸۴', departure: '06:22', departureHour: 6, arrival: '13:08', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با شام و پانیها', status: 'sold_out' as const },
+  { id: 2, name: 'ایران', number: '۳۲۴', departure: '17:35', departureHour: 17, arrival: '00:21', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با پذیرایی و شام', status: 'sold_out' as const },
+  { id: 3, name: 'اکونومی پلاس فدک', number: '۳۴۴', departure: '20:30', departureHour: 20, arrival: '03:16', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', status: 'sold_out' as const },
+  { id: 4, name: 'رویال', number: '۳۸۶', departure: '20:50', departureHour: 20, arrival: '03:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با پذیرایی عصرانه و شام', status: 'sold_out' as const },
+  { id: 5, name: 'اکونومی پلاس', number: '۳۶۶', departure: '21:10', departureHour: 21, arrival: '03:56', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', status: 'available' as const },
+  { id: 6, name: 'اکونومی پلاس', number: '۳۶۲', departure: '21:50', departureHour: 21, arrival: '04:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', status: 'few_left' as const },
+  { id: 7, name: 'زمرد', number: '۱۶۶', departure: '22:50', departureHour: 22, arrival: '05:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با پذیرایی و شام', status: 'available' as const },
 ];
 
 const cities: Record<string, string> = {
@@ -26,60 +30,55 @@ const cities: Record<string, string> = {
 const SearchResults = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const [selectedTrains, setSelectedTrains] = useState<number[]>([]);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [sortOption, setSortOption] = useState<SortOption>('default');
+  const [currentDate, setCurrentDate] = useState('سه شنبه ۱۴۰۴/۱۱/۱۴');
+  
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
     departureTime: [0, 24],
     duration: [0, 12],
     compartmentTypes: [],
   });
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
-  const from = searchParams.get('from') || '';
-  const to = searchParams.get('to') || '';
-  const passengers = searchParams.get('passengers') || '1';
+  const from = searchParams.get('from') || 'tehran';
+  const to = searchParams.get('to') || 'mashhad';
 
-  const formatPrice = (price: number) => price.toLocaleString('fa-IR');
-
-  const toggleTrain = (trainId: number) => {
-    setSelectedTrains(prev => 
-      prev.includes(trainId) 
-        ? prev.filter(id => id !== trainId)
-        : [...prev, trainId]
-    );
-  };
-
-  // Apply filters to trains
+  // Apply filters
   const filteredTrains = trains.filter(train => {
-    // Price filter
-    if (train.price < filters.priceRange[0] || train.price > filters.priceRange[1]) {
-      return false;
-    }
-    // Departure time filter
-    if (train.departureHour < filters.departureTime[0] || train.departureHour > filters.departureTime[1]) {
-      return false;
-    }
-    // Duration filter (convert minutes to hours)
+    if (train.price < filters.priceRange[0] || train.price > filters.priceRange[1]) return false;
+    if (train.departureHour < filters.departureTime[0] || train.departureHour > filters.departureTime[1]) return false;
     const durationHours = train.durationMinutes / 60;
-    if (durationHours < filters.duration[0] || durationHours > filters.duration[1]) {
-      return false;
-    }
-    // Compartment type filter
-    if (filters.compartmentTypes.length > 0 && !filters.compartmentTypes.includes(train.compartmentId)) {
-      return false;
-    }
+    if (durationHours < filters.duration[0] || durationHours > filters.duration[1]) return false;
     return true;
+  });
+
+  // Apply sorting
+  const sortedTrains = [...filteredTrains].sort((a, b) => {
+    switch (sortOption) {
+      case 'departure':
+        return a.departureHour - b.departureHour;
+      case 'cheapest':
+        return a.price - b.price;
+      case 'expensive':
+        return b.price - a.price;
+      default:
+        return 0;
+    }
   });
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  const handleSubmit = () => {
-    if (selectedTrains.length > 0) {
-      navigate(`/booking?trains=${selectedTrains.join(',')}&from=${from}&to=${to}&passengers=${passengers}`);
-    }
+  const handlePrevDay = () => {
+    // Placeholder - would decrement date
+    setCurrentDate('دوشنبه ۱۴۰۴/۱۱/۱۳');
+  };
+
+  const handleNextDay = () => {
+    // Placeholder - would increment date
+    setCurrentDate('چهارشنبه ۱۴۰۴/۱۱/۱۵');
   };
 
   return (
@@ -107,47 +106,75 @@ const SearchResults = () => {
         </div>
 
         <div className="container mx-auto px-4 py-4">
-          {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h1 className="text-lg lg:text-xl font-bold text-foreground drop-shadow-sm">
-              {language === 'fa' ? 'قطارهای موجود' : 'Available Trains'}
-            </h1>
-            <div className="flex items-center gap-2">
-              {/* Mobile Filter Button */}
-              <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="lg:hidden gap-2 bg-card/80 backdrop-blur-md">
-                    <span className="material-symbols-outlined text-lg">tune</span>
-                    {language === 'fa' ? 'فیلتر' : 'Filter'}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-80 p-0">
-                  <div className="p-4">
-                    <FilterBox onFilterChange={handleFilterChange} />
-                  </div>
-                </SheetContent>
-              </Sheet>
-              
-              <div className="bg-card/80 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2 shadow-soft border border-border/50 text-xs sm:text-sm">
-                <span className="font-semibold">{cities[from]}</span>
-                <span className="text-primary">←</span>
-                <span className="font-semibold">{cities[to]}</span>
+          {/* Header with Route Info */}
+          <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-4 mb-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              {/* Route Title */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-muted/50 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary">train</span>
+                </div>
+                <h1 className="text-lg font-bold">
+                  {language === 'fa' 
+                    ? `انتخاب قطار رفت ${cities[from]} به ${cities[to]}`
+                    : `Select Train from ${cities[from]} to ${cities[to]}`
+                  }
+                </h1>
               </div>
+
+              {/* Date Navigation */}
+              <DateNavigation 
+                currentDate={currentDate}
+                onPrevDay={handlePrevDay}
+                onNextDay={handleNextDay}
+              />
+            </div>
+
+            {/* Sort Options */}
+            <div className="mt-4 pt-4 border-t border-border/50">
+              <SortOptions activeSort={sortOption} onSortChange={setSortOption} />
+            </div>
+
+            {/* Notice Banner */}
+            <div className="mt-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+              <p className="text-xs text-amber-800 dark:text-amber-200 text-center">
+                {language === 'fa' 
+                  ? 'مسافرین محترم توجه داشته باشید که هر روز بلیط های استردادی برای خرید، به لیست بلیط ها اضافه میشود و شما میتوانید آنها را خریداری نمایید، ساعات اضافه شدن به لیست فروش: (۰۵:۰۰، ۰۹:۰۰، ۱۲:۰۰، ۱۵:۰۰، ۱۷:۰۰ و ۱۹:۰۰)'
+                  : 'Dear passengers, refunded tickets are added daily at 05:00, 09:00, 12:00, 15:00, 17:00 and 19:00'
+                }
+              </p>
             </div>
           </div>
 
-          {/* Main Layout: In RTL, first element appears on right */}
+          {/* Main Layout */}
           <div className="flex gap-4">
-            {/* Filter Box - Sidebar (First = Right in RTL) - Desktop Only */}
+            {/* Filter Box - Sidebar (Desktop Only) */}
             <div className="hidden lg:block w-72 shrink-0">
               <FilterBox onFilterChange={handleFilterChange} />
             </div>
 
-            {/* Train Cards - Main Content */}
+            {/* Train Rows - Main Content */}
             <div className="flex-1">
+              {/* Mobile Filter Button */}
+              <div className="lg:hidden mb-3">
+                <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2 bg-card/80 backdrop-blur-md">
+                      <span className="material-symbols-outlined text-lg">tune</span>
+                      {language === 'fa' ? 'فیلتر نتایج' : 'Filter Results'}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-80 p-0">
+                    <div className="p-4">
+                      <FilterBox onFilterChange={handleFilterChange} />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
               {/* Train List */}
-              <div className="space-y-3">
-                {filteredTrains.length === 0 ? (
+              <div className="space-y-2">
+                {sortedTrains.length === 0 ? (
                   <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl p-8 text-center">
                     <span className="material-symbols-outlined text-4xl text-muted-foreground mb-2">search_off</span>
                     <p className="text-muted-foreground">
@@ -155,153 +182,19 @@ const SearchResults = () => {
                     </p>
                   </div>
                 ) : (
-                  filteredTrains.map((train) => (
-                    <div
+                  sortedTrains.map((train) => (
+                    <TrainRow 
                       key={train.id}
-                      className={`bg-card/90 backdrop-blur-md border rounded-2xl transition-all cursor-pointer hover:shadow-lg ${
-                        selectedTrains.includes(train.id) 
-                          ? 'border-primary ring-2 ring-primary/30' 
-                          : 'border-border/50'
-                      }`}
-                      onClick={() => toggleTrain(train.id)}
-                    >
-                      <div className="p-4">
-                        {/* Mobile Layout */}
-                        <div className="flex flex-col gap-4 sm:hidden">
-                          {/* Top Row: Checkbox + Train Name + Price */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <Checkbox 
-                                checked={selectedTrains.includes(train.id)}
-                                onCheckedChange={() => toggleTrain(train.id)}
-                                onClick={(e) => e.stopPropagation()}
-                                className="shrink-0 size-5"
-                              />
-                              <div>
-                                <p className="font-semibold text-sm">{train.name} {train.number}</p>
-                                <p className="text-xs text-muted-foreground">{train.compartmentType}</p>
-                              </div>
-                            </div>
-                            <div className="text-left">
-                              <p className="text-lg font-bold text-accent">{formatPrice(train.price)}</p>
-                              <p className="text-xs text-muted-foreground">{language === 'fa' ? 'تومان' : 'Toman'}</p>
-                            </div>
-                          </div>
-
-                          {/* Bottom Row: Times */}
-                          <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3">
-                            <div className="text-center">
-                              <p className="text-xl font-bold">{train.departure}</p>
-                              <p className="text-xs text-muted-foreground">{cities[from]}</p>
-                            </div>
-                            <div className="flex flex-col items-center gap-1">
-                              <div className="flex items-center">
-                                <div className="size-2 rounded-full bg-muted-foreground/30" />
-                                <div className="w-8 border-t border-dashed border-muted-foreground/30" />
-                                <span className="material-symbols-outlined text-muted-foreground text-sm">train</span>
-                                <div className="w-8 border-t border-dashed border-muted-foreground/30" />
-                                <div className="size-2 rounded-full bg-muted-foreground/30" />
-                              </div>
-                              <p className="text-xs text-muted-foreground">{train.duration}</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-xl font-bold">{train.arrival}</p>
-                              <p className="text-xs text-muted-foreground">{cities[to]}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Desktop Layout */}
-                        <div className="hidden sm:flex items-center gap-4">
-                          {/* Checkbox */}
-                          <Checkbox 
-                            checked={selectedTrains.includes(train.id)}
-                            onCheckedChange={() => toggleTrain(train.id)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="shrink-0 size-5"
-                          />
-
-                          {/* Departure - Right side in RTL */}
-                          <div className="text-center min-w-[80px] lg:min-w-[100px]">
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {language === 'fa' ? `از ${cities[from]}` : `From ${cities[from]}`}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {language === 'fa' ? 'زمان حرکت' : 'Departure'}
-                            </p>
-                            <p className="text-2xl lg:text-4xl font-bold text-foreground mt-1">{train.departure}</p>
-                          </div>
-
-                          {/* Center - Train Info with Timeline */}
-                          <div className="flex-1 flex flex-col items-center gap-2">
-                            {/* Timeline */}
-                            <div className="flex items-center w-full max-w-[200px]">
-                              <div className="size-3 rounded-full bg-muted-foreground/30" />
-                              <div className="flex-1 border-t-2 border-dashed border-muted-foreground/30" />
-                              <div className="size-8 lg:size-10 rounded-full bg-muted/50 flex items-center justify-center mx-2">
-                                <span className="material-symbols-outlined text-muted-foreground text-lg lg:text-xl">train</span>
-                              </div>
-                              <div className="flex-1 border-t-2 border-dashed border-muted-foreground/30" />
-                              <div className="size-3 rounded-full bg-muted-foreground/30" />
-                            </div>
-                            
-                            {/* Train Details */}
-                            <div className="text-center space-y-0.5 lg:space-y-1">
-                              <p className="text-xs lg:text-sm font-medium text-foreground">
-                                {language === 'fa' ? 'عنوان سالن' : 'Salon'}: {train.name} {train.number}
-                              </p>
-                              <p className="text-xs lg:text-sm text-muted-foreground">
-                                {language === 'fa' ? 'ظرفیت کوپه' : 'Compartment'}: {train.compartmentType}
-                              </p>
-                              <p className="text-xs text-muted-foreground">{train.duration}</p>
-                            </div>
-                          </div>
-
-                          {/* Arrival - Left side in RTL */}
-                          <div className="text-center min-w-[80px] lg:min-w-[100px]">
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {language === 'fa' ? `به ${cities[to]}` : `To ${cities[to]}`}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {language === 'fa' ? 'زمان ورود' : 'Arrival'}
-                            </p>
-                            <p className="text-2xl lg:text-4xl font-bold text-foreground mt-1">{train.arrival}</p>
-                          </div>
-
-                          {/* Price */}
-                          <div className="text-center min-w-[90px] lg:min-w-[110px] bg-primary/5 rounded-xl p-2 lg:p-3">
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {language === 'fa' ? 'قیمت هر نفر' : 'Per person'}
-                            </p>
-                            <p className="text-lg lg:text-2xl font-bold text-accent">{formatPrice(train.price)}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {language === 'fa' ? 'تومان' : 'Toman'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      train={train}
+                      date={currentDate}
+                      from={from}
+                      to={to}
+                    />
                   ))
                 )}
               </div>
             </div>
           </div>
-
-          {/* Submit Button - Fixed at bottom when items selected */}
-          {selectedTrains.length > 0 && (
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
-              <Button 
-                onClick={handleSubmit}
-                className="gradient-primary hover:opacity-90 px-6 sm:px-8 py-3 rounded-full shadow-lg text-sm sm:text-base font-semibold gap-2"
-              >
-                <span className="material-symbols-outlined">check_circle</span>
-                {language === 'fa' 
-                  ? `رزرو ${selectedTrains.length} قطار انتخاب شده` 
-                  : `Book ${selectedTrains.length} Selected Train(s)`
-                }
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </MainLayout>

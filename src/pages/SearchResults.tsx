@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
 import { TrainRow } from '@/components/search/TrainRow';
+import { SortOptions, SortOption } from '@/components/search/SortOptions';
 import { DateNavigation } from '@/components/search/DateNavigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -30,17 +31,8 @@ const SearchResults = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [sortOption, setSortOption] = useState<SortOption>('default');
   const [currentDate, setCurrentDate] = useState('سه شنبه ۱۴۰۴/۱۱/۱۴');
-
-  const handlePrevDay = () => {
-    // TODO: Implement actual date logic
-    setCurrentDate('دوشنبه ۱۴۰۴/۱۱/۱۳');
-  };
-
-  const handleNextDay = () => {
-    // TODO: Implement actual date logic
-    setCurrentDate('چهارشنبه ۱۴۰۴/۱۱/۱۵');
-  };
   
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
@@ -67,8 +59,32 @@ const SearchResults = () => {
     return true;
   });
 
+  // Apply sorting
+  const sortedTrains = [...filteredTrains].sort((a, b) => {
+    switch (sortOption) {
+      case 'departure':
+        return a.departureHour - b.departureHour;
+      case 'cheapest':
+        return a.price - b.price;
+      case 'expensive':
+        return b.price - a.price;
+      default:
+        return 0;
+    }
+  });
+
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
+  };
+
+  const handlePrevDay = () => {
+    // Placeholder - would decrement date
+    setCurrentDate('دوشنبه ۱۴۰۴/۱۱/۱۳');
+  };
+
+  const handleNextDay = () => {
+    // Placeholder - would increment date
+    setCurrentDate('چهارشنبه ۱۴۰۴/۱۱/۱۵');
   };
 
   return (
@@ -89,6 +105,46 @@ const SearchResults = () => {
       {/* Content */}
       <div className="relative z-10 min-h-screen">
         <div className="container mx-auto px-4 py-6">
+          {/* Header with Route Info */}
+          <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-4 mb-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              {/* Route Title */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-muted/50 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary">train</span>
+                </div>
+                <h1 className="text-lg font-bold">
+                  {language === 'fa' 
+                    ? `انتخاب قطار رفت ${cities[from]} به ${cities[to]}`
+                    : `Select Train from ${cities[from]} to ${cities[to]}`
+                  }
+                </h1>
+              </div>
+
+              {/* Date Navigation */}
+              <DateNavigation 
+                currentDate={currentDate}
+                onPrevDay={handlePrevDay}
+                onNextDay={handleNextDay}
+              />
+            </div>
+
+            {/* Sort Options */}
+            <div className="mt-4 pt-4 border-t border-border/50">
+              <SortOptions activeSort={sortOption} onSortChange={setSortOption} />
+            </div>
+
+            {/* Notice Banner */}
+            <div className="mt-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+              <p className="text-xs text-amber-800 dark:text-amber-200 text-center">
+                {language === 'fa' 
+                  ? 'مسافرین محترم توجه داشته باشید که هر روز بلیط های استردادی برای خرید، به لیست بلیط ها اضافه میشود و شما میتوانید آنها را خریداری نمایید، ساعات اضافه شدن به لیست فروش: (۰۵:۰۰، ۰۹:۰۰، ۱۲:۰۰، ۱۵:۰۰، ۱۷:۰۰ و ۱۹:۰۰)'
+                  : 'Dear passengers, refunded tickets are added daily at 05:00, 09:00, 12:00, 15:00, 17:00 and 19:00'
+                }
+              </p>
+            </div>
+          </div>
+
           {/* Main Layout */}
           <div className="flex gap-4">
             {/* Filter Box - Sidebar (Desktop Only) */}
@@ -98,43 +154,6 @@ const SearchResults = () => {
 
             {/* Train Rows - Main Content */}
             <div className="flex-1">
-              {/* Header with Route Info and Date Navigation */}
-              <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl p-4 mb-4">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  {/* Route Info */}
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-2xl text-primary">train</span>
-                    <div className="text-center md:text-right">
-                      <h2 className="font-bold text-lg">
-                        {cities[from] || from} → {cities[to] || to}
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        {language === 'fa' ? 'انتخاب قطار رفت' : 'Select Outbound Train'}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Date Navigation */}
-                  <DateNavigation 
-                    currentDate={currentDate}
-                    onPrevDay={handlePrevDay}
-                    onNextDay={handleNextDay}
-                  />
-                </div>
-              </div>
-
-              {/* Booking Instructions Banner */}
-              <div className="bg-primary/10 backdrop-blur-md border border-primary/30 rounded-xl p-3 mb-4">
-                <div className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-primary text-lg mt-0.5">info</span>
-                  <p className="text-sm text-foreground">
-                    {language === 'fa' 
-                      ? 'ابتدا فیلترهای مورد نظر خود را انتخاب کنید، سپس دکمه «ثبت رزرو» را بزنید تا به مرحله تکمیل اطلاعات مسافران منتقل شوید.'
-                      : 'First select your desired filters, then click "Submit Booking" to proceed to passenger information.'}
-                  </p>
-                </div>
-              </div>
-
               {/* Mobile Filter Button */}
               <div className="lg:hidden mb-3">
                 <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
@@ -154,7 +173,7 @@ const SearchResults = () => {
 
               {/* Train List */}
               <div className="space-y-2">
-                {filteredTrains.length === 0 ? (
+                {sortedTrains.length === 0 ? (
                   <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl p-8 text-center">
                     <span className="material-symbols-outlined text-4xl text-muted-foreground mb-2">search_off</span>
                     <p className="text-muted-foreground">
@@ -162,7 +181,7 @@ const SearchResults = () => {
                     </p>
                   </div>
                 ) : (
-                  filteredTrains.map((train) => (
+                  sortedTrains.map((train) => (
                     <TrainRow 
                       key={train.id}
                       train={train}

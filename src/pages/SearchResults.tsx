@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
 import { TrainRow } from '@/components/search/TrainRow';
+import { DateNavigation } from '@/components/search/DateNavigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-train.jpg';
@@ -29,7 +30,17 @@ const SearchResults = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const currentDate = 'سه شنبه ۱۴۰۴/۱۱/۱۴';
+  const [currentDate, setCurrentDate] = useState('سه شنبه ۱۴۰۴/۱۱/۱۴');
+
+  const handlePrevDay = () => {
+    // TODO: Implement actual date logic
+    setCurrentDate('دوشنبه ۱۴۰۴/۱۱/۱۳');
+  };
+
+  const handleNextDay = () => {
+    // TODO: Implement actual date logic
+    setCurrentDate('چهارشنبه ۱۴۰۴/۱۱/۱۵');
+  };
   
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
@@ -87,6 +98,43 @@ const SearchResults = () => {
 
             {/* Train Rows - Main Content */}
             <div className="flex-1">
+              {/* Header with Route Info and Date Navigation */}
+              <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl p-4 mb-4">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  {/* Route Info */}
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-2xl text-primary">train</span>
+                    <div className="text-center md:text-right">
+                      <h2 className="font-bold text-lg">
+                        {cities[from] || from} → {cities[to] || to}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        {language === 'fa' ? 'انتخاب قطار رفت' : 'Select Outbound Train'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Date Navigation */}
+                  <DateNavigation 
+                    currentDate={currentDate}
+                    onPrevDay={handlePrevDay}
+                    onNextDay={handleNextDay}
+                  />
+                </div>
+              </div>
+
+              {/* Booking Instructions Banner */}
+              <div className="bg-primary/10 backdrop-blur-md border border-primary/30 rounded-xl p-3 mb-4">
+                <div className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-primary text-lg mt-0.5">info</span>
+                  <p className="text-sm text-foreground">
+                    {language === 'fa' 
+                      ? 'ابتدا فیلترهای مورد نظر خود را انتخاب کنید، سپس دکمه «ثبت رزرو» را بزنید تا به مرحله تکمیل اطلاعات مسافران منتقل شوید.'
+                      : 'First select your desired filters, then click "Submit Booking" to proceed to passenger information.'}
+                  </p>
+                </div>
+              </div>
+
               {/* Mobile Filter Button */}
               <div className="lg:hidden mb-3">
                 <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>

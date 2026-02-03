@@ -25,6 +25,8 @@ export function Header() {
     { href: '/', label: t('home') },
     { href: '/rules', label: t('rules') },
     { href: '/contact', label: t('contact') },
+    { href: '/dashboard', label: t('dashboard') },
+    { href: '/admin', label: 'مدیریت' },
   ];
 
   const isActive = (path: string) => location.pathname === path;

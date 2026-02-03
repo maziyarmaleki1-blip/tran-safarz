@@ -1,18 +1,24 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export function Header() {
   const { t, language, setLanguage } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
+  const { profile } = useProfile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -22,6 +28,13 @@ export function Header() {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const displayName = profile?.first_name || user?.email?.split('@')[0] || 'کاربر';
 
   return (
     <header className="sticky top-0 z-50 w-full glass-effect border-b border-border shadow-soft">
@@ -76,12 +89,43 @@ export function Header() {
 
             {/* Auth Buttons - Desktop */}
             <div className="hidden sm:flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">{t('login')}</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link to="/dashboard">{t('dashboard')}</Link>
-              </Button>
+              {loading ? (
+                <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <div className="size-7 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
+                        {displayName.charAt(0)}
+                      </div>
+                      <span className="hidden lg:inline">{displayName}</span>
+                      <span className="material-symbols-outlined text-sm">expand_more</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-lg">dashboard</span>
+                        {t('dashboard')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                      <span className="material-symbols-outlined text-lg">logout</span>
+                      خروج
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/login">{t('login')}</Link>
+                  </Button>
+                  <Button size="sm" asChild>
+                    <Link to="/login">{t('signUp')}</Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu */}
@@ -93,6 +137,17 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-72">
                 <div className="flex flex-col gap-4 mt-8">
+                  {user && (
+                    <div className="flex items-center gap-3 px-4 py-3 bg-muted rounded-lg">
+                      <div className="size-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold">
+                        {displayName.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-medium">{displayName}</p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      </div>
+                    </div>
+                  )}
                   {navLinks.map((link) => (
                     <Link
                       key={link.href}
@@ -108,20 +163,43 @@ export function Header() {
                     </Link>
                   ))}
                   <hr className="border-border" />
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-3 rounded-lg font-medium text-foreground hover:bg-muted"
-                  >
-                    {t('login')}
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-3 rounded-lg font-medium bg-primary text-primary-foreground"
-                  >
-                    {t('dashboard')}
-                  </Link>
+                  {user ? (
+                    <>
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-3 rounded-lg font-medium bg-primary text-primary-foreground"
+                      >
+                        {t('dashboard')}
+                      </Link>
+                      <button
+                        onClick={() => {
+                          handleSignOut();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="px-4 py-3 rounded-lg font-medium text-destructive hover:bg-destructive/10 text-start"
+                      >
+                        خروج از حساب
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-3 rounded-lg font-medium text-foreground hover:bg-muted"
+                      >
+                        {t('login')}
+                      </Link>
+                      <Link
+                        to="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="px-4 py-3 rounded-lg font-medium bg-primary text-primary-foreground"
+                      >
+                        {t('signUp')}
+                      </Link>
+                    </>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>

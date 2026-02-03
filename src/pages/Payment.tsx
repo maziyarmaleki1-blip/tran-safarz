@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import heroImage from '@/assets/hero-train.jpg';
 
 const trains: Record<number, { name: string; number: string; departure: string; arrival: string; duration: string; price: number }> = {
@@ -23,6 +26,8 @@ const cities: Record<string, string> = {
 
 const Payment = () => {
   const { t } = useLanguage();
+  const { toast } = useToast();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -38,13 +43,67 @@ const Payment = () => {
 
   const formatPrice = (price: number) => price.toLocaleString('fa-IR');
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (!user) {
+      toast({ title: 'لطفاً ابتدا وارد حساب کاربری شوید', variant: 'destructive' });
+      navigate('/login');
+      return;
+    }
+
     setIsProcessing(true);
-    // Simulate payment processing
-    setTimeout(() => {
+    
+    try {
+      // Generate tracking code
       const trackingCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+      
+      // Get passenger data from session storage
+      const passengerData = sessionStorage.getItem('passengerData');
+      const parsedPassengers = passengerData ? JSON.parse(passengerData) : null;
+      
+      // Create reservation in database
+      const { error: reservationError } = await supabase
+        .from('reservations')
+        .insert({
+          user_id: user.id,
+          reservation_code: trackingCode,
+          origin: from,
+          destination: to,
+          departure_date: new Date().toISOString().split('T')[0],
+          departure_time: train.departure,
+          train_name: train.name,
+          wagon_type: 'عادی',
+          passenger_count: passengers,
+          total_price: totalPrice,
+          status: 'confirmed',
+          passengers: parsedPassengers,
+        });
+
+      if (reservationError) throw reservationError;
+
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          type: 'purchase',
+          amount: totalPrice,
+          description: `خرید بلیط ${cities[from]} → ${cities[to]}`,
+        });
+
+      if (transactionError) throw transactionError;
+
+      // Clear session storage
+      sessionStorage.removeItem('passengerData');
+      sessionStorage.removeItem('userCredentials');
+
+      // Navigate to confirmation
       navigate(`/confirmation?code=${trackingCode}&train=${trainId}&from=${from}&to=${to}&passengers=${passengers}`);
-    }, 2000);
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast({ title: 'خطا در ثبت رزرو', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { formatPersianDate, gregorianToJalali, toPersianDigits } from '@/lib/persianDate';
 
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
 import { TrainRow } from '@/components/search/TrainRow';
@@ -9,15 +10,16 @@ import { DateNavigation } from '@/components/search/DateNavigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-train.jpg';
+import { format, addDays, subDays } from 'date-fns';
 
 const trains = [
-  { id: 1, name: 'اکونومی پلاس', number: '۵۸۴', departure: '06:22', departureHour: 6, arrival: '13:08', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با شام و پانیها', status: 'sold_out' as const },
-  { id: 2, name: 'ایران', number: '۳۲۴', departure: '17:35', departureHour: 17, arrival: '00:21', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با پذیرایی و شام', status: 'sold_out' as const },
-  { id: 3, name: 'اکونومی پلاس فدک', number: '۳۴۴', departure: '20:30', departureHour: 20, arrival: '03:16', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', status: 'sold_out' as const },
-  { id: 4, name: 'رویال', number: '۳۸۶', departure: '20:50', departureHour: 20, arrival: '03:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با پذیرایی عصرانه و شام', status: 'sold_out' as const },
-  { id: 5, name: 'اکونومی پلاس', number: '۳۶۶', departure: '21:10', departureHour: 21, arrival: '03:56', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', status: 'available' as const },
-  { id: 6, name: 'اکونومی پلاس', number: '۳۶۲', departure: '21:50', departureHour: 21, arrival: '04:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', status: 'few_left' as const },
-  { id: 7, name: 'زمرد', number: '۱۶۶', departure: '22:50', departureHour: 22, arrival: '05:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', rating: '۵ ستاره', amenities: 'با پذیرایی و شام', status: 'available' as const },
+  { id: 1, name: 'اکونومی پلاس', number: '۵۸۴', departure: '06:22', departureHour: 6, arrival: '13:08', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', compartmentId: '4تخته5ستاره', rating: '۵ ستاره', amenities: 'با شام و پانیها', status: 'sold_out' as const },
+  { id: 2, name: 'ایران', number: '۳۲۴', departure: '17:35', departureHour: 17, arrival: '00:21', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', compartmentId: '4تخته5ستاره', rating: '۵ ستاره', amenities: 'با پذیرایی و شام', status: 'sold_out' as const },
+  { id: 3, name: 'اکونومی پلاس فدک', number: '۳۴۴', departure: '20:30', departureHour: 20, arrival: '03:16', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', compartmentId: '4تخته5ستاره', rating: '۵ ستاره', status: 'sold_out' as const },
+  { id: 4, name: 'رویال', number: '۳۸۶', departure: '20:50', departureHour: 20, arrival: '03:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1850000, compartmentType: 'کوپه ای ۴ نفره', compartmentId: '4تخته4ستاره', rating: '۴ ستاره', amenities: 'با پذیرایی عصرانه و شام', status: 'sold_out' as const },
+  { id: 5, name: 'اکونومی پلاس', number: '۳۶۶', departure: '21:10', departureHour: 21, arrival: '03:56', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1990000, compartmentType: 'کوپه ای ۴ نفره', compartmentId: '4تخته5ستاره', rating: '۵ ستاره', status: 'available' as const },
+  { id: 6, name: 'اکونومی پلاس', number: '۳۶۲', departure: '21:50', departureHour: 21, arrival: '04:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1650000, compartmentType: 'کوپه ای ۶ نفره', compartmentId: '6تخته3ستاره', rating: '۳ ستاره', status: 'few_left' as const },
+  { id: 7, name: 'زمرد', number: '۱۶۶', departure: '22:50', departureHour: 22, arrival: '05:36', duration: '۶ ساعت ۴۶ دقیقه', durationMinutes: 406, price: 1750000, compartmentType: 'کوپه ای ۴ نفره', compartmentId: '4تخته4ستاره', rating: '۴ ستاره', amenities: 'با پذیرایی و شام', status: 'available' as const },
 ];
 
 const cities: Record<string, string> = {
@@ -26,11 +28,24 @@ const cities: Record<string, string> = {
   kermanshah: 'کرمانشاه', qom: 'قم',
 };
 
+const persianWeekDays = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+
+const getPersianWeekDay = (date: Date) => {
+  const day = date.getDay();
+  return persianWeekDays[day];
+};
+
+const formatPersianFullDate = (date: Date) => {
+  const [jy, jm, jd] = gregorianToJalali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const weekDay = getPersianWeekDay(date);
+  return `${weekDay} ${toPersianDigits(jy)}/${toPersianDigits(jm.toString().padStart(2, '0'))}/${toPersianDigits(jd.toString().padStart(2, '0'))}`;
+};
+
 const SearchResults = () => {
   const { language } = useLanguage();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const [currentDate, setCurrentDate] = useState('سه شنبه ۱۴۰۴/۱۱/۱۴');
   
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
@@ -40,6 +55,14 @@ const SearchResults = () => {
 
   const from = searchParams.get('from') || 'tehran';
   const to = searchParams.get('to') || 'mashhad';
+  const dateParam = searchParams.get('date');
+  const currentDate = useMemo(() => {
+    return dateParam ? new Date(dateParam) : new Date();
+  }, [dateParam]);
+
+  const formattedDate = language === 'fa' 
+    ? formatPersianFullDate(currentDate) 
+    : format(currentDate, 'EEEE yyyy/MM/dd');
 
   // Apply filters
   const filteredTrains = trains.filter(train => {
@@ -53,6 +76,11 @@ const SearchResults = () => {
       });
       if (!matchesSlot) return false;
     }
+
+    // Filter by compartment type
+    if (filters.compartmentTypes.length > 0) {
+      if (!filters.compartmentTypes.includes(train.compartmentId)) return false;
+    }
     
     return true;
   });
@@ -64,13 +92,30 @@ const SearchResults = () => {
   };
 
   const handlePrevDay = () => {
-    // Placeholder - would decrement date
-    setCurrentDate('دوشنبه ۱۴۰۴/۱۱/۱۳');
+    const newDate = subDays(currentDate, 1);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('date', newDate.toISOString());
+    setSearchParams(newParams);
   };
 
   const handleNextDay = () => {
-    // Placeholder - would increment date
-    setCurrentDate('چهارشنبه ۱۴۰۴/۱۱/۱۵');
+    const newDate = addDays(currentDate, 1);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('date', newDate.toISOString());
+    setSearchParams(newParams);
+  };
+
+  const handleSubmitBooking = () => {
+    // Navigate to booking page with search params
+    const bookingParams = new URLSearchParams({
+      from,
+      to,
+      date: currentDate.toISOString(),
+      passengers: searchParams.get('passengers') || '1',
+      adults: searchParams.get('adults') || '1',
+      children: searchParams.get('children') || '0',
+    });
+    navigate(`/booking?${bookingParams.toString()}`);
   };
 
   return (
@@ -109,7 +154,7 @@ const SearchResults = () => {
 
               {/* Date Navigation */}
               <DateNavigation 
-                currentDate={currentDate}
+                currentDate={formattedDate}
                 onPrevDay={handlePrevDay}
                 onNextDay={handleNextDay}
               />
@@ -130,7 +175,7 @@ const SearchResults = () => {
           <div className="flex gap-4">
             {/* Filter Box - Sidebar (Desktop Only) */}
             <div className="hidden lg:block w-72 shrink-0">
-              <FilterBox onFilterChange={handleFilterChange} />
+              <FilterBox onFilterChange={handleFilterChange} onSubmit={handleSubmitBooking} />
             </div>
 
             {/* Train Rows - Main Content */}
@@ -146,7 +191,10 @@ const SearchResults = () => {
                   </SheetTrigger>
                   <SheetContent side="right" className="w-80 p-0">
                     <div className="p-4">
-                      <FilterBox onFilterChange={handleFilterChange} />
+                      <FilterBox onFilterChange={handleFilterChange} onSubmit={() => {
+                        setFilterSheetOpen(false);
+                        handleSubmitBooking();
+                      }} />
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -166,7 +214,7 @@ const SearchResults = () => {
                     <TrainRow 
                       key={train.id}
                       train={train}
-                      date={currentDate}
+                      date={formattedDate}
                       from={from}
                       to={to}
                     />

@@ -19,13 +19,15 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   // Form states
-  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPhone, setLoginPhone] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [registerFirstName, setRegisterFirstName] = useState('');
   const [registerLastName, setRegisterLastName] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+
+  // Helper to convert phone to email format for Supabase
+  const phoneToEmail = (phone: string) => `${phone.replace(/\s/g, '')}@phone.local`;
 
   // Redirect if already logged in
   useEffect(() => {
@@ -38,13 +40,14 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signIn(loginEmail, loginPassword);
+    const email = phoneToEmail(loginPhone);
+    const { error } = await signIn(email, loginPassword);
     
     if (error) {
       toast({ 
         title: 'خطا در ورود', 
         description: error.message === 'Invalid login credentials' 
-          ? 'ایمیل یا رمز عبور اشتباه است' 
+          ? 'شماره موبایل یا رمز عبور اشتباه است' 
           : error.message,
         variant: 'destructive'
       });
@@ -60,7 +63,8 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signUp(registerEmail, registerPassword, {
+    const email = phoneToEmail(registerPhone);
+    const { error } = await signUp(email, registerPassword, {
       first_name: registerFirstName,
       last_name: registerLastName,
       phone_number: registerPhone,
@@ -75,8 +79,9 @@ const Auth = () => {
     } else {
       toast({ 
         title: 'ثبت نام موفق', 
-        description: 'لطفاً ایمیل خود را برای تایید بررسی کنید' 
+        description: 'حساب شما با موفقیت ایجاد شد' 
       });
+      navigate('/dashboard');
     }
     
     setLoading(false);
@@ -115,14 +120,13 @@ const Auth = () => {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>{t('email')}</Label>
+                  <Label>{t('mobile')}</Label>
                   <Input 
-                    type="email" 
-                    placeholder="email@example.com" 
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
+                    type="tel" 
+                    placeholder="۰۹۱۲۳۴۵۶۷۸۹" 
+                    value={loginPhone}
+                    onChange={(e) => setLoginPhone(e.target.value)}
                     required 
-                    dir="ltr"
                   />
                 </div>
                 <div className="space-y-2">
@@ -172,17 +176,6 @@ const Auth = () => {
                     value={registerPhone}
                     onChange={(e) => setRegisterPhone(e.target.value)}
                     required 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('email')}</Label>
-                  <Input 
-                    type="email" 
-                    placeholder="email@example.com" 
-                    value={registerEmail}
-                    onChange={(e) => setRegisterEmail(e.target.value)}
-                    required
-                    dir="ltr"
                   />
                 </div>
                 <div className="space-y-2">

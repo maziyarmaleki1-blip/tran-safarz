@@ -91,7 +91,7 @@ export function SearchBox() {
   };
 
   return (
-    <div className="bg-card/95 backdrop-blur-md rounded-2xl p-4 shadow-soft border border-border w-full max-w-6xl mx-auto">
+    <div className="bg-white/20 dark:bg-card/20 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/30 w-full max-w-6xl mx-auto">
       {/* Trip Type Tabs */}
       <div className="flex justify-center mb-4">
         <TripTypeTabs value={tripType} onChange={setTripType} />

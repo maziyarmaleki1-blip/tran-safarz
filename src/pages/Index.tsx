@@ -22,7 +22,7 @@ const Index = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 min-h-screen flex items-start justify-center overflow-hidden pt-8">
+      <section className="relative z-10 flex items-start justify-center overflow-hidden pt-8">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center justify-center size-20 rounded-2xl gradient-gold shadow-lg mb-6">

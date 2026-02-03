@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { SearchBox } from '@/components/search/SearchBox';
+
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
 import { TrainRow } from '@/components/search/TrainRow';
 import { SortOptions, SortOption } from '@/components/search/SortOptions';
@@ -98,14 +98,7 @@ const SearchResults = () => {
 
       {/* Content */}
       <div className="relative z-10 min-h-screen">
-        {/* Search Box Section */}
-        <div className="py-4 lg:py-6">
-          <div className="container mx-auto px-4">
-            <SearchBox />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-6">
           {/* Header with Route Info */}
           <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-4 mb-4">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

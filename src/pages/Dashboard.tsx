@@ -20,9 +20,9 @@ const menuItems = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { profile, loading: profileLoading, updateProfile } = useProfile();
+  const { profile, loading: profileLoading, updateProfile, fetchProfile } = useProfile();
   const { reservations, loading: reservationsLoading } = useReservations();
-  const { transactions, loading: transactionsLoading } = useTransactions();
+  const { transactions, loading: transactionsLoading, fetchTransactions } = useTransactions();
   const [activeTab, setActiveTab] = useState('reservations');
 
   useEffect(() => {
@@ -130,6 +130,10 @@ const Dashboard = () => {
               transactions={transactions} 
               loadingProfile={profileLoading}
               loadingTransactions={transactionsLoading}
+              onRefresh={() => {
+                fetchProfile();
+                fetchTransactions();
+              }}
             />
           )}
         </div>

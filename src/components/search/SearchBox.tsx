@@ -46,6 +46,8 @@ export function SearchBox() {
   const [destination, setDestination] = useState('');
   const [departureDate, setDepartureDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
+  const [departureDateOpen, setDepartureDateOpen] = useState(false);
+  const [returnDateOpen, setReturnDateOpen] = useState(false);
   const [passengers, setPassengers] = useState<PassengerCount>({
     adults: 1,
     children: 0,
@@ -158,7 +160,7 @@ export function SearchBox() {
           <label className="block text-sm font-medium text-muted-foreground mb-1">
             {dateLabels[language].departure}
           </label>
-          <Popover>
+          <Popover open={departureDateOpen} onOpenChange={setDepartureDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -177,7 +179,10 @@ export function SearchBox() {
               {language === 'fa' ? (
                 <PersianCalendar
                   selected={departureDate}
-                  onSelect={(d) => setDepartureDate(d)}
+                  onSelect={(d) => {
+                    setDepartureDate(d);
+                    setDepartureDateOpen(false);
+                  }}
                   disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
                   mode="future"
                 />
@@ -185,7 +190,10 @@ export function SearchBox() {
                 <Calendar
                   mode="single"
                   selected={departureDate}
-                  onSelect={setDepartureDate}
+                  onSelect={(d) => {
+                    setDepartureDate(d);
+                    setDepartureDateOpen(false);
+                  }}
                   initialFocus
                   locale={enUS}
                   className={cn("p-3 pointer-events-auto")}
@@ -202,7 +210,7 @@ export function SearchBox() {
             <label className="block text-sm font-medium text-muted-foreground mb-1">
               {dateLabels[language].return}
             </label>
-            <Popover>
+            <Popover open={returnDateOpen} onOpenChange={setReturnDateOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -221,7 +229,10 @@ export function SearchBox() {
                 {language === 'fa' ? (
                   <PersianCalendar
                     selected={returnDate}
-                    onSelect={(d) => setReturnDate(d)}
+                    onSelect={(d) => {
+                      setReturnDate(d);
+                      setReturnDateOpen(false);
+                    }}
                     disabled={(d) => d < (departureDate || new Date(new Date().setHours(0, 0, 0, 0)))}
                     mode="future"
                   />
@@ -229,7 +240,10 @@ export function SearchBox() {
                   <Calendar
                     mode="single"
                     selected={returnDate}
-                    onSelect={setReturnDate}
+                    onSelect={(d) => {
+                      setReturnDate(d);
+                      setReturnDateOpen(false);
+                    }}
                     initialFocus
                     locale={enUS}
                     className={cn("p-3 pointer-events-auto")}

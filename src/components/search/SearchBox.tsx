@@ -91,7 +91,7 @@ export function SearchBox() {
   };
 
   return (
-    <div className="bg-card/95 backdrop-blur-md rounded-2xl p-4 shadow-soft border border-border w-full max-w-6xl mx-auto">
+    <div className="bg-card/75 backdrop-blur-md rounded-2xl p-4 shadow-soft border border-border w-full max-w-6xl mx-auto">
       {/* Trip Type Tabs */}
       <div className="flex justify-center mb-4">
         <TripTypeTabs value={tripType} onChange={setTripType} />
@@ -104,7 +104,7 @@ export function SearchBox() {
           <div className="flex items-end gap-2 sm:col-span-2 lg:contents">
             {/* Origin */}
             <div className="flex-1 lg:flex-1 lg:min-w-[120px]">
-              <label className="block text-xs font-medium text-muted-foreground mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t('origin')}
               </label>
               <Select value={origin} onValueChange={setOrigin}>
@@ -134,7 +134,7 @@ export function SearchBox() {
 
             {/* Destination */}
             <div className="flex-1 lg:flex-1 lg:min-w-[120px]">
-              <label className="block text-xs font-medium text-muted-foreground mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t('destination')}
               </label>
               <Select value={destination} onValueChange={setDestination}>
@@ -155,7 +155,7 @@ export function SearchBox() {
 
         {/* Departure Date */}
         <div className="col-span-1 lg:flex-1 lg:min-w-[130px]">
-          <label className="block text-xs font-medium text-muted-foreground mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             {dateLabels[language].departure}
           </label>
           <Popover>
@@ -199,7 +199,7 @@ export function SearchBox() {
         {/* Return Date (only for round-trip) */}
         {tripType === 'round-trip' && (
           <div className="col-span-1 lg:flex-1 lg:min-w-[130px]">
-            <label className="block text-xs font-medium text-muted-foreground mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               {dateLabels[language].return}
             </label>
             <Popover>
@@ -243,7 +243,7 @@ export function SearchBox() {
 
         {/* Passengers */}
         <div className="col-span-1 lg:w-32">
-          <label className="block text-xs font-medium text-muted-foreground mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             {t('passengers')}
           </label>
           <PassengerSelector value={passengers} onChange={setPassengers} />
@@ -271,7 +271,7 @@ export function SearchBox() {
             onCheckedChange={(checked) => setPrivateCompartment(checked === true)}
             className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
           />
-          <label htmlFor="privateCompartment" className="text-xs font-medium cursor-pointer">
+          <label htmlFor="privateCompartment" className="text-sm font-medium cursor-pointer">
             {language === 'fa' ? 'کوپه دربست' : 'Private Compartment'}
           </label>
         </div>
@@ -283,7 +283,7 @@ export function SearchBox() {
             onCheckedChange={(checked) => setForeignNational(checked === true)}
             className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
           />
-          <label htmlFor="foreignNational" className="text-xs font-medium cursor-pointer">
+          <label htmlFor="foreignNational" className="text-sm font-medium cursor-pointer">
             {language === 'fa' ? 'اتباع خارجی' : 'Foreign National'}
           </label>
         </div>

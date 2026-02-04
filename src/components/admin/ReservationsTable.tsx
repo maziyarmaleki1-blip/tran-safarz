@@ -59,6 +59,9 @@ interface Reservation {
   confirmed_by: string | null;
   confirmed_at: string | null;
   confirmer_name?: string;
+  assigned_to: string | null;
+  assigned_at: string | null;
+  assignee_name?: string;
 }
 
 const cities: Record<string, string> = {
@@ -84,7 +87,38 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
   const [isPassengerDialogOpen, setIsPassengerDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [claimingId, setClaimingId] = useState<string | null>(null);
 
+  // Claim or release a reservation
+  const toggleClaim = async (reservation: Reservation) => {
+    if (!user) {
+      toast.error('لطفاً وارد شوید');
+      return;
+    }
+
+    try {
+      setClaimingId(reservation.id);
+      const isCurrentlyMine = reservation.assigned_to === user.id;
+      
+      const { error } = await supabase
+        .from('reservations')
+        .update({
+          assigned_to: isCurrentlyMine ? null : user.id,
+          assigned_at: isCurrentlyMine ? null : new Date().toISOString(),
+        })
+        .eq('id', reservation.id);
+
+      if (error) throw error;
+
+      toast.success(isCurrentlyMine ? 'رزرو آزاد شد' : 'رزرو برای شما ثبت شد');
+      onRefresh();
+    } catch (error) {
+      console.error('Error claiming reservation:', error);
+      toast.error('خطا در ثبت رزرو');
+    } finally {
+      setClaimingId(null);
+    }
+  };
   const updateReservationStatus = async (reservationId: string, newStatus: string) => {
     try {
       const updateData: any = { status: newStatus };
@@ -227,6 +261,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                     <TableHead className="text-right">مبلغ</TableHead>
                     <TableHead className="text-right">وضعیت</TableHead>
                     <TableHead className="text-right">تأییدکننده</TableHead>
+                    <TableHead className="text-right">در حال پیگیری</TableHead>
                     <TableHead className="text-right">عملیات</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -281,6 +316,45 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                           </div>
                         ) : (
                           <span className="text-muted-foreground text-sm">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {reservation.assigned_to ? (
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant="outline" 
+                              className={reservation.assigned_to === user?.id 
+                                ? 'bg-primary/20 text-primary border-primary/30' 
+                                : 'bg-orange-500/20 text-orange-600 border-orange-500/30'
+                              }
+                            >
+                              <span className="material-symbols-outlined text-sm ml-1">person</span>
+                              {reservation.assigned_to === user?.id ? 'شما' : reservation.assignee_name || 'همکار'}
+                            </Badge>
+                            {reservation.assigned_to === user?.id && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleClaim(reservation)}
+                                disabled={claimingId === reservation.id}
+                                className="h-6 px-2 text-xs text-destructive hover:text-destructive"
+                                title="آزاد کردن"
+                              >
+                                <span className="material-symbols-outlined text-sm">close</span>
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleClaim(reservation)}
+                            disabled={claimingId === reservation.id}
+                            className="h-7 text-xs gap-1"
+                          >
+                            <span className="material-symbols-outlined text-sm">add_task</span>
+                            پیگیری
+                          </Button>
                         )}
                       </TableCell>
                       <TableCell>

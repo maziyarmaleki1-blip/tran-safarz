@@ -38,6 +38,9 @@ interface Reservation {
   confirmed_by: string | null;
   confirmed_at: string | null;
   confirmer_name?: string;
+  assigned_to: string | null;
+  assigned_at: string | null;
+  assignee_name?: string;
 }
 
 const Admin = () => {
@@ -114,30 +117,45 @@ const Admin = () => {
 
       if (error) throw error;
 
-      // Fetch confirmer names
-      const reservationsWithConfirmer: Reservation[] = [];
+      // Fetch confirmer and assignee names
+      const reservationsWithNames: Reservation[] = [];
       for (const item of data || []) {
         let confirmerName = undefined;
+        let assigneeName = undefined;
+        
         if (item.confirmed_by) {
           const { data: profile } = await supabase
             .from('profiles')
             .select('first_name, last_name')
             .eq('id', item.confirmed_by)
-            .single();
+            .maybeSingle();
           
           if (profile) {
             confirmerName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
           }
         }
 
-        reservationsWithConfirmer.push({
+        if (item.assigned_to) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', item.assigned_to)
+            .maybeSingle();
+          
+          if (profile) {
+            assigneeName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+          }
+        }
+
+        reservationsWithNames.push({
           ...item,
           passengers: Array.isArray(item.passengers) ? item.passengers as unknown as Passenger[] : null,
           confirmer_name: confirmerName,
+          assignee_name: assigneeName,
         });
       }
 
-      setReservations(reservationsWithConfirmer);
+      setReservations(reservationsWithNames);
     } catch (error) {
       console.error('Error fetching reservations:', error);
       toast.error('خطا در دریافت رزروها');

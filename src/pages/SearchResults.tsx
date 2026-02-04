@@ -106,6 +106,14 @@ const SearchResults = () => {
   };
 
   const handleSubmitBooking = () => {
+    // Save selected filters to session storage for later use in Payment
+    sessionStorage.setItem('selectedFilters', JSON.stringify({
+      compartmentTypes: filters.compartmentTypes,
+      departureTimeSlots: filters.departureTimeSlots,
+      priceRangeMin: filters.priceRange[0],
+      priceRangeMax: filters.priceRange[1],
+    }));
+    
     // Navigate to booking page with search params
     const bookingParams = new URLSearchParams({
       from,

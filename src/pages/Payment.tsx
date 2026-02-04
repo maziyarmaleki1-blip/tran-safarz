@@ -60,6 +60,10 @@ const Payment = () => {
       const passengerData = sessionStorage.getItem('passengerData');
       const parsedPassengers = passengerData ? JSON.parse(passengerData) : null;
       
+      // Get selected filters from session storage
+      const filtersData = sessionStorage.getItem('selectedFilters');
+      const selectedFilters = filtersData ? JSON.parse(filtersData) : null;
+      
       // Create reservation in database
       const { error: reservationError } = await supabase
         .from('reservations')
@@ -76,6 +80,11 @@ const Payment = () => {
           total_price: totalPrice,
           status: 'confirmed',
           passengers: parsedPassengers,
+          // Save selected filters
+          selected_wagon_types: selectedFilters?.compartmentTypes || [],
+          selected_time_slots: selectedFilters?.departureTimeSlots || [],
+          price_range_min: selectedFilters?.priceRangeMin || null,
+          price_range_max: selectedFilters?.priceRangeMax || null,
         });
 
       if (reservationError) throw reservationError;

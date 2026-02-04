@@ -266,6 +266,16 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
     return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
   };
 
+  // Get time range label based on departure time
+  const getTimeRangeLabel = (time: string | null) => {
+    if (!time) return 'نامشخص';
+    const hour = parseInt(time.split(':')[0], 10);
+    if (hour >= 0 && hour < 6) return '۰-۶';
+    if (hour >= 6 && hour < 12) return '۶-۱۲';
+    if (hour >= 12 && hour < 18) return '۱۲-۱۸';
+    return '۱۸-۲۴';
+  };
+
   const getCityName = (key: string) => cities[key] || key;
 
   const handleViewPassengers = (reservation: Reservation) => {
@@ -376,27 +386,44 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                               <span className="material-symbols-outlined text-sm text-muted-foreground">expand_more</span>
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-56 p-3" align="start" dir="rtl">
-                            <div className="space-y-3 text-sm">
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">نوع کوپه:</span>
-                                <span className="font-medium">{reservation.wagon_type || 'نامشخص'}</span>
+                          <PopoverContent className="w-64 p-4" align="start" dir="rtl">
+                            <div className="space-y-4">
+                              {/* نوع سالن */}
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                  <span className="material-symbols-outlined text-base text-primary">bed</span>
+                                  <span>نوع سالن</span>
+                                </div>
+                                <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm">
+                                  {reservation.wagon_type || 'نامشخص'}
+                                </div>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">قطار:</span>
-                                <span className="font-medium">{reservation.train_name || 'نامشخص'}</span>
+
+                              {/* زمان حرکت */}
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                  <span className="material-symbols-outlined text-base text-primary">schedule</span>
+                                  <span>زمان حرکت</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm flex-1">
+                                    بازه: {getTimeRangeLabel(reservation.departure_time)}
+                                  </div>
+                                  <div className="bg-primary/10 text-primary rounded-lg px-3 py-2 text-sm font-medium">
+                                    {reservation.departure_time || 'نامشخص'}
+                                  </div>
+                                </div>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">ساعت حرکت:</span>
-                                <span className="font-medium">{reservation.departure_time || 'نامشخص'}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">تعداد مسافر:</span>
-                                <span className="font-medium">{reservation.passenger_count || 1} نفر</span>
-                              </div>
-                              <div className="flex justify-between border-t pt-2">
-                                <span className="text-muted-foreground">مبلغ کل:</span>
-                                <span className="font-bold text-primary">{formatPrice(reservation.total_price)}</span>
+
+                              {/* بازه قیمت */}
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                  <span className="material-symbols-outlined text-base text-primary">payments</span>
+                                  <span>قیمت</span>
+                                </div>
+                                <div className="bg-success/10 text-success rounded-lg px-3 py-2 text-sm font-bold">
+                                  {formatPrice(reservation.total_price)}
+                                </div>
                               </div>
                             </div>
                           </PopoverContent>

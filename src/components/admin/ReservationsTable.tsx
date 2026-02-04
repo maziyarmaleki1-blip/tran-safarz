@@ -135,7 +135,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
     }
   };
 
-  // Toggle employee assignment for a reservation
+  // Toggle employee assignment for a reservation (multi-select)
   const toggleEmployeeAssignment = async (reservationId: string, employeeId: string, currentAssignees: string[]) => {
     try {
       setUpdatingId(reservationId);
@@ -144,10 +144,11 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
         ? currentAssignees.filter(id => id !== employeeId)
         : [...currentAssignees, employeeId];
 
-      // For backward compatibility, also update assigned_to with first employee or null
+      // Update both the new array column and legacy assigned_to for backward compatibility
       const { error } = await supabase
         .from('reservations')
         .update({
+          assigned_employees: newAssignees,
           assigned_to: newAssignees.length > 0 ? newAssignees[0] : null,
           assigned_at: newAssignees.length > 0 ? new Date().toISOString() : null,
         })
@@ -163,6 +164,14 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
     } finally {
       setUpdatingId(null);
     }
+  };
+
+  // Helper to get employee names from IDs
+  const getEmployeeNames = (employeeIds: string[]) => {
+    return employeeIds
+      .map(id => employees.find(e => e.user_id === id)?.name || '')
+      .filter(Boolean)
+      .join('، ');
   };
 
   const updateReservationStatus = async (reservationId: string, newStatus: string) => {
@@ -373,10 +382,15 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                               className="h-8 min-w-[120px] justify-between gap-1"
                               disabled={updatingId === reservation.id}
                             >
-                              {reservation.assigned_to ? (
+                              {(reservation.assigned_employees?.length || 0) > 0 ? (
                                 <div className="flex items-center gap-1">
                                   <span className="material-symbols-outlined text-sm">group</span>
-                                  <span>{reservation.assignee_name || 'انتخاب شده'}</span>
+                                  <span className="truncate max-w-[100px]">
+                                    {getEmployeeNames(reservation.assigned_employees || [])}
+                                  </span>
+                                  <Badge variant="secondary" className="text-xs px-1">
+                                    {reservation.assigned_employees?.length}
+                                  </Badge>
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-1 text-muted-foreground">
@@ -394,7 +408,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                                 <p className="text-sm text-muted-foreground text-center py-2">کارمندی یافت نشد</p>
                               ) : (
                                 employees.map((employee) => {
-                                  const currentAssignees = reservation.assigned_to ? [reservation.assigned_to] : [];
+                                  const currentAssignees = reservation.assigned_employees || [];
                                   const isChecked = currentAssignees.includes(employee.user_id);
                                   return (
                                     <div

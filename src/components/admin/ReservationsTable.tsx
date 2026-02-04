@@ -101,6 +101,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
   const [searchQuery, setSearchQuery] = useState('');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  
+  // Status change confirmation
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   // Fetch employees on mount
   useEffect(() => {
@@ -174,37 +178,59 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
       .join('، ');
   };
 
-  const updateReservationStatus = async (reservationId: string, newStatus: string) => {
+  // Request status change (opens confirmation dialog)
+  const requestStatusChange = (newStatus: string) => {
+    setPendingStatus(newStatus);
+    setIsConfirmDialogOpen(true);
+  };
+
+  // Confirm and apply status change
+  const confirmStatusChange = async () => {
+    if (!selectedReservation || !pendingStatus) return;
+    
     try {
-      const updateData: any = { status: newStatus };
-      
-      // If confirming, record who confirmed it
-      if (newStatus === 'confirmed' && user) {
-        updateData.confirmed_by = user.id;
-        updateData.confirmed_at = new Date().toISOString();
-      }
+      const updateData: any = { 
+        status: pendingStatus,
+        confirmed_by: user?.id || null,
+        confirmed_at: new Date().toISOString(),
+      };
 
       const { error } = await supabase
         .from('reservations')
         .update(updateData)
-        .eq('id', reservationId);
+        .eq('id', selectedReservation.id);
 
       if (error) throw error;
 
-      if (selectedReservation?.id === reservationId) {
-        setSelectedReservation(prev =>
-          prev
-            ? { ...prev, status: newStatus, confirmed_by: user?.id || null, confirmed_at: new Date().toISOString() }
-            : null
-        );
-      }
+      setSelectedReservation(prev =>
+        prev
+          ? { ...prev, status: pendingStatus, confirmed_by: user?.id || null, confirmed_at: new Date().toISOString() }
+          : null
+      );
 
       toast.success('وضعیت رزرو بروزرسانی شد');
       onRefresh();
     } catch (error) {
       console.error('Error updating reservation:', error);
       toast.error('خطا در بروزرسانی وضعیت');
+    } finally {
+      setIsConfirmDialogOpen(false);
+      setPendingStatus(null);
     }
+  };
+
+  const cancelStatusChange = () => {
+    setIsConfirmDialogOpen(false);
+    setPendingStatus(null);
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      confirmed: 'تأیید شده',
+      pending: 'در انتظار',
+      cancelled: 'لغو شده',
+    };
+    return labels[status] || status;
   };
 
   const getStatusBadge = (status: string) => {
@@ -601,25 +627,80 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                 )}
               </div>
 
-              {/* Status Update */}
-              <div className="pt-4 border-t border-border">
-                <span className="text-sm text-muted-foreground mb-2 block">تغییر وضعیت رزرو</span>
-                <Select
-                  value={selectedReservation.status}
-                  onValueChange={value => updateReservationStatus(selectedReservation.id, value)}
-                >
-                  <SelectTrigger className="w-full sm:w-[200px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="confirmed">تأیید شده</SelectItem>
-                    <SelectItem value="pending">در انتظار</SelectItem>
-                    <SelectItem value="cancelled">لغو شده</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Status Update with Confirmation */}
+              <div className="pt-4 border-t border-border space-y-3">
+                <span className="text-sm text-muted-foreground block">تغییر وضعیت رزرو</span>
+                
+                <div className="flex items-center gap-3">
+                  <Select
+                    value={pendingStatus || selectedReservation.status}
+                    onValueChange={requestStatusChange}
+                  >
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="confirmed">تأیید شده</SelectItem>
+                      <SelectItem value="pending">در انتظار</SelectItem>
+                      <SelectItem value="cancelled">لغو شده</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Show who confirmed */}
+                {selectedReservation.confirmer_name && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 p-2 rounded">
+                    <span className="material-symbols-outlined text-base">verified_user</span>
+                    <span>آخرین تغییر توسط:</span>
+                    <span className="font-medium text-foreground">{selectedReservation.confirmer_name}</span>
+                    {selectedReservation.confirmed_at && (
+                      <span className="text-xs">
+                        ({new Intl.DateTimeFormat('fa-IR').format(new Date(selectedReservation.confirmed_at))})
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Status Change Confirmation Dialog */}
+      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="material-symbols-outlined">warning</span>
+              تأیید تغییر وضعیت
+            </DialogTitle>
+            <DialogDescription>
+              آیا از تغییر وضعیت رزرو به "{pendingStatus ? getStatusLabel(pendingStatus) : ''}" اطمینان دارید؟
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="bg-muted/50 p-3 rounded-lg text-sm space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-base text-muted-foreground">confirmation_number</span>
+              <span>کد رزرو:</span>
+              <span className="font-medium">{selectedReservation?.reservation_code}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-base text-muted-foreground">person</span>
+              <span>تغییردهنده:</span>
+              <span className="font-medium">{employees.find(e => e.user_id === user?.id)?.name || 'شما'}</span>
+            </div>
+          </div>
+
+          <div className="flex gap-3 justify-end mt-4">
+            <Button variant="outline" onClick={cancelStatusChange}>
+              انصراف
+            </Button>
+            <Button onClick={confirmStatusChange} className="gap-1">
+              <span className="material-symbols-outlined text-base">check</span>
+              تأیید تغییر
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

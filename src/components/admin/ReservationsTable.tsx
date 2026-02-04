@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -27,6 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -62,6 +67,13 @@ interface Reservation {
   assigned_to: string | null;
   assigned_at: string | null;
   assignee_name?: string;
+  assigned_employees?: string[];
+}
+
+interface Employee {
+  user_id: string;
+  name: string;
+  role: string;
 }
 
 const cities: Record<string, string> = {
@@ -87,38 +99,72 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
   const [isPassengerDialogOpen, setIsPassengerDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // Claim or release a reservation
-  const toggleClaim = async (reservation: Reservation) => {
-    if (!user) {
-      toast.error('لطفاً وارد شوید');
-      return;
-    }
+  // Fetch employees on mount
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
+  const fetchEmployees = async () => {
     try {
-      setClaimingId(reservation.id);
-      const isCurrentlyMine = reservation.assigned_to === user.id;
-      
-      const { error } = await supabase
-        .from('reservations')
-        .update({
-          assigned_to: isCurrentlyMine ? null : user.id,
-          assigned_at: isCurrentlyMine ? null : new Date().toISOString(),
-        })
-        .eq('id', reservation.id);
+      const { data: roles, error } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
 
       if (error) throw error;
 
-      toast.success(isCurrentlyMine ? 'رزرو آزاد شد' : 'رزرو برای شما ثبت شد');
-      onRefresh();
+      const employeesWithNames: Employee[] = [];
+      for (const role of roles || []) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', role.user_id)
+          .maybeSingle();
+
+        employeesWithNames.push({
+          user_id: role.user_id,
+          name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'بدون نام' : 'بدون نام',
+          role: role.role,
+        });
+      }
+      setEmployees(employeesWithNames);
     } catch (error) {
-      console.error('Error claiming reservation:', error);
-      toast.error('خطا در ثبت رزرو');
-    } finally {
-      setClaimingId(null);
+      console.error('Error fetching employees:', error);
     }
   };
+
+  // Toggle employee assignment for a reservation
+  const toggleEmployeeAssignment = async (reservationId: string, employeeId: string, currentAssignees: string[]) => {
+    try {
+      setUpdatingId(reservationId);
+      const isAssigned = currentAssignees.includes(employeeId);
+      const newAssignees = isAssigned
+        ? currentAssignees.filter(id => id !== employeeId)
+        : [...currentAssignees, employeeId];
+
+      // For backward compatibility, also update assigned_to with first employee or null
+      const { error } = await supabase
+        .from('reservations')
+        .update({
+          assigned_to: newAssignees.length > 0 ? newAssignees[0] : null,
+          assigned_at: newAssignees.length > 0 ? new Date().toISOString() : null,
+        })
+        .eq('id', reservationId);
+
+      if (error) throw error;
+
+      toast.success(isAssigned ? 'کارمند حذف شد' : 'کارمند اضافه شد');
+      onRefresh();
+    } catch (error) {
+      console.error('Error updating assignment:', error);
+      toast.error('خطا در به‌روزرسانی');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const updateReservationStatus = async (reservationId: string, newStatus: string) => {
     try {
       const updateData: any = { status: newStatus };
@@ -319,43 +365,63 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                         )}
                       </TableCell>
                       <TableCell>
-                        {reservation.assigned_to ? (
-                          <div className="flex items-center gap-2">
-                            <Badge 
-                              variant="outline" 
-                              className={reservation.assigned_to === user?.id 
-                                ? 'bg-primary/20 text-primary border-primary/30' 
-                                : 'bg-orange-500/20 text-orange-600 border-orange-500/30'
-                              }
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 min-w-[120px] justify-between gap-1"
+                              disabled={updatingId === reservation.id}
                             >
-                              <span className="material-symbols-outlined text-sm ml-1">person</span>
-                              {reservation.assigned_to === user?.id ? 'شما' : reservation.assignee_name || 'همکار'}
-                            </Badge>
-                            {reservation.assigned_to === user?.id && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleClaim(reservation)}
-                                disabled={claimingId === reservation.id}
-                                className="h-6 px-2 text-xs text-destructive hover:text-destructive"
-                                title="آزاد کردن"
-                              >
-                                <span className="material-symbols-outlined text-sm">close</span>
-                              </Button>
-                            )}
-                          </div>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => toggleClaim(reservation)}
-                            disabled={claimingId === reservation.id}
-                            className="h-7 text-xs gap-1"
-                          >
-                            <span className="material-symbols-outlined text-sm">add_task</span>
-                            پیگیری
-                          </Button>
-                        )}
+                              {reservation.assigned_to ? (
+                                <div className="flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-sm">group</span>
+                                  <span>{reservation.assignee_name || 'انتخاب شده'}</span>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-1 text-muted-foreground">
+                                  <span className="material-symbols-outlined text-sm">person_add</span>
+                                  <span>انتخاب کارمند</span>
+                                </div>
+                              )}
+                              <span className="material-symbols-outlined text-sm">expand_more</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-56 p-2" align="start" dir="rtl">
+                            <div className="space-y-1">
+                              <p className="text-sm font-medium mb-2 text-muted-foreground">انتخاب کارمند</p>
+                              {employees.length === 0 ? (
+                                <p className="text-sm text-muted-foreground text-center py-2">کارمندی یافت نشد</p>
+                              ) : (
+                                employees.map((employee) => {
+                                  const currentAssignees = reservation.assigned_to ? [reservation.assigned_to] : [];
+                                  const isChecked = currentAssignees.includes(employee.user_id);
+                                  return (
+                                    <div
+                                      key={employee.user_id}
+                                      className="flex items-center gap-2 p-2 rounded hover:bg-muted cursor-pointer"
+                                      onClick={() => toggleEmployeeAssignment(reservation.id, employee.user_id, currentAssignees)}
+                                    >
+                                      <Checkbox
+                                        checked={isChecked}
+                                        onCheckedChange={() => toggleEmployeeAssignment(reservation.id, employee.user_id, currentAssignees)}
+                                      />
+                                      <div className="flex-1">
+                                        <p className="text-sm font-medium">{employee.name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {employee.role === 'admin' ? 'مدیر' : 'کارمند'}
+                                        </p>
+                                      </div>
+                                      {employee.user_id === user?.id && (
+                                        <Badge variant="secondary" className="text-xs">شما</Badge>
+                                      )}
+                                    </div>
+                                  );
+                                })
+                              )}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -487,7 +553,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                         <div className="flex items-center gap-2">
-                          <Label className="text-muted-foreground min-w-[80px]">نام:</Label>
+                          <span className="text-muted-foreground min-w-[80px]">نام:</span>
                           <span className="font-medium">
                             {passenger.firstName} {passenger.lastName}
                           </span>
@@ -496,21 +562,21 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                           <span className="material-symbols-outlined text-muted-foreground text-base">
                             badge
                           </span>
-                          <Label className="text-muted-foreground min-w-[80px]">کد ملی:</Label>
+                          <span className="text-muted-foreground min-w-[80px]">کد ملی:</span>
                           <span className="font-medium">{passenger.nationalId}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-muted-foreground text-base">
                             cake
                           </span>
-                          <Label className="text-muted-foreground min-w-[80px]">تولد:</Label>
+                          <span className="text-muted-foreground min-w-[80px]">تولد:</span>
                           <span className="font-medium">{passenger.birthDate}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-muted-foreground text-base">
                             phone
                           </span>
-                          <Label className="text-muted-foreground min-w-[80px]">موبایل:</Label>
+                          <span className="text-muted-foreground min-w-[80px]">موبایل:</span>
                           <span className="font-medium">{passenger.mobile || '-'}</span>
                         </div>
                       </div>
@@ -523,7 +589,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
 
               {/* Status Update */}
               <div className="pt-4 border-t border-border">
-                <Label className="text-sm text-muted-foreground mb-2 block">تغییر وضعیت رزرو</Label>
+                <span className="text-sm text-muted-foreground mb-2 block">تغییر وضعیت رزرو</span>
                 <Select
                   value={selectedReservation.status}
                   onValueChange={value => updateReservationStatus(selectedReservation.id, value)}

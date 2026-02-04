@@ -81,7 +81,7 @@ export const EmployeeManagement = ({ isAdmin }: EmployeeManagementProps) => {
           .from('profiles')
           .select('first_name, last_name, phone_number, email')
           .eq('id', role.user_id)
-          .single();
+          .maybeSingle();
 
         employeesWithProfiles.push({
           ...role,
@@ -209,7 +209,7 @@ export const EmployeeManagement = ({ isAdmin }: EmployeeManagementProps) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="rtl">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">

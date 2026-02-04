@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useReservationNotification } from '@/hooks/useReservationNotification';
 import { Header } from '@/components/layout/Header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,6 +65,7 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isStaff, setIsStaff] = useState(false);
   const [checkingRole, setCheckingRole] = useState(true);
+
 
   const direction = isRTL ? 'rtl' : 'ltr';
 
@@ -190,6 +192,9 @@ const Admin = () => {
       setLoading(false);
     }
   };
+
+  // Enable notification sound for new reservations and auto-refresh
+  useReservationNotification(true, fetchAllReservations);
 
   // Stats
   const totalReservations = reservations.length;

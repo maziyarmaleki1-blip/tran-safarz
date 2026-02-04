@@ -52,15 +52,22 @@ const Admin = () => {
 
   const direction = isRTL ? 'rtl' : 'ltr';
 
+  // TEMPORARY: Auth check disabled for development
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-      return;
-    }
-    if (user) {
-      checkUserRole();
-    }
-  }, [user, authLoading, navigate]);
+    // if (!authLoading && !user) {
+    //   navigate('/login');
+    //   return;
+    // }
+    // if (user) {
+    //   checkUserRole();
+    // }
+    
+    // Temporarily set as admin for development
+    setIsAdmin(true);
+    setIsStaff(true);
+    setCheckingRole(false);
+    fetchAllReservations();
+  }, []);
 
   const checkUserRole = async () => {
     if (!user) return;

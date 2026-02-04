@@ -358,23 +358,8 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                       <TableCell className="font-medium text-primary">
                         {reservation.reservation_code}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1 text-sm">
-                            <span className="material-symbols-outlined text-muted-foreground text-sm">
-                              location_on
-                            </span>
-                            <span>{getCityName(reservation.origin)}</span>
-                            <span className="text-muted-foreground">→</span>
-                            <span>{getCityName(reservation.destination)}</span>
-                          </div>
-                          {reservation.train_name && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <span className="material-symbols-outlined text-xs">train</span>
-                              <span>{reservation.train_name}</span>
-                            </div>
-                          )}
-                        </div>
+                      <TableCell className="text-sm">
+                        {getCityName(reservation.origin)} به {getCityName(reservation.destination)}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm">

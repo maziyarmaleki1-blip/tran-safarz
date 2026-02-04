@@ -361,18 +361,8 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                       <TableCell className="text-sm">
                         {getCityName(reservation.origin)} به {getCityName(reservation.destination)}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <span className="material-symbols-outlined text-muted-foreground text-sm">
-                            calendar_today
-                          </span>
-                          {formatDate(reservation.departure_date)}
-                        </div>
-                        {reservation.departure_time && (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {reservation.departure_time}
-                          </div>
-                        )}
+                      <TableCell className="text-sm">
+                        {formatDate(reservation.departure_date)}
                       </TableCell>
                       <TableCell className="font-medium">
                         {formatPrice(reservation.total_price)}

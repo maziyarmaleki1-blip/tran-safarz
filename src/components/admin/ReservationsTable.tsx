@@ -268,6 +268,13 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
     return new Intl.DateTimeFormat('fa-IR').format(date);
   };
 
+  const formatDateTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const formattedDate = new Intl.DateTimeFormat('fa-IR').format(date);
+    const formattedTime = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' }).format(date);
+    return { date: formattedDate, time: formattedTime };
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
   };
@@ -359,8 +366,9 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-right">کد رزرو</TableHead>
+                    <TableHead className="text-right">تاریخ رزرو</TableHead>
                     <TableHead className="text-right">مسیر</TableHead>
-                    <TableHead className="text-right">تاریخ</TableHead>
+                    <TableHead className="text-right">تاریخ حرکت</TableHead>
                     <TableHead className="text-right">فیلترها</TableHead>
                     <TableHead className="text-right">وضعیت</TableHead>
                     <TableHead className="text-right">تأییدکننده</TableHead>
@@ -373,6 +381,12 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                     <TableRow key={reservation.id}>
                       <TableCell className="font-medium text-primary">
                         {reservation.reservation_code}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        <div className="flex flex-col">
+                          <span>{formatDateTime(reservation.created_at).date}</span>
+                          <span className="text-xs text-muted-foreground">{formatDateTime(reservation.created_at).time}</span>
+                        </div>
                       </TableCell>
                       <TableCell className="text-sm">
                         {getCityName(reservation.origin)} به {getCityName(reservation.destination)}

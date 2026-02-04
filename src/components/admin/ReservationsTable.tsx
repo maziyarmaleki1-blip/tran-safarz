@@ -68,6 +68,11 @@ interface Reservation {
   assigned_at: string | null;
   assignee_name?: string;
   assigned_employees?: string[];
+  // Pending status change (employee request awaiting admin approval)
+  pending_status?: string | null;
+  pending_status_by?: string | null;
+  pending_status_at?: string | null;
+  pending_status_by_name?: string;
 }
 
 interface Employee {
@@ -91,9 +96,10 @@ interface ReservationsTableProps {
   reservations: Reservation[];
   loading: boolean;
   onRefresh: () => void;
+  isAdmin: boolean;
 }
 
-export const ReservationsTable = ({ reservations, loading, onRefresh }: ReservationsTableProps) => {
+export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }: ReservationsTableProps) => {
   const { user } = useAuth();
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [isPassengerDialogOpen, setIsPassengerDialogOpen] = useState(false);
@@ -103,8 +109,11 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   
   // Status change confirmation
-  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [pendingStatusLocal, setPendingStatusLocal] = useState<string | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  
+  // For admin to approve/reject pending requests
+  const [isPendingApprovalDialogOpen, setIsPendingApprovalDialogOpen] = useState(false);
 
   // Fetch employees on mount
   useEffect(() => {
@@ -180,48 +189,115 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
 
   // Request status change (opens confirmation dialog)
   const requestStatusChange = (newStatus: string) => {
-    setPendingStatus(newStatus);
+    setPendingStatusLocal(newStatus);
     setIsConfirmDialogOpen(true);
   };
 
-  // Confirm and apply status change
+  // Confirm and apply status change (or request if employee)
   const confirmStatusChange = async () => {
-    if (!selectedReservation || !pendingStatus) return;
+    if (!selectedReservation || !pendingStatusLocal) return;
     
     try {
-      const updateData: any = { 
-        status: pendingStatus,
-        confirmed_by: user?.id || null,
-        confirmed_at: new Date().toISOString(),
-      };
+      if (isAdmin) {
+        // Admin: Apply change immediately
+        const updateData: any = { 
+          status: pendingStatusLocal,
+          confirmed_by: user?.id || null,
+          confirmed_at: new Date().toISOString(),
+          // Clear any pending request
+          pending_status: null,
+          pending_status_by: null,
+          pending_status_at: null,
+        };
 
-      const { error } = await supabase
-        .from('reservations')
-        .update(updateData)
-        .eq('id', selectedReservation.id);
+        const { error } = await supabase
+          .from('reservations')
+          .update(updateData)
+          .eq('id', selectedReservation.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setSelectedReservation(prev =>
-        prev
-          ? { ...prev, status: pendingStatus, confirmed_by: user?.id || null, confirmed_at: new Date().toISOString() }
-          : null
-      );
+        toast.success('وضعیت رزرو بروزرسانی شد');
+      } else {
+        // Employee: Submit request for admin approval
+        const updateData: any = { 
+          pending_status: pendingStatusLocal,
+          pending_status_by: user?.id || null,
+          pending_status_at: new Date().toISOString(),
+        };
 
-      toast.success('وضعیت رزرو بروزرسانی شد');
+        const { error } = await supabase
+          .from('reservations')
+          .update(updateData)
+          .eq('id', selectedReservation.id);
+
+        if (error) throw error;
+
+        toast.success('درخواست تغییر وضعیت ارسال شد و منتظر تأیید مدیر است');
+      }
+
       onRefresh();
     } catch (error) {
       console.error('Error updating reservation:', error);
       toast.error('خطا در بروزرسانی وضعیت');
     } finally {
       setIsConfirmDialogOpen(false);
-      setPendingStatus(null);
+      setPendingStatusLocal(null);
+    }
+  };
+
+  // Admin approves pending status change
+  const approvePendingChange = async (reservation: Reservation) => {
+    if (!reservation.pending_status) return;
+    
+    try {
+      const { error } = await supabase
+        .from('reservations')
+        .update({
+          status: reservation.pending_status,
+          confirmed_by: user?.id || null,
+          confirmed_at: new Date().toISOString(),
+          pending_status: null,
+          pending_status_by: null,
+          pending_status_at: null,
+        })
+        .eq('id', reservation.id);
+
+      if (error) throw error;
+
+      toast.success('درخواست تأیید شد');
+      onRefresh();
+    } catch (error) {
+      console.error('Error approving change:', error);
+      toast.error('خطا در تأیید درخواست');
+    }
+  };
+
+  // Admin rejects pending status change
+  const rejectPendingChange = async (reservation: Reservation) => {
+    try {
+      const { error } = await supabase
+        .from('reservations')
+        .update({
+          pending_status: null,
+          pending_status_by: null,
+          pending_status_at: null,
+        })
+        .eq('id', reservation.id);
+
+      if (error) throw error;
+
+      toast.success('درخواست رد شد');
+      onRefresh();
+    } catch (error) {
+      console.error('Error rejecting change:', error);
+      toast.error('خطا در رد درخواست');
     }
   };
 
   const cancelStatusChange = () => {
     setIsConfirmDialogOpen(false);
-    setPendingStatus(null);
+    setPendingStatusLocal(null);
   };
 
   const getStatusLabel = (status: string) => {
@@ -633,7 +709,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                 
                 <div className="flex items-center gap-3">
                   <Select
-                    value={pendingStatus || selectedReservation.status}
+                    value={pendingStatusLocal || selectedReservation.status}
                     onValueChange={requestStatusChange}
                   >
                     <SelectTrigger className="w-full sm:w-[200px]">
@@ -646,6 +722,38 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Show pending request awaiting admin approval */}
+                {selectedReservation.pending_status && (
+                  <div className="flex items-center justify-between gap-2 text-sm bg-amber-500/10 border border-amber-500/30 p-3 rounded">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-amber-600">hourglass_top</span>
+                      <span>درخواست تغییر به "{getStatusLabel(selectedReservation.pending_status)}" در انتظار تأیید مدیر</span>
+                    </div>
+                    {isAdmin && (
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="h-7 text-xs gap-1 border-green-500 text-green-600 hover:bg-green-500/10"
+                          onClick={() => approvePendingChange(selectedReservation)}
+                        >
+                          <span className="material-symbols-outlined text-sm">check</span>
+                          تأیید
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="h-7 text-xs gap-1 border-destructive text-destructive hover:bg-destructive/10"
+                          onClick={() => rejectPendingChange(selectedReservation)}
+                        >
+                          <span className="material-symbols-outlined text-sm">close</span>
+                          رد
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Show who confirmed */}
                 {selectedReservation.confirmer_name && (
@@ -675,7 +783,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
               تأیید تغییر وضعیت
             </DialogTitle>
             <DialogDescription>
-              آیا از تغییر وضعیت رزرو به "{pendingStatus ? getStatusLabel(pendingStatus) : ''}" اطمینان دارید؟
+              {isAdmin 
+                ? `آیا از تغییر وضعیت رزرو به "${pendingStatusLocal ? getStatusLabel(pendingStatusLocal) : ''}" اطمینان دارید؟`
+                : `درخواست تغییر وضعیت به "${pendingStatusLocal ? getStatusLabel(pendingStatusLocal) : ''}" برای تأیید مدیر ارسال می‌شود.`
+              }
             </DialogDescription>
           </DialogHeader>
           

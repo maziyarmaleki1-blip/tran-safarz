@@ -62,6 +62,9 @@ export type Database = {
           origin: string
           passenger_count: number | null
           passengers: Json | null
+          pending_status: string | null
+          pending_status_at: string | null
+          pending_status_by: string | null
           reservation_code: string
           status: string
           total_price: number
@@ -84,6 +87,9 @@ export type Database = {
           origin: string
           passenger_count?: number | null
           passengers?: Json | null
+          pending_status?: string | null
+          pending_status_at?: string | null
+          pending_status_by?: string | null
           reservation_code: string
           status?: string
           total_price: number
@@ -106,6 +112,9 @@ export type Database = {
           origin?: string
           passenger_count?: number | null
           passengers?: Json | null
+          pending_status?: string | null
+          pending_status_at?: string | null
+          pending_status_by?: string | null
           reservation_code?: string
           status?: string
           total_price?: number

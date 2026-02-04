@@ -42,6 +42,11 @@ interface Reservation {
   assigned_at: string | null;
   assignee_name?: string;
   assigned_employees?: string[];
+  // Pending status change
+  pending_status?: string | null;
+  pending_status_by?: string | null;
+  pending_status_at?: string | null;
+  pending_status_by_name?: string;
 }
 
 const Admin = () => {
@@ -148,12 +153,26 @@ const Admin = () => {
           }
         }
 
+        let pendingStatusByName = undefined;
+        if (item.pending_status_by) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', item.pending_status_by)
+            .maybeSingle();
+          
+          if (profile) {
+            pendingStatusByName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+          }
+        }
+
         reservationsWithNames.push({
           ...item,
           passengers: Array.isArray(item.passengers) ? item.passengers as unknown as Passenger[] : null,
           confirmer_name: confirmerName,
           assignee_name: assigneeName,
           assigned_employees: Array.isArray(item.assigned_employees) ? item.assigned_employees : [],
+          pending_status_by_name: pendingStatusByName,
         });
       }
 
@@ -221,6 +240,7 @@ const Admin = () => {
               reservations={reservations}
               loading={loading}
               onRefresh={fetchAllReservations}
+              isAdmin={isAdmin}
             />
           </TabsContent>
 

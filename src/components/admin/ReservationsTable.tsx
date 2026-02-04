@@ -380,16 +380,17 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                         {formatDate(reservation.departure_date)}
                       </TableCell>
                       <TableCell>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 gap-1 text-sm font-normal"
-                            >
-                              <span>{reservation.wagon_type || 'نامشخص'}</span>
-                              <span className="material-symbols-outlined text-sm text-muted-foreground">expand_more</span>
-                            </Button>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{reservation.wagon_type || 'نامشخص'}</span>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                              >
+                                <span className="material-symbols-outlined text-sm text-muted-foreground">info</span>
+                              </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-72 p-4" align="start" dir="rtl">
                             <div className="space-y-4">
@@ -459,6 +460,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                             </div>
                           </PopoverContent>
                         </Popover>
+                        </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(reservation.status)}</TableCell>
                       <TableCell>

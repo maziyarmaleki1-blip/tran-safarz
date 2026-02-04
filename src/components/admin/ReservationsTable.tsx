@@ -73,6 +73,7 @@ interface Reservation {
   selected_time_slots?: string[];
   price_range_min?: number | null;
   price_range_max?: number | null;
+  customer_notes?: string | null;
 }
 
 interface Employee {
@@ -457,6 +458,19 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                                   </div>
                                 )}
                               </div>
+
+                              {/* توضیحات مشتری - Customer Notes */}
+                              {reservation.customer_notes && (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2 text-sm font-medium">
+                                    <span className="material-symbols-outlined text-base text-primary">notes</span>
+                                    <span>توضیحات مسافر</span>
+                                  </div>
+                                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 text-sm">
+                                    {reservation.customer_notes}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </PopoverContent>
                         </Popover>

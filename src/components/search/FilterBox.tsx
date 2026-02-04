@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Accordion,
   AccordionContent,
@@ -20,6 +21,7 @@ export interface FilterState {
   priceRange: [number, number];
   departureTimeSlots: string[];
   compartmentTypes: string[];
+  customerNotes: string;
 }
 
 const compartmentOptions = [
@@ -43,6 +45,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const [priceRange, setPriceRange] = useState<[number, number]>([440000, 2450000]);
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>([]);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
+  const [customerNotes, setCustomerNotes] = useState<string>('');
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fa-IR');
@@ -53,6 +56,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
       priceRange,
       departureTimeSlots,
       compartmentTypes,
+      customerNotes,
       ...newFilters,
     };
     onFilterChange?.(filters);
@@ -79,15 +83,22 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
     notifyChange({ compartmentTypes: newTypes });
   };
 
+  const handleNotesChange = (notes: string) => {
+    setCustomerNotes(notes);
+    notifyChange({ customerNotes: notes });
+  };
+
   const clearFilters = () => {
     const defaultFilters: FilterState = {
       priceRange: [440000, 2450000],
       departureTimeSlots: [],
       compartmentTypes: [],
+      customerNotes: '',
     };
     setPriceRange(defaultFilters.priceRange);
     setDepartureTimeSlots(defaultFilters.departureTimeSlots);
     setCompartmentTypes(defaultFilters.compartmentTypes);
+    setCustomerNotes(defaultFilters.customerNotes);
     onFilterChange?.(defaultFilters);
   };
 
@@ -181,6 +192,25 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
               <span>{formatPrice(priceRange[0])}</span>
               <span>{formatPrice(priceRange[1])}</span>
             </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Customer Notes */}
+        <AccordionItem value="notes" className="border-none">
+          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
+            {isRtl ? 'توضیحات خاص' : 'Special Notes'}
+          </AccordionTrigger>
+          <AccordionContent className="pt-2 pb-4">
+            <Textarea
+              placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
+              value={customerNotes}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              className="min-h-[80px] resize-none text-sm"
+              maxLength={500}
+            />
+            <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
+              {customerNotes.length}/500
+            </p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

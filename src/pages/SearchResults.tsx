@@ -51,6 +51,7 @@ const SearchResults = () => {
     priceRange: [440000, 2450000],
     departureTimeSlots: [],
     compartmentTypes: [],
+    customerNotes: '',
   });
 
   const from = searchParams.get('from') || 'tehran';
@@ -112,6 +113,7 @@ const SearchResults = () => {
       departureTimeSlots: filters.departureTimeSlots,
       priceRangeMin: filters.priceRange[0],
       priceRangeMax: filters.priceRange[1],
+      customerNotes: filters.customerNotes,
     }));
     
     // Navigate to booking page with search params

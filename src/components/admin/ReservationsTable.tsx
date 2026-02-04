@@ -598,134 +598,213 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" dir="rtl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <span className="material-symbols-outlined">group</span>
-              مشخصات رزرو
+              <span className="material-symbols-outlined">visibility</span>
+              جزئیات رزرو
             </DialogTitle>
             <DialogDescription>کد رزرو: {selectedReservation?.reservation_code}</DialogDescription>
           </DialogHeader>
 
           {selectedReservation && (
             <div className="space-y-6">
-              {/* Reservation Info */}
-              <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-muted-foreground text-base">
-                      location_on
-                    </span>
-                    <span>مسیر:</span>
-                    <span className="font-medium">
-                      {getCityName(selectedReservation.origin)} →{' '}
-                      {getCityName(selectedReservation.destination)}
-                    </span>
+              {/* Section 1: Route Info - مبدا به مقصد */}
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary">route</span>
                   </div>
+                  <h3 className="font-bold text-lg">مسیر سفر</h3>
+                </div>
+                <div className="flex items-center gap-4 text-lg">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-muted-foreground text-base">
-                      calendar_today
-                    </span>
-                    <span>تاریخ:</span>
-                    <span className="font-medium">
-                      {formatDate(selectedReservation.departure_date)}
-                    </span>
+                    <span className="material-symbols-outlined text-muted-foreground">location_on</span>
+                    <span className="font-bold text-primary">{getCityName(selectedReservation.origin)}</span>
                   </div>
-                  {selectedReservation.train_name && (
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-muted-foreground text-base">
-                        train
-                      </span>
-                      <span>قطار:</span>
-                      <span className="font-medium">{selectedReservation.train_name}</span>
-                    </div>
-                  )}
+                  <span className="material-symbols-outlined text-xl text-muted-foreground">arrow_forward</span>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-muted-foreground">flag</span>
+                    <span className="font-bold text-primary">{getCityName(selectedReservation.destination)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Departure Date - تاریخ حرکت */}
+              <div className="p-4 bg-success/5 border border-success/20 rounded-xl">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-success">calendar_month</span>
+                  </div>
+                  <h3 className="font-bold text-lg">تاریخ حرکت</h3>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-muted-foreground">event</span>
+                    <span className="font-bold text-lg">{formatDate(selectedReservation.departure_date)}</span>
+                  </div>
                   {selectedReservation.departure_time && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-muted-foreground text-base">
-                        schedule
-                      </span>
-                      <span>ساعت:</span>
+                      <span className="material-symbols-outlined text-muted-foreground">schedule</span>
                       <span className="font-medium">{selectedReservation.departure_time}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-2 border-t border-border mt-2 flex items-center justify-between">
-                  <div>
-                    <span className="text-sm text-muted-foreground">مبلغ کل: </span>
-                    <span className="font-bold text-primary">
-                      {formatPrice(selectedReservation.total_price)}
-                    </span>
-                  </div>
-                  {selectedReservation.confirmer_name && (
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">تأیید توسط: </span>
-                      <span className="font-medium">{selectedReservation.confirmer_name}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Passengers List */}
-              <div className="space-y-4">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <span className="material-symbols-outlined">group</span>
-                  لیست مسافران
-                  <span className="text-sm text-muted-foreground font-normal">
-                    ({selectedReservation.passengers?.length || 0} نفر)
-                  </span>
-                </h4>
-
-                {selectedReservation.passengers && selectedReservation.passengers.length > 0 ? (
-                  selectedReservation.passengers.map((passenger, index) => (
-                    <div key={passenger.id || index} className="p-4 border border-border rounded-lg bg-card">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="font-medium flex items-center gap-2">
-                          <span
-                            className={`material-symbols-outlined ${
-                              passenger.isChild ? 'text-gold' : 'text-primary'
-                            }`}
-                          >
-                            {passenger.isChild ? 'child_care' : 'person'}
-                          </span>
-                          مسافر {index + 1}
-                          {passenger.isChild && (
-                            <Badge variant="outline" className="text-xs">
-                              خردسال
-                            </Badge>
-                          )}
-                        </span>
+              {/* Section 3: Applied Filters - فیلترهای اعمالی */}
+              <div className="p-4 bg-gold/5 border border-gold/20 rounded-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gold-dark">filter_alt</span>
+                  </div>
+                  <h3 className="font-bold text-lg">فیلترهای اعمالی توسط مسافر</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Wagon Types */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <span className="material-symbols-outlined text-base text-primary">bed</span>
+                      <span>نوع سالن</span>
+                    </div>
+                    {selectedReservation.selected_wagon_types && selectedReservation.selected_wagon_types.length > 0 ? (
+                      <div className="space-y-1">
+                        {selectedReservation.selected_wagon_types.map((type, idx) => (
+                          <div key={idx} className="bg-primary/10 text-primary rounded-lg px-3 py-2 text-sm font-medium flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            {type === '6تخته3ستاره' ? '۶ تخته ۳ ستاره' : 
+                             type === '4تخته4ستاره' ? '۴ تخته ۴ ستاره' : 
+                             type === '4تخته5ستاره' ? '۴ تخته ۵ ستاره' : type}
+                          </div>
+                        ))}
                       </div>
+                    ) : (
+                      <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                        فیلتری انتخاب نشده
+                      </div>
+                    )}
+                  </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground min-w-[80px]">نام:</span>
-                          <span className="font-medium">
-                            {passenger.firstName} {passenger.lastName}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-muted-foreground text-base">
-                            badge
-                          </span>
-                          <span className="text-muted-foreground min-w-[80px]">کد ملی:</span>
-                          <span className="font-medium">{passenger.nationalId}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-muted-foreground text-base">
-                            cake
-                          </span>
-                          <span className="text-muted-foreground min-w-[80px]">تولد:</span>
-                          <span className="font-medium">{passenger.birthDate}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-muted-foreground text-base">
-                            phone
-                          </span>
-                          <span className="text-muted-foreground min-w-[80px]">موبایل:</span>
-                          <span className="font-medium">{passenger.mobile || '-'}</span>
-                        </div>
+                  {/* Time Slots */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <span className="material-symbols-outlined text-base text-primary">schedule</span>
+                      <span>بازه زمانی</span>
+                    </div>
+                    {selectedReservation.selected_time_slots && selectedReservation.selected_time_slots.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedReservation.selected_time_slots.map((slot, idx) => (
+                          <div key={idx} className="bg-primary/10 text-primary rounded-lg px-3 py-2 text-sm font-medium">
+                            ⏰ {slot.replace('-', ' تا ')}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                        فیلتری انتخاب نشده
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Price Range */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <span className="material-symbols-outlined text-base text-primary">payments</span>
+                      <span>بازه قیمت</span>
+                    </div>
+                    {selectedReservation.price_range_min && selectedReservation.price_range_max ? (
+                      <div className="bg-success/10 text-success rounded-lg px-3 py-2 text-sm font-bold flex items-center gap-2">
+                        <span>{formatPrice(selectedReservation.price_range_min)}</span>
+                        <span className="text-muted-foreground">تا</span>
+                        <span>{formatPrice(selectedReservation.price_range_max)}</span>
+                      </div>
+                    ) : (
+                      <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                        فیلتری انتخاب نشده
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Customer Notes */}
+                  {selectedReservation.customer_notes && (
+                    <div className="space-y-2 col-span-full">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <span className="material-symbols-outlined text-base text-primary">notes</span>
+                        <span>توضیحات مسافر</span>
+                      </div>
+                      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 text-sm">
+                        {selectedReservation.customer_notes}
                       </div>
                     </div>
-                  ))
+                  )}
+                </div>
+              </div>
+
+              {/* Section 4: Passengers List - اسامی مسافران */}
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">group</span>
+                  </div>
+                  <h3 className="font-bold text-lg">اسامی و مشخصات مسافران</h3>
+                  <Badge variant="outline" className="mr-auto">
+                    {selectedReservation.passengers?.length || 0} نفر
+                  </Badge>
+                </div>
+
+                {selectedReservation.passengers && selectedReservation.passengers.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedReservation.passengers.map((passenger, index) => (
+                      <div key={passenger.id || index} className="p-4 bg-card border border-border rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-medium flex items-center gap-2">
+                            <span
+                              className={`material-symbols-outlined ${
+                                passenger.isChild ? 'text-gold' : 'text-primary'
+                              }`}
+                            >
+                              {passenger.isChild ? 'child_care' : 'person'}
+                            </span>
+                            مسافر {index + 1}
+                            {passenger.isChild && (
+                              <Badge variant="outline" className="text-xs">
+                                خردسال
+                              </Badge>
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-muted-foreground text-base">badge</span>
+                            <span className="text-muted-foreground min-w-[80px]">نام کامل:</span>
+                            <span className="font-medium">
+                              {passenger.firstName} {passenger.lastName}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-muted-foreground text-base">
+                              phone
+                            </span>
+                            <span className="text-muted-foreground min-w-[80px]">موبایل:</span>
+                            <span className="font-medium text-primary" dir="ltr">{passenger.mobile || '-'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-muted-foreground text-base">
+                              credit_card
+                            </span>
+                            <span className="text-muted-foreground min-w-[80px]">کد ملی:</span>
+                            <span className="font-medium">{passenger.nationalId}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-muted-foreground text-base">
+                              cake
+                            </span>
+                            <span className="text-muted-foreground min-w-[80px]">تاریخ تولد:</span>
+                            <span className="font-medium">{passenger.birthDate}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <p className="text-muted-foreground text-center py-4">اطلاعات مسافران ثبت نشده</p>
                 )}

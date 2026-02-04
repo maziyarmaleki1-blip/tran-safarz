@@ -49,6 +49,8 @@ export type Database = {
       }
       reservations: {
         Row: {
+          assigned_at: string | null
+          assigned_to: string | null
           confirmed_at: string | null
           confirmed_by: string | null
           created_at: string
@@ -68,6 +70,8 @@ export type Database = {
           wagon_type: string | null
         }
         Insert: {
+          assigned_at?: string | null
+          assigned_to?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
@@ -87,6 +91,8 @@ export type Database = {
           wagon_type?: string | null
         }
         Update: {
+          assigned_at?: string | null
+          assigned_to?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string

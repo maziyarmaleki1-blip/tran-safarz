@@ -168,7 +168,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
   });
 
   return (
-    <>
+    <div dir="rtl">
       {/* Search and Filters */}
       <Card className="mb-6">
         <CardContent className="p-4">
@@ -243,7 +243,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
                               location_on
                             </span>
                             <span>{getCityName(reservation.origin)}</span>
-                            <span className="text-muted-foreground">←</span>
+                            <span className="text-muted-foreground">→</span>
                             <span>{getCityName(reservation.destination)}</span>
                           </div>
                           {reservation.train_name && (
@@ -468,6 +468,6 @@ export const ReservationsTable = ({ reservations, loading, onRefresh }: Reservat
           )}
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };

@@ -345,7 +345,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                     <TableHead className="text-right">کد رزرو</TableHead>
                     <TableHead className="text-right">مسیر</TableHead>
                     <TableHead className="text-right">تاریخ</TableHead>
-                    <TableHead className="text-right">مبلغ</TableHead>
+                    <TableHead className="text-right">نوع کوپه</TableHead>
                     <TableHead className="text-right">وضعیت</TableHead>
                     <TableHead className="text-right">تأییدکننده</TableHead>
                     <TableHead className="text-right">در حال پیگیری</TableHead>
@@ -364,8 +364,43 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                       <TableCell className="text-sm">
                         {formatDate(reservation.departure_date)}
                       </TableCell>
-                      <TableCell className="font-medium">
-                        {formatPrice(reservation.total_price)}
+                      <TableCell>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 gap-1 text-sm font-normal"
+                            >
+                              <span>{reservation.wagon_type || 'نامشخص'}</span>
+                              <span className="material-symbols-outlined text-sm text-muted-foreground">expand_more</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-56 p-3" align="start" dir="rtl">
+                            <div className="space-y-3 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">نوع کوپه:</span>
+                                <span className="font-medium">{reservation.wagon_type || 'نامشخص'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">قطار:</span>
+                                <span className="font-medium">{reservation.train_name || 'نامشخص'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">ساعت حرکت:</span>
+                                <span className="font-medium">{reservation.departure_time || 'نامشخص'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">تعداد مسافر:</span>
+                                <span className="font-medium">{reservation.passenger_count || 1} نفر</span>
+                              </div>
+                              <div className="flex justify-between border-t pt-2">
+                                <span className="text-muted-foreground">مبلغ کل:</span>
+                                <span className="font-bold text-primary">{formatPrice(reservation.total_price)}</span>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell>{getStatusBadge(reservation.status)}</TableCell>
                       <TableCell>

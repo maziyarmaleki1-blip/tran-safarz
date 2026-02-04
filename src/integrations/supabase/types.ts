@@ -55,6 +55,7 @@ export type Database = {
           confirmed_at: string | null
           confirmed_by: string | null
           created_at: string
+          customer_notes: string | null
           departure_date: string
           departure_time: string | null
           destination: string
@@ -84,6 +85,7 @@ export type Database = {
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
+          customer_notes?: string | null
           departure_date: string
           departure_time?: string | null
           destination: string
@@ -113,6 +115,7 @@ export type Database = {
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
+          customer_notes?: string | null
           departure_date?: string
           departure_time?: string | null
           destination?: string

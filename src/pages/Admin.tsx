@@ -52,6 +52,7 @@ interface Reservation {
   selected_time_slots?: string[];
   price_range_min?: number | null;
   price_range_max?: number | null;
+  customer_notes?: string | null;
 }
 
 const Admin = () => {

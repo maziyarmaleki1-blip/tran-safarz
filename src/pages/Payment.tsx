@@ -85,6 +85,7 @@ const Payment = () => {
           selected_time_slots: selectedFilters?.departureTimeSlots || [],
           price_range_min: selectedFilters?.priceRangeMin || null,
           price_range_max: selectedFilters?.priceRangeMax || null,
+          customer_notes: selectedFilters?.customerNotes || null,
         });
 
       if (reservationError) throw reservationError;

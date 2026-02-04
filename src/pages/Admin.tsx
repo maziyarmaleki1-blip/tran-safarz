@@ -41,6 +41,7 @@ interface Reservation {
   assigned_to: string | null;
   assigned_at: string | null;
   assignee_name?: string;
+  assigned_employees?: string[];
 }
 
 const Admin = () => {
@@ -152,6 +153,7 @@ const Admin = () => {
           passengers: Array.isArray(item.passengers) ? item.passengers as unknown as Passenger[] : null,
           confirmer_name: confirmerName,
           assignee_name: assigneeName,
+          assigned_employees: Array.isArray(item.assigned_employees) ? item.assigned_employees : [],
         });
       }
 

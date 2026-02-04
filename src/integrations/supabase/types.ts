@@ -50,6 +50,7 @@ export type Database = {
       reservations: {
         Row: {
           assigned_at: string | null
+          assigned_employees: string[] | null
           assigned_to: string | null
           confirmed_at: string | null
           confirmed_by: string | null
@@ -71,6 +72,7 @@ export type Database = {
         }
         Insert: {
           assigned_at?: string | null
+          assigned_employees?: string[] | null
           assigned_to?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -92,6 +94,7 @@ export type Database = {
         }
         Update: {
           assigned_at?: string | null
+          assigned_employees?: string[] | null
           assigned_to?: string | null
           confirmed_at?: string | null
           confirmed_by?: string | null

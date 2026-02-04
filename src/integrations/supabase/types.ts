@@ -65,7 +65,11 @@ export type Database = {
           pending_status: string | null
           pending_status_at: string | null
           pending_status_by: string | null
+          price_range_max: number | null
+          price_range_min: number | null
           reservation_code: string
+          selected_time_slots: string[] | null
+          selected_wagon_types: string[] | null
           status: string
           total_price: number
           train_name: string | null
@@ -90,7 +94,11 @@ export type Database = {
           pending_status?: string | null
           pending_status_at?: string | null
           pending_status_by?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
           reservation_code: string
+          selected_time_slots?: string[] | null
+          selected_wagon_types?: string[] | null
           status?: string
           total_price: number
           train_name?: string | null
@@ -115,7 +123,11 @@ export type Database = {
           pending_status?: string | null
           pending_status_at?: string | null
           pending_status_by?: string | null
+          price_range_max?: number | null
+          price_range_min?: number | null
           reservation_code?: string
+          selected_time_slots?: string[] | null
+          selected_wagon_types?: string[] | null
           status?: string
           total_price?: number
           train_name?: string | null

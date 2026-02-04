@@ -47,6 +47,11 @@ interface Reservation {
   pending_status_by?: string | null;
   pending_status_at?: string | null;
   pending_status_by_name?: string;
+  // Selected filters from search
+  selected_wagon_types?: string[];
+  selected_time_slots?: string[];
+  price_range_min?: number | null;
+  price_range_max?: number | null;
 }
 
 const Admin = () => {

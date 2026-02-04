@@ -68,6 +68,11 @@ interface Reservation {
   assigned_at: string | null;
   assignee_name?: string;
   assigned_employees?: string[];
+  // Selected filters from search
+  selected_wagon_types?: string[];
+  selected_time_slots?: string[];
+  price_range_min?: number | null;
+  price_range_max?: number | null;
 }
 
 interface Employee {
@@ -386,44 +391,70 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                               <span className="material-symbols-outlined text-sm text-muted-foreground">expand_more</span>
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-64 p-4" align="start" dir="rtl">
+                          <PopoverContent className="w-72 p-4" align="start" dir="rtl">
                             <div className="space-y-4">
-                              {/* نوع سالن */}
+                              {/* نوع سالن - Selected wagon types */}
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-sm font-medium">
                                   <span className="material-symbols-outlined text-base text-primary">bed</span>
                                   <span>نوع سالن</span>
                                 </div>
-                                <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm">
-                                  {reservation.wagon_type || 'نامشخص'}
-                                </div>
+                                {reservation.selected_wagon_types && reservation.selected_wagon_types.length > 0 ? (
+                                  <div className="space-y-1">
+                                    {reservation.selected_wagon_types.map((type, idx) => (
+                                      <div key={idx} className="bg-primary/10 text-primary rounded-lg px-3 py-2 text-sm font-medium flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-sm">check_circle</span>
+                                        {type === '6تخته3ستاره' ? '۶ تخته ۳ ستاره' : 
+                                         type === '4تخته4ستاره' ? '۴ تخته ۴ ستاره' : 
+                                         type === '4تخته5ستاره' ? '۴ تخته ۵ ستاره' : type}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                                    فیلتری انتخاب نشده
+                                  </div>
+                                )}
                               </div>
 
-                              {/* زمان حرکت */}
+                              {/* زمان حرکت - Selected time slots */}
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-sm font-medium">
                                   <span className="material-symbols-outlined text-base text-primary">schedule</span>
-                                  <span>زمان حرکت</span>
+                                  <span>بازه زمانی</span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm flex-1">
-                                    بازه: {getTimeRangeLabel(reservation.departure_time)}
+                                {reservation.selected_time_slots && reservation.selected_time_slots.length > 0 ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {reservation.selected_time_slots.map((slot, idx) => (
+                                      <div key={idx} className="bg-primary/10 text-primary rounded-lg px-3 py-2 text-sm font-medium">
+                                        ⏰ {slot.replace('-', ' تا ')}
+                                      </div>
+                                    ))}
                                   </div>
-                                  <div className="bg-primary/10 text-primary rounded-lg px-3 py-2 text-sm font-medium">
-                                    {reservation.departure_time || 'نامشخص'}
+                                ) : (
+                                  <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                                    فیلتری انتخاب نشده
                                   </div>
-                                </div>
+                                )}
                               </div>
 
-                              {/* بازه قیمت */}
+                              {/* بازه قیمت - Price range */}
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-sm font-medium">
                                   <span className="material-symbols-outlined text-base text-primary">payments</span>
-                                  <span>قیمت</span>
+                                  <span>بازه قیمت</span>
                                 </div>
-                                <div className="bg-success/10 text-success rounded-lg px-3 py-2 text-sm font-bold">
-                                  {formatPrice(reservation.total_price)}
-                                </div>
+                                {reservation.price_range_min && reservation.price_range_max ? (
+                                  <div className="bg-success/10 text-success rounded-lg px-3 py-2 text-sm font-bold flex items-center justify-between">
+                                    <span>{formatPrice(reservation.price_range_min)}</span>
+                                    <span className="text-muted-foreground mx-2">تا</span>
+                                    <span>{formatPrice(reservation.price_range_max)}</span>
+                                  </div>
+                                ) : (
+                                  <div className="bg-muted/50 rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                                    فیلتری انتخاب نشده
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </PopoverContent>

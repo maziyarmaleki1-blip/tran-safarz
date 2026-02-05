@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { StatsCards } from '@/components/admin/StatsCards';
 import { ReservationsTable } from '@/components/admin/ReservationsTable';
 import { EmployeeManagement } from '@/components/admin/EmployeeManagement';
+import ServiceFeeSettings from '@/components/admin/ServiceFeeSettings';
 import AdminLogin from '@/components/admin/AdminLogin';
 
 interface Passenger {
@@ -266,10 +267,16 @@ const Admin = () => {
               رزروها
             </TabsTrigger>
             {isAdmin && (
-              <TabsTrigger value="employees" className="gap-2">
-                <span className="material-symbols-outlined text-lg">group</span>
-                کارمندان
-              </TabsTrigger>
+              <>
+                <TabsTrigger value="employees" className="gap-2">
+                  <span className="material-symbols-outlined text-lg">group</span>
+                  کارمندان
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="gap-2">
+                  <span className="material-symbols-outlined text-lg">settings</span>
+                  تنظیمات
+                </TabsTrigger>
+              </>
             )}
           </TabsList>
 
@@ -290,9 +297,17 @@ const Admin = () => {
           </TabsContent>
 
           {isAdmin && (
-            <TabsContent value="employees">
-              <EmployeeManagement isAdmin={isAdmin} />
-            </TabsContent>
+            <>
+              <TabsContent value="employees">
+                <EmployeeManagement isAdmin={isAdmin} />
+              </TabsContent>
+
+              <TabsContent value="settings">
+                <div className="max-w-md">
+                  <ServiceFeeSettings />
+                </div>
+              </TabsContent>
+            </>
           )}
         </Tabs>
       </main>

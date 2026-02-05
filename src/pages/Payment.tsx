@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useServiceFee } from '@/hooks/useServiceFee';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -28,6 +29,7 @@ const Payment = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { serviceFee, calculateFee, loading: feeLoading } = useServiceFee();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -39,7 +41,9 @@ const Payment = () => {
   const passengers = parseInt(searchParams.get('passengers') || '1');
 
   const train = trains[trainId] || trains[1];
-  const totalPrice = train.price * passengers;
+  const ticketPrice = train.price * passengers;
+  const serviceFeeAmount = calculateFee(ticketPrice);
+  const totalPrice = ticketPrice + serviceFeeAmount;
 
   const formatPrice = (price: number) => price.toLocaleString('fa-IR');
 
@@ -250,11 +254,21 @@ const Payment = () => {
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{t('ticketPrice')}</span>
-                  <span>{formatPrice(train.price)} {t('toman')}</span>
+                  <span>{formatPrice(ticketPrice)} {t('toman')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{t('passengerCount')}</span>
                   <span>× {passengers}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">کارمزد خدمات جستجو</span>
+                  {feeLoading ? (
+                    <span className="size-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                  ) : serviceFeeAmount > 0 ? (
+                    <span>{formatPrice(serviceFeeAmount)} {t('toman')}</span>
+                  ) : (
+                    <span className="text-success">{t('free')}</span>
+                  )}
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{t('tax')}</span>

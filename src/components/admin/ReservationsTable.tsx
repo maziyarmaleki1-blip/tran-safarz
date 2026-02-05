@@ -118,6 +118,9 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [isPassengerDialogOpen, setIsPassengerDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+   const [filterWagonType, setFilterWagonType] = useState<string>('all');
+   const [filterApprover, setFilterApprover] = useState<string>('all');
+   const [filterAssignedEmployee, setFilterAssignedEmployee] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -311,6 +314,15 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
 
   const filteredReservations = reservations.filter(r => {
     const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
+     const matchesWagonType = filterWagonType === 'all' || 
+       (r.selected_wagon_types && r.selected_wagon_types.includes(filterWagonType)) ||
+       r.wagon_type === filterWagonType;
+     const matchesApprover = filterApprover === 'all' || 
+       (filterApprover === 'empty' && !r.confirmer_name && !r.pending_status_by_name) ||
+       (filterApprover === 'has' && (r.confirmer_name || r.pending_status_by_name));
+     const matchesAssignedEmployee = filterAssignedEmployee === 'all' ||
+       (filterAssignedEmployee === 'none' && (!r.assigned_employees || r.assigned_employees.length === 0)) ||
+       (r.assigned_employees && r.assigned_employees.includes(filterAssignedEmployee));
     const matchesSearch =
       searchQuery === '' ||
       r.reservation_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -321,7 +333,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
             p.lastName?.includes(searchQuery) ||
             p.nationalId?.includes(searchQuery)
         ));
-    return matchesStatus && matchesSearch;
+     return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch;
   });
 
   return (
@@ -329,7 +341,8 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
       {/* Search and Filters */}
       <Card className="mb-6">
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+           <div className="flex flex-col gap-4">
+             {/* Row 1: Search */}
             <div className="flex-1">
               <Input
                 placeholder="جستجو با کد رزرو یا نام مسافر..."
@@ -339,17 +352,79 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
               />
             </div>
 
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full sm:w-[180px] h-10">
-                <SelectValue placeholder="وضعیت بلیط" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">همه</SelectItem>
-                <SelectItem value="confirmed">تأیید شده</SelectItem>
-                <SelectItem value="pending">در انتظار</SelectItem>
-                <SelectItem value="cancelled">لغو شده</SelectItem>
-              </SelectContent>
-            </Select>
+             {/* Row 2: Filters */}
+             <div className="flex flex-wrap items-center gap-3">
+               {/* نوع سالن */}
+               <Select value={filterWagonType} onValueChange={setFilterWagonType}>
+                 <SelectTrigger className="w-[150px] h-9">
+                   <SelectValue placeholder="نوع سالن" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه سالن‌ها</SelectItem>
+                   <SelectItem value="6تخته3ستاره">۶ تخته ۳ ستاره</SelectItem>
+                   <SelectItem value="4تخته4ستاره">۴ تخته ۴ ستاره</SelectItem>
+                   <SelectItem value="4تخته5ستاره">۴ تخته ۵ ستاره</SelectItem>
+                 </SelectContent>
+               </Select>
+ 
+               {/* وضعیت - پیش‌فرض در انتظار */}
+               <Select value={filterStatus} onValueChange={setFilterStatus}>
+                 <SelectTrigger className="w-[140px] h-9">
+                   <SelectValue placeholder="وضعیت" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه وضعیت‌ها</SelectItem>
+                   <SelectItem value="pending">در انتظار</SelectItem>
+                   <SelectItem value="confirmed">تأیید شده</SelectItem>
+                   <SelectItem value="cancelled">لغو شده</SelectItem>
+                 </SelectContent>
+               </Select>
+ 
+               {/* تأییدکننده */}
+               <Select value={filterApprover} onValueChange={setFilterApprover}>
+                 <SelectTrigger className="w-[150px] h-9">
+                   <SelectValue placeholder="تأییدکننده" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه</SelectItem>
+                   <SelectItem value="empty">تأییدکننده خالی</SelectItem>
+                   <SelectItem value="has">دارای تأییدکننده</SelectItem>
+                 </SelectContent>
+               </Select>
+ 
+               {/* در حال پیگیری - انتخاب کارمند */}
+               <Select value={filterAssignedEmployee} onValueChange={setFilterAssignedEmployee}>
+                 <SelectTrigger className="w-[160px] h-9">
+                   <SelectValue placeholder="پیگیری توسط" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه</SelectItem>
+                   <SelectItem value="none">بدون پیگیری</SelectItem>
+                   {employees.map((emp) => (
+                     <SelectItem key={emp.user_id} value={emp.user_id}>
+                       {emp.name}
+                     </SelectItem>
+                   ))}
+                 </SelectContent>
+               </Select>
+ 
+               {/* Reset Filters Button */}
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 onClick={() => {
+                   setFilterWagonType('all');
+                   setFilterStatus('all');
+                   setFilterApprover('all');
+                   setFilterAssignedEmployee('all');
+                   setSearchQuery('');
+                 }}
+                 className="h-9 text-destructive hover:text-destructive/80 gap-1"
+               >
+                 <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+                 پاک کردن فیلترها
+               </Button>
+             </div>
           </div>
         </CardContent>
       </Card>

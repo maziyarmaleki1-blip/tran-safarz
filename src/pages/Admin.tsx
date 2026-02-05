@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { StatsCards } from '@/components/admin/StatsCards';
 import { ReservationsTable } from '@/components/admin/ReservationsTable';
 import { EmployeeManagement } from '@/components/admin/EmployeeManagement';
+import AdminLogin from '@/components/admin/AdminLogin';
 
 interface Passenger {
   id: string;
@@ -65,26 +66,22 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isStaff, setIsStaff] = useState(false);
   const [checkingRole, setCheckingRole] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 
   const direction = isRTL ? 'rtl' : 'ltr';
 
-  // TEMPORARY: Auth check disabled for development
+  // Check if user is already logged in with staff role
   useEffect(() => {
-    // if (!authLoading && !user) {
-    //   navigate('/login');
-    //   return;
-    // }
-    // if (user) {
-    //   checkUserRole();
-    // }
-    
-    // Temporarily set as admin for development
-    setIsAdmin(true);
-    setIsStaff(true);
-    setCheckingRole(false);
-    fetchAllReservations();
-  }, []);
+    if (!authLoading) {
+      if (user) {
+        checkUserRole();
+      } else {
+        setCheckingRole(false);
+        setIsAuthenticated(false);
+      }
+    }
+  }, [authLoading, user]);
 
   const checkUserRole = async () => {
     if (!user) return;
@@ -106,19 +103,24 @@ const Admin = () => {
       setIsStaff(hasStaffRole);
 
       if (!hasStaffRole) {
-        toast.error('شما دسترسی به این صفحه ندارید');
-        navigate('/');
+        setIsAuthenticated(false);
+        setCheckingRole(false);
         return;
       }
 
+      setIsAuthenticated(true);
       fetchAllReservations();
     } catch (error) {
       console.error('Error checking role:', error);
-      toast.error('خطا در بررسی دسترسی');
-      navigate('/');
+      setIsAuthenticated(false);
     } finally {
       setCheckingRole(false);
     }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    checkUserRole();
   };
 
   const fetchAllReservations = async () => {
@@ -202,7 +204,8 @@ const Admin = () => {
   const pendingReservations = reservations.filter(r => r.status === 'pending').length;
   const cancelledReservations = reservations.filter(r => r.status === 'cancelled').length;
 
-  if (authLoading || checkingRole) {
+  // Show loading while checking auth
+  if (authLoading || (user && checkingRole)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <div className="flex flex-col items-center gap-3">
@@ -211,6 +214,11 @@ const Admin = () => {
         </div>
       </div>
     );
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (

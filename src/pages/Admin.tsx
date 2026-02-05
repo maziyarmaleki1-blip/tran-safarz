@@ -55,6 +55,9 @@ interface Reservation {
   price_range_min?: number | null;
   price_range_max?: number | null;
   customer_notes?: string | null;
+   // Starring and notes
+   is_starred?: boolean;
+   internal_notes?: string | null;
 }
 
 const Admin = () => {
@@ -183,6 +186,8 @@ const Admin = () => {
           assignee_name: assigneeName,
           assigned_employees: Array.isArray(item.assigned_employees) ? item.assigned_employees : [],
           pending_status_by_name: pendingStatusByName,
+           is_starred: item.is_starred || false,
+           internal_notes: item.internal_notes || null,
         });
       }
 

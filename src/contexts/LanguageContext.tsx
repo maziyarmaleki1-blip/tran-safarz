@@ -16,6 +16,7 @@ const translations: Translations = {
   contact: { fa: 'تماس با ما', en: 'Contact' },
   login: { fa: 'ورود', en: 'Login' },
   register: { fa: 'ثبت نام', en: 'Register' },
+  signUp: { fa: 'عضویت', en: 'Sign Up' },
   dashboard: { fa: 'داشبورد', en: 'Dashboard' },
   logout: { fa: 'خروج', en: 'Logout' },
   

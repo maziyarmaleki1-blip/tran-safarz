@@ -38,6 +38,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { RefundDialog } from './RefundDialog';
+import { TicketUploadDialog } from './TicketUploadDialog';
 
 interface Passenger {
   id: string;
@@ -98,6 +99,9 @@ interface Reservation {
    refund_method?: string | null;
    refund_by?: string | null;
    refund_at?: string | null;
+   // Ticket info
+   ticket_file_path?: string | null;
+   ticket_uploaded_at?: string | null;
 }
 
 interface Employee {
@@ -147,6 +151,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
    // Refund dialog
    const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
    const [refundReservation, setRefundReservation] = useState<Reservation | null>(null);
+ 
+  // Ticket upload dialog
+  const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
+  const [ticketReservation, setTicketReservation] = useState<Reservation | null>(null);
  
   // Status change confirmation
   const [pendingStatusLocal, setPendingStatusLocal] = useState<string | null>(null);
@@ -469,6 +477,12 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
      setIsRefundDialogOpen(true);
    };
    
+   // Open ticket upload dialog
+   const openTicketDialog = (reservation: Reservation) => {
+     setTicketReservation(reservation);
+     setIsTicketDialogOpen(true);
+   };
+ 
    // Export to Excel
    const exportToExcel = () => {
      const headers = ['کد رزرو', 'تاریخ رزرو', 'مبدأ', 'مقصد', 'تاریخ حرکت', 'بزرگسال', 'کودک', 'نوع سالن', 'وضعیت', 'یادداشت داخلی'];
@@ -944,6 +958,17 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                              {reservation.internal_notes ? 'sticky_note_2' : 'note_add'}
                            </span>
                          </Button>
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => openTicketDialog(reservation)}
+                           className="h-8 w-8 p-0"
+                           title={reservation.ticket_file_path ? 'بلیط آپلود شده' : 'آپلود بلیط'}
+                         >
+                           <span className={`material-symbols-outlined text-lg ${reservation.ticket_file_path ? 'text-success' : 'text-muted-foreground'}`}>
+                             {reservation.ticket_file_path ? 'task' : 'upload_file'}
+                           </span>
+                         </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1344,6 +1369,14 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
          onOpenChange={setIsRefundDialogOpen}
          reservation={refundReservation}
          onRefundComplete={onRefresh}
+       />
+       
+       {/* Ticket Upload Dialog */}
+       <TicketUploadDialog
+         open={isTicketDialogOpen}
+         onOpenChange={setIsTicketDialogOpen}
+         reservation={ticketReservation}
+         onUploadComplete={onRefresh}
        />
     </div>
   );

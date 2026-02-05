@@ -17,6 +17,8 @@ export interface Reservation {
   passengers: any;
   created_at: string;
   updated_at: string;
+  ticket_file_path?: string | null;
+  ticket_uploaded_at?: string | null;
 }
 
 export function useReservations() {

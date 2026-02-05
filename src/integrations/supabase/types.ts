@@ -75,6 +75,12 @@ export type Database = {
           price_range_max: number | null
           price_range_min: number | null
           private_compartment: boolean | null
+          refund_amount: number | null
+          refund_at: string | null
+          refund_by: string | null
+          refund_card_number: string | null
+          refund_method: string | null
+          refund_status: string | null
           reservation_code: string
           selected_time_slots: string[] | null
           selected_wagon_types: string[] | null
@@ -112,6 +118,12 @@ export type Database = {
           price_range_max?: number | null
           price_range_min?: number | null
           private_compartment?: boolean | null
+          refund_amount?: number | null
+          refund_at?: string | null
+          refund_by?: string | null
+          refund_card_number?: string | null
+          refund_method?: string | null
+          refund_status?: string | null
           reservation_code: string
           selected_time_slots?: string[] | null
           selected_wagon_types?: string[] | null
@@ -149,6 +161,12 @@ export type Database = {
           price_range_max?: number | null
           price_range_min?: number | null
           private_compartment?: boolean | null
+          refund_amount?: number | null
+          refund_at?: string | null
+          refund_by?: string | null
+          refund_card_number?: string | null
+          refund_method?: string | null
+          refund_status?: string | null
           reservation_code?: string
           selected_time_slots?: string[] | null
           selected_wagon_types?: string[] | null

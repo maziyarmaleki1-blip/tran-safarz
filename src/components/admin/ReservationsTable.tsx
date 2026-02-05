@@ -37,6 +37,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { RefundDialog } from './RefundDialog';
 
 interface Passenger {
   id: string;
@@ -91,6 +92,12 @@ interface Reservation {
    // Starring and notes
    is_starred?: boolean;
    internal_notes?: string | null;
+   // Refund info
+   refund_status?: string | null;
+   refund_amount?: number | null;
+   refund_method?: string | null;
+   refund_by?: string | null;
+   refund_at?: string | null;
 }
 
 interface Employee {
@@ -137,6 +144,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
    const [editingNotes, setEditingNotes] = useState<string>('');
    const [savingNotes, setSavingNotes] = useState(false);
    
+   // Refund dialog
+   const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
+   const [refundReservation, setRefundReservation] = useState<Reservation | null>(null);
+ 
   // Status change confirmation
   const [pendingStatusLocal, setPendingStatusLocal] = useState<string | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -451,6 +462,12 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
      setEditingNotes(reservation.internal_notes || '');
      setIsNotesDialogOpen(true);
    };
+    
+   // Open refund dialog
+   const openRefundDialog = (reservation: Reservation) => {
+     setRefundReservation(reservation);
+     setIsRefundDialogOpen(true);
+   };
    
    // Export to Excel
    const exportToExcel = () => {
@@ -663,6 +680,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                     <TableHead className="text-right">تعداد</TableHead>
                     <TableHead className="text-right">فیلترها</TableHead>
                     <TableHead className="text-right">وضعیت</TableHead>
+                    <TableHead className="text-right">بازگشت وجه</TableHead>
                     <TableHead className="text-right">تأییدکننده</TableHead>
                     <TableHead className="text-right">در حال پیگیری</TableHead>
                     <TableHead className="text-right">عملیات</TableHead>
@@ -800,6 +818,28 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(reservation.status)}</TableCell>
+                      <TableCell>
+                        {reservation.status === 'cancelled' && !reservation.refund_status && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1 text-success border-success/30 hover:bg-success/10"
+                            onClick={() => openRefundDialog(reservation)}
+                          >
+                            <span className="material-symbols-outlined text-sm">payments</span>
+                            بازگشت وجه
+                          </Button>
+                        )}
+                        {reservation.status === 'cancelled' && reservation.refund_status === 'completed' && (
+                          <div className="flex items-center gap-1 text-xs text-success">
+                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            برگشت شد
+                          </div>
+                        )}
+                        {reservation.status !== 'cancelled' && (
+                          <span className="text-muted-foreground text-xs">-</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {reservation.pending_status_by_name ? (
                           <div className="flex items-center gap-1 text-sm">
@@ -1297,6 +1337,14 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
            </div>
          </DialogContent>
        </Dialog>
+       
+       {/* Refund Dialog */}
+       <RefundDialog
+         open={isRefundDialogOpen}
+         onOpenChange={setIsRefundDialogOpen}
+         reservation={refundReservation}
+         onRefundComplete={onRefresh}
+       />
     </div>
   );
 };

@@ -58,6 +58,12 @@ interface Reservation {
    // Starring and notes
    is_starred?: boolean;
    internal_notes?: string | null;
+   // Refund info
+   refund_status?: string | null;
+   refund_amount?: number | null;
+   refund_method?: string | null;
+   refund_by?: string | null;
+   refund_at?: string | null;
 }
 
 const Admin = () => {
@@ -188,6 +194,11 @@ const Admin = () => {
           pending_status_by_name: pendingStatusByName,
            is_starred: item.is_starred || false,
            internal_notes: item.internal_notes || null,
+           refund_status: item.refund_status || null,
+           refund_amount: item.refund_amount || null,
+           refund_method: item.refund_method || null,
+           refund_by: item.refund_by || null,
+           refund_at: item.refund_at || null,
         });
       }
 

@@ -611,11 +611,24 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden p-0" dir="rtl">
           {/* Sticky Header */}
           <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-start justify-between">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <span className="material-symbols-outlined">visibility</span>
-                جزئیات رزرو
-              </DialogTitle>
+            <DialogHeader className="flex-1">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="flex items-center gap-2">
+                  <span className="material-symbols-outlined">visibility</span>
+                  جزئیات رزرو
+                </DialogTitle>
+                {/* Mobile number in header */}
+                {selectedReservation?.passengers?.[0]?.mobile && (
+                  <a 
+                    href={`tel:${selectedReservation.passengers[0].mobile}`}
+                    className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1.5 rounded-lg hover:bg-primary/20 transition-colors ml-4"
+                    dir="ltr"
+                  >
+                    <span className="material-symbols-outlined text-base">phone</span>
+                    <span className="font-medium text-sm">{selectedReservation.passengers[0].mobile}</span>
+                  </a>
+                )}
+              </div>
               <DialogDescription>کد رزرو: {selectedReservation?.reservation_code}</DialogDescription>
             </DialogHeader>
             <DialogClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">

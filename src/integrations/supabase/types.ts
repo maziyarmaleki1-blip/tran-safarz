@@ -88,6 +88,10 @@ export type Database = {
           selected_wagon_types: string[] | null
           status: string
           ticket_file_path: string | null
+          ticket_paid_at: string | null
+          ticket_payment_amount: number | null
+          ticket_payment_link: string | null
+          ticket_payment_status: string | null
           ticket_uploaded_at: string | null
           ticket_uploaded_by: string | null
           total_price: number
@@ -136,6 +140,10 @@ export type Database = {
           selected_wagon_types?: string[] | null
           status?: string
           ticket_file_path?: string | null
+          ticket_paid_at?: string | null
+          ticket_payment_amount?: number | null
+          ticket_payment_link?: string | null
+          ticket_payment_status?: string | null
           ticket_uploaded_at?: string | null
           ticket_uploaded_by?: string | null
           total_price: number
@@ -184,6 +192,10 @@ export type Database = {
           selected_wagon_types?: string[] | null
           status?: string
           ticket_file_path?: string | null
+          ticket_paid_at?: string | null
+          ticket_payment_amount?: number | null
+          ticket_payment_link?: string | null
+          ticket_payment_status?: string | null
           ticket_uploaded_at?: string | null
           ticket_uploaded_by?: string | null
           total_price?: number

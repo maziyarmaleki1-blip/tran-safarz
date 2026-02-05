@@ -4,6 +4,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import PassengerForm, { PassengerData, UserCredentials } from '@/components/PassengerForm';
 import heroTrain from '@/assets/hero-train.jpg';
 
+const trains: Record<number, { name: string; price: number }> = {
+  1: { name: 'فدک', price: 250000 },
+  2: { name: 'غزال', price: 320000 },
+  3: { name: 'پردیس', price: 450000 },
+  4: { name: 'سبز', price: 280000 },
+  5: { name: 'نور', price: 350000 },
+};
+
 const Booking = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -13,8 +21,13 @@ const Booking = () => {
   const passengers = parseInt(searchParams.get('passengers') || '1');
   const from = searchParams.get('from') || '';
   const to = searchParams.get('to') || '';
-  const trainId = searchParams.get('train') || searchParams.get('trains') || '1';
+  const trainId = parseInt(searchParams.get('train') || searchParams.get('trains') || '1');
   const foreignNational = searchParams.get('foreign') === 'true';
+  const dateParam = searchParams.get('date');
+
+  const train = trains[trainId] || trains[1];
+  const tripDate = dateParam ? new Date(dateParam) : new Date();
+  const totalPrice = train.price * passengers;
 
   const handleSubmit = (passengerData: PassengerData[], credentials: UserCredentials) => {
     sessionStorage.setItem('passengerData', JSON.stringify(passengerData));
@@ -47,6 +60,13 @@ const Booking = () => {
           <PassengerForm
             passengerCount={passengers}
             foreignNational={foreignNational}
+            tripInfo={{
+              from,
+              to,
+              date: tripDate,
+              trainName: train.name,
+              price: totalPrice,
+            }}
             onSubmit={handleSubmit}
             onBack={handleBack}
           />

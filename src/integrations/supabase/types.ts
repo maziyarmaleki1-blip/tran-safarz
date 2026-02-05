@@ -230,6 +230,131 @@ export type Database = {
         }
         Relationships: []
       }
+      service_fees: {
+        Row: {
+          amount: number
+          created_at: string | null
+          fee_type: string
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string | null
+          fee_type?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          fee_type?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      train_schedules: {
+        Row: {
+          arrival_time: string | null
+          available_seats: number | null
+          created_at: string | null
+          departure_date: string
+          departure_time: string | null
+          destination: string
+          duration: string | null
+          id: string
+          is_available: boolean | null
+          last_synced_at: string | null
+          origin: string
+          raja_price: number
+          train_id: string | null
+          updated_at: string | null
+          wagon_type: string | null
+        }
+        Insert: {
+          arrival_time?: string | null
+          available_seats?: number | null
+          created_at?: string | null
+          departure_date: string
+          departure_time?: string | null
+          destination: string
+          duration?: string | null
+          id?: string
+          is_available?: boolean | null
+          last_synced_at?: string | null
+          origin: string
+          raja_price?: number
+          train_id?: string | null
+          updated_at?: string | null
+          wagon_type?: string | null
+        }
+        Update: {
+          arrival_time?: string | null
+          available_seats?: number | null
+          created_at?: string | null
+          departure_date?: string
+          departure_time?: string | null
+          destination?: string
+          duration?: string | null
+          id?: string
+          is_available?: boolean | null
+          last_synced_at?: string | null
+          origin?: string
+          raja_price?: number
+          train_id?: string | null
+          updated_at?: string | null
+          wagon_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "train_schedules_train_id_fkey"
+            columns: ["train_id"]
+            isOneToOne: false
+            referencedRelation: "trains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trains: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          train_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          train_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          train_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

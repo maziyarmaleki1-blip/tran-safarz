@@ -194,6 +194,42 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_passengers: {
+        Row: {
+          birth_date: string
+          created_at: string
+          first_name: string
+          id: string
+          is_foreign: boolean | null
+          last_name: string
+          national_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string
+          first_name: string
+          id?: string
+          is_foreign?: boolean | null
+          last_name: string
+          national_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string
+          first_name?: string
+          id?: string
+          is_foreign?: boolean | null
+          last_name?: string
+          national_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

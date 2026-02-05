@@ -82,6 +82,7 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [hasExistingAccount, setHasExistingAccount] = useState(false);
   const [acceptRules, setAcceptRules] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState<boolean[]>(
     Array(passengerCount).fill(false)
@@ -175,7 +176,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
         return;
       }
 
-      if (password !== confirmPassword) {
+      // Only check confirm password if registering new account
+      if (!hasExistingAccount && password !== confirmPassword) {
         toast({
           title: isRTL ? 'خطا' : 'Error',
           description: isRTL ? 'رمز عبور و تکرار آن مطابقت ندارند' : 'Passwords do not match',
@@ -433,16 +435,28 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
           <div className="px-4 sm:px-8 py-4 sm:py-6 border-t border-white/30 bg-white/20">
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">
+                {/* Existing account toggle */}
+                <div className="flex items-center gap-3 mb-4">
+                  <Checkbox
+                    id="has-account"
+                    checked={hasExistingAccount}
+                    onCheckedChange={(checked) => setHasExistingAccount(checked === true)}
+                  />
+                  <label htmlFor="has-account" className="text-sm text-muted-foreground cursor-pointer">
+                    {isRTL ? 'قبلاً ثبت‌نام کرده‌ام (ورود به حساب موجود)' : 'I already have an account (login)'}
+                  </label>
+                </div>
+
                 <div className="flex items-center gap-2 mb-3 sm:mb-4 text-muted-foreground justify-end">
                   <p className="text-xs sm:text-sm">
-                    {isRTL 
-                      ? 'با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود'
-                      : 'An account will be created for you upon reservation'}
+                    {hasExistingAccount 
+                      ? (isRTL ? 'شماره موبایل و رمز عبور حساب خود را وارد کنید' : 'Enter your account mobile and password')
+                      : (isRTL ? 'با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود' : 'An account will be created for you upon reservation')}
                   </p>
                   <Info className="size-4 text-sky-500 shrink-0" />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div className={`grid grid-cols-1 ${hasExistingAccount ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3'} gap-3 sm:gap-4`}>
                   <div className="space-y-2">
                     <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
                       {getFieldLabel('mobile')}
@@ -470,17 +484,20 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getFieldLabel('confirmPassword')}
-                    </label>
-                    <Input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={cn("h-10 text-sm bg-sky-50/80 border-sky-100", isRTL ? 'text-right' : 'text-left')}
-                    />
-                  </div>
+                  {/* Only show confirm password for new registrations */}
+                  {!hasExistingAccount && (
+                    <div className="space-y-2">
+                      <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {getFieldLabel('confirmPassword')}
+                      </label>
+                      <Input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className={cn("h-10 text-sm bg-sky-50/80 border-sky-100", isRTL ? 'text-right' : 'text-left')}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

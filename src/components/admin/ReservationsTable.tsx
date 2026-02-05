@@ -829,17 +829,13 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-muted-foreground text-base">badge</span>
-                            <span className="text-muted-foreground min-w-[80px]">نام کامل:</span>
-                            <span className="font-medium">
-                              {passenger.firstName} {passenger.lastName}
-                            </span>
+                            <span className="text-muted-foreground min-w-[80px]">نام:</span>
+                            <span className="font-medium">{passenger.firstName}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-muted-foreground text-base">
-                              phone
-                            </span>
-                            <span className="text-muted-foreground min-w-[80px]">موبایل:</span>
-                            <span className="font-medium text-primary" dir="ltr">{passenger.mobile || '-'}</span>
+                            <span className="material-symbols-outlined text-muted-foreground text-base">badge</span>
+                            <span className="text-muted-foreground min-w-[80px]">نام خانوادگی:</span>
+                            <span className="font-medium">{passenger.lastName}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-muted-foreground text-base">

@@ -21,7 +21,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, loading: profileLoading, updateProfile, fetchProfile } = useProfile();
-  const { reservations, loading: reservationsLoading } = useReservations();
+  const { reservations, loading: reservationsLoading, fetchReservations } = useReservations();
   const { transactions, loading: transactionsLoading, fetchTransactions } = useTransactions();
   const [activeTab, setActiveTab] = useState('reservations');
 
@@ -115,7 +115,7 @@ const Dashboard = () => {
       <main className="flex-1 lg:mr-64 p-6 pt-20 lg:pt-6">
         <div className="max-w-4xl mx-auto">
           {activeTab === 'reservations' && (
-            <ReservationsTab reservations={reservations} loading={reservationsLoading} />
+            <ReservationsTab reservations={reservations} loading={reservationsLoading} onRefresh={fetchReservations} />
           )}
 
           {activeTab === 'profile' && (

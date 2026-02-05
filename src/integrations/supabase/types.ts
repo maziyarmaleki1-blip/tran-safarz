@@ -53,6 +53,8 @@ export type Database = {
           assigned_at: string | null
           assigned_employees: string[] | null
           assigned_to: string | null
+          cancel_requested: boolean | null
+          cancel_requested_at: string | null
           children_count: number | null
           confirmed_at: string | null
           confirmed_by: string | null
@@ -99,6 +101,8 @@ export type Database = {
           assigned_at?: string | null
           assigned_employees?: string[] | null
           assigned_to?: string | null
+          cancel_requested?: boolean | null
+          cancel_requested_at?: string | null
           children_count?: number | null
           confirmed_at?: string | null
           confirmed_by?: string | null
@@ -145,6 +149,8 @@ export type Database = {
           assigned_at?: string | null
           assigned_employees?: string[] | null
           assigned_to?: string | null
+          cancel_requested?: boolean | null
+          cancel_requested_at?: string | null
           children_count?: number | null
           confirmed_at?: string | null
           confirmed_by?: string | null

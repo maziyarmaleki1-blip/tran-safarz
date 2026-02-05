@@ -19,6 +19,17 @@ export interface Reservation {
   updated_at: string;
   ticket_file_path?: string | null;
   ticket_uploaded_at?: string | null;
+  // Refund info
+  refund_status?: string | null;
+  refund_amount?: number | null;
+  refund_method?: string | null;
+  refund_at?: string | null;
+  // Passenger breakdown
+  adults_count?: number | null;
+  children_count?: number | null;
+  // Cancel request
+  cancel_requested?: boolean | null;
+  cancel_requested_at?: string | null;
 }
 
 export function useReservations() {

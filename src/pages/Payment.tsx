@@ -88,6 +88,9 @@ const Payment = () => {
           customer_notes: selectedFilters?.customerNotes || null,
           private_compartment: selectedFilters?.privateCompartment || false,
           foreign_national: selectedFilters?.foreignNational || false,
+          passenger_type: selectedFilters?.passengerType || 'regular',
+          adults_count: selectedFilters?.adultsCount || 1,
+          children_count: selectedFilters?.childrenCount || 0,
         });
 
       if (reservationError) throw reservationError;

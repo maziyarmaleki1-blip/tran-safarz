@@ -49,9 +49,11 @@ export type Database = {
       }
       reservations: {
         Row: {
+          adults_count: number | null
           assigned_at: string | null
           assigned_employees: string[] | null
           assigned_to: string | null
+          children_count: number | null
           confirmed_at: string | null
           confirmed_by: string | null
           created_at: string
@@ -63,6 +65,7 @@ export type Database = {
           id: string
           origin: string
           passenger_count: number | null
+          passenger_type: string | null
           passengers: Json | null
           pending_status: string | null
           pending_status_at: string | null
@@ -81,9 +84,11 @@ export type Database = {
           wagon_type: string | null
         }
         Insert: {
+          adults_count?: number | null
           assigned_at?: string | null
           assigned_employees?: string[] | null
           assigned_to?: string | null
+          children_count?: number | null
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
@@ -95,6 +100,7 @@ export type Database = {
           id?: string
           origin: string
           passenger_count?: number | null
+          passenger_type?: string | null
           passengers?: Json | null
           pending_status?: string | null
           pending_status_at?: string | null
@@ -113,9 +119,11 @@ export type Database = {
           wagon_type?: string | null
         }
         Update: {
+          adults_count?: number | null
           assigned_at?: string | null
           assigned_employees?: string[] | null
           assigned_to?: string | null
+          children_count?: number | null
           confirmed_at?: string | null
           confirmed_by?: string | null
           created_at?: string
@@ -127,6 +135,7 @@ export type Database = {
           id?: string
           origin?: string
           passenger_count?: number | null
+          passenger_type?: string | null
           passengers?: Json | null
           pending_status?: string | null
           pending_status_at?: string | null

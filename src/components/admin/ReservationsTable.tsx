@@ -377,6 +377,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                     <TableHead className="text-right">تاریخ رزرو</TableHead>
                     <TableHead className="text-right">مسیر</TableHead>
                     <TableHead className="text-right">تاریخ حرکت</TableHead>
+                    <TableHead className="text-right">تعداد</TableHead>
                     <TableHead className="text-right">فیلترها</TableHead>
                     <TableHead className="text-right">وضعیت</TableHead>
                     <TableHead className="text-right">تأییدکننده</TableHead>
@@ -401,6 +402,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                       </TableCell>
                       <TableCell className="text-sm">
                         {formatDate(reservation.departure_date)}
+                      </TableCell>
+                      <TableCell className="text-sm font-medium">
+                        <span className="text-primary">{reservation.adults_count || 1}ب</span>
+                        <span className="text-muted-foreground">{reservation.children_count || 0}خ</span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">

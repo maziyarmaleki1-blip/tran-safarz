@@ -74,6 +74,9 @@ interface Reservation {
   price_range_min?: number | null;
   price_range_max?: number | null;
   customer_notes?: string | null;
+  // Additional options
+  private_compartment?: boolean;
+  foreign_national?: boolean;
 }
 
 interface Employee {
@@ -606,47 +609,56 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
 
           {selectedReservation && (
             <div className="space-y-6">
-              {/* Section 1: Route Info - مبدا به مقصد */}
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
+              {/* Section 1: Summary Info - مشخصات کلی */}
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-4">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary">route</span>
+                    <span className="material-symbols-outlined text-primary">info</span>
                   </div>
-                  <h3 className="font-bold text-lg">مسیر سفر</h3>
+                  <h3 className="font-bold text-lg">مشخصات رزرو</h3>
                 </div>
-                <div className="flex items-center gap-4 text-lg">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-muted-foreground">location_on</span>
-                    <span className="font-bold text-primary">{getCityName(selectedReservation.origin)}</span>
-                  </div>
-                  <span className="material-symbols-outlined text-xl text-muted-foreground">arrow_forward</span>
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-muted-foreground">flag</span>
-                    <span className="font-bold text-primary">{getCityName(selectedReservation.destination)}</span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Section 2: Departure Date - تاریخ حرکت */}
-              <div className="p-4 bg-success/5 border border-success/20 rounded-xl">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-success">calendar_month</span>
-                  </div>
-                  <h3 className="font-bold text-lg">تاریخ حرکت</h3>
+                {/* Row 1: Route */}
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">route</span>
+                  <span className="text-muted-foreground">مسیر:</span>
+                  <span className="font-bold text-lg">
+                    {getCityName(selectedReservation.origin)} → {getCityName(selectedReservation.destination)}
+                  </span>
                 </div>
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-muted-foreground">event</span>
-                    <span className="font-bold text-lg">{formatDate(selectedReservation.departure_date)}</span>
-                  </div>
-                  {selectedReservation.departure_time && (
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-muted-foreground">schedule</span>
-                      <span className="font-medium">{selectedReservation.departure_time}</span>
+
+                {/* Row 2: Departure Date */}
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">calendar_month</span>
+                  <span className="text-muted-foreground">تاریخ حرکت:</span>
+                  <span className="font-bold">{formatDate(selectedReservation.departure_date)}</span>
+                </div>
+
+                {/* Row 3: Passenger Count */}
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">group</span>
+                  <span className="text-muted-foreground">تعداد مسافران:</span>
+                  <span className="font-bold">{selectedReservation.passenger_count || selectedReservation.passengers?.length || 0} نفر</span>
+                </div>
+
+                {/* Row 4: Special Options */}
+                <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-border/50">
+                  {selectedReservation.private_compartment && (
+                    <div className="flex items-center gap-2 bg-success/10 text-success px-3 py-1.5 rounded-lg">
+                      <span className="material-symbols-outlined text-base">check_circle</span>
+                      <span className="font-medium text-sm">کوپه دربست</span>
                     </div>
                   )}
-                </div>
+                  {selectedReservation.foreign_national && (
+                    <div className="flex items-center gap-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg">
+                      <span className="material-symbols-outlined text-base">check_circle</span>
+                      <span className="font-medium text-sm">اتباع خارجی</span>
+                    </div>
+                  )}
+                  {!selectedReservation.private_compartment && !selectedReservation.foreign_national && (
+                    <span className="text-sm text-muted-foreground">بدون گزینه خاص</span>
+                  )}
+                  </div>
               </div>
 
               {/* Section 3: Applied Filters - فیلترهای اعمالی */}

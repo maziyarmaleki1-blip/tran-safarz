@@ -1,74 +1,35 @@
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { Reservation } from '@/hooks/useReservations';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useState } from 'react';
-
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Reservation } from '@/hooks/useReservations';
+import { ReservationCard } from './ReservationCard';
 
 interface ReservationsTabProps {
   reservations: Reservation[];
   loading: boolean;
+  onRefresh: () => void;
 }
 
-export function ReservationsTab({ reservations, loading }: ReservationsTabProps) {
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
- 
-  const getStatusBadge = (status: string) => {
-    const styles = {
-      confirmed: 'bg-success/10 text-success border-success/20',
-      pending: 'bg-gold/10 text-gold-dark border-gold/20',
-      cancelled: 'bg-destructive/10 text-destructive border-destructive/20',
-    };
-    const labels = { confirmed: 'تأیید شده', pending: 'در انتظار', cancelled: 'لغو شده' };
-    return <Badge variant="outline" className={styles[status as keyof typeof styles]}>{labels[status as keyof typeof labels]}</Badge>;
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('fa-IR').format(date);
-  };
-
-  const downloadTicket = async (reservation: Reservation) => {
-    if (!reservation.ticket_file_path) {
-      toast.error('بلیط هنوز آپلود نشده است');
-      return;
-    }
- 
-    try {
-      setDownloadingId(reservation.id);
-      
-      const { data, error } = await supabase.storage
-        .from('tickets')
-        .download(reservation.ticket_file_path);
- 
-      if (error) throw error;
- 
-      // Create download link
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ticket-${reservation.reservation_code}.${reservation.ticket_file_path.split('.').pop()}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
- 
-      toast.success('بلیط دانلود شد');
-    } catch (error) {
-      console.error('Error downloading ticket:', error);
-      toast.error('خطا در دانلود بلیط');
-    } finally {
-      setDownloadingId(null);
-    }
-  };
- 
+export function ReservationsTab({ reservations, loading, onRefresh }: ReservationsTabProps) {
+  const [activeTab, setActiveTab] = useState('upcoming');
+  
+  // Split reservations into upcoming and past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const upcomingReservations = reservations.filter(r => {
+    const departureDate = new Date(r.departure_date);
+    departureDate.setHours(0, 0, 0, 0);
+    return departureDate >= today && r.status !== 'cancelled';
+  });
+  
+  const pastReservations = reservations.filter(r => {
+    const departureDate = new Date(r.departure_date);
+    departureDate.setHours(0, 0, 0, 0);
+    return departureDate < today || r.status === 'cancelled';
+  });
+  
   if (loading) {
     return (
       <div className="space-y-4">
@@ -102,48 +63,56 @@ export function ReservationsTab({ reservations, loading }: ReservationsTabProps)
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold mb-6">رزروهای من</h1>
-      {reservations.map((res) => (
-        <Card key={res.id} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-primary">confirmation_number</span>
-          </div>
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-            <div><span className="text-muted-foreground">کد: </span>{res.reservation_code}</div>
-            <div><span className="text-muted-foreground">مسیر: </span>{cities[res.origin] || res.origin} → {cities[res.destination] || res.destination}</div>
-            <div><span className="text-muted-foreground">تاریخ: </span>{formatDate(res.departure_date)}</div>
-            <div>{getStatusBadge(res.status)}</div>
-          </div>
-          {/* Download ticket button */}
-          {res.status === 'confirmed' && res.ticket_file_path && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 text-success border-success/30 hover:bg-success/10 shrink-0"
-              onClick={() => downloadTicket(res)}
-              disabled={downloadingId === res.id}
-            >
-              {downloadingId === res.id ? (
-                <>
-                  <span className="material-symbols-outlined animate-spin text-sm">refresh</span>
-                  در حال دانلود...
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-sm">download</span>
-                  دریافت بلیط
-                </>
-              )}
-            </Button>
+      <h1 className="text-2xl font-bold mb-2">رزروهای من</h1>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger value="upcoming" className="gap-2">
+            <span className="material-symbols-outlined text-lg">upcoming</span>
+            سفرهای پیش‌رو
+            {upcomingReservations.length > 0 && (
+              <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
+                {upcomingReservations.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="history" className="gap-2">
+            <span className="material-symbols-outlined text-lg">history</span>
+            تاریخچه سفرها
+            {pastReservations.length > 0 && (
+              <span className="bg-muted-foreground/20 text-muted-foreground text-xs px-2 py-0.5 rounded-full">
+                {pastReservations.length}
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="upcoming" className="space-y-4">
+          {upcomingReservations.length === 0 ? (
+            <Card className="p-8 text-center">
+              <span className="material-symbols-outlined text-4xl text-muted-foreground mb-4">event_available</span>
+              <p className="text-muted-foreground">سفری در برنامه ندارید</p>
+            </Card>
+          ) : (
+            upcomingReservations.map((res) => (
+              <ReservationCard key={res.id} reservation={res} onRefresh={onRefresh} />
+            ))
           )}
-          {res.status === 'confirmed' && !res.ticket_file_path && (
-            <div className="text-xs text-muted-foreground flex items-center gap-1 shrink-0">
-              <span className="material-symbols-outlined text-sm">hourglass_empty</span>
-              بلیط در حال آماده‌سازی
-            </div>
+        </TabsContent>
+        
+        <TabsContent value="history" className="space-y-4">
+          {pastReservations.length === 0 ? (
+            <Card className="p-8 text-center">
+              <span className="material-symbols-outlined text-4xl text-muted-foreground mb-4">history</span>
+              <p className="text-muted-foreground">سفری در تاریخچه ندارید</p>
+            </Card>
+          ) : (
+            pastReservations.map((res) => (
+              <ReservationCard key={res.id} reservation={res} onRefresh={onRefresh} />
+            ))
           )}
-        </Card>
-      ))}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

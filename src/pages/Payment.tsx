@@ -86,6 +86,8 @@ const Payment = () => {
           price_range_min: selectedFilters?.priceRangeMin || null,
           price_range_max: selectedFilters?.priceRangeMax || null,
           customer_notes: selectedFilters?.customerNotes || null,
+          private_compartment: selectedFilters?.privateCompartment || false,
+          foreign_national: selectedFilters?.foreignNational || false,
         });
 
       if (reservationError) throw reservationError;

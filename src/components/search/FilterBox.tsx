@@ -22,6 +22,8 @@ export interface FilterState {
   departureTimeSlots: string[];
   compartmentTypes: string[];
   customerNotes: string;
+  privateCompartment: boolean;
+  foreignNational: boolean;
 }
 
 const compartmentOptions = [
@@ -46,6 +48,8 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>([]);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
   const [customerNotes, setCustomerNotes] = useState<string>('');
+  const [privateCompartment, setPrivateCompartment] = useState(false);
+  const [foreignNational, setForeignNational] = useState(false);
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fa-IR');
@@ -57,6 +61,8 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
       departureTimeSlots,
       compartmentTypes,
       customerNotes,
+      privateCompartment,
+      foreignNational,
       ...newFilters,
     };
     onFilterChange?.(filters);
@@ -94,11 +100,15 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
       departureTimeSlots: [],
       compartmentTypes: [],
       customerNotes: '',
+      privateCompartment: false,
+      foreignNational: false,
     };
     setPriceRange(defaultFilters.priceRange);
     setDepartureTimeSlots(defaultFilters.departureTimeSlots);
     setCompartmentTypes(defaultFilters.compartmentTypes);
     setCustomerNotes(defaultFilters.customerNotes);
+    setPrivateCompartment(false);
+    setForeignNational(false);
     onFilterChange?.(defaultFilters);
   };
 
@@ -196,11 +206,39 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
         </AccordionItem>
 
         {/* Customer Notes */}
-        <AccordionItem value="notes" className="border-none">
+        <AccordionItem value="options" className="border-none">
           <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
-            {isRtl ? 'توضیحات خاص' : 'Special Notes'}
+            {isRtl ? 'گزینه‌های اضافی' : 'Additional Options'}
           </AccordionTrigger>
           <AccordionContent className="pt-2 pb-4">
+            {/* Checkboxes */}
+            <div className="space-y-3 mb-4">
+              <label className="flex items-center justify-between cursor-pointer text-sm">
+                <span>{isRtl ? 'کوپه دربست' : 'Private Compartment'}</span>
+                <Checkbox
+                  checked={privateCompartment}
+                  onCheckedChange={(checked) => {
+                    setPrivateCompartment(!!checked);
+                    notifyChange({ privateCompartment: !!checked });
+                  }}
+                />
+              </label>
+              <label className="flex items-center justify-between cursor-pointer text-sm">
+                <span>{isRtl ? 'اتباع خارجی' : 'Foreign National'}</span>
+                <Checkbox
+                  checked={foreignNational}
+                  onCheckedChange={(checked) => {
+                    setForeignNational(!!checked);
+                    notifyChange({ foreignNational: !!checked });
+                  }}
+                />
+              </label>
+            </div>
+
+            {/* Notes textarea */}
+            <p className="text-xs text-muted-foreground mb-2">
+              {isRtl ? 'توضیحات خاص' : 'Special Notes'}
+            </p>
             <Textarea
               placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
               value={customerNotes}

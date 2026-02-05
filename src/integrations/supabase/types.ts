@@ -59,6 +59,7 @@ export type Database = {
           departure_date: string
           departure_time: string | null
           destination: string
+          foreign_national: boolean | null
           id: string
           origin: string
           passenger_count: number | null
@@ -68,6 +69,7 @@ export type Database = {
           pending_status_by: string | null
           price_range_max: number | null
           price_range_min: number | null
+          private_compartment: boolean | null
           reservation_code: string
           selected_time_slots: string[] | null
           selected_wagon_types: string[] | null
@@ -89,6 +91,7 @@ export type Database = {
           departure_date: string
           departure_time?: string | null
           destination: string
+          foreign_national?: boolean | null
           id?: string
           origin: string
           passenger_count?: number | null
@@ -98,6 +101,7 @@ export type Database = {
           pending_status_by?: string | null
           price_range_max?: number | null
           price_range_min?: number | null
+          private_compartment?: boolean | null
           reservation_code: string
           selected_time_slots?: string[] | null
           selected_wagon_types?: string[] | null
@@ -119,6 +123,7 @@ export type Database = {
           departure_date?: string
           departure_time?: string | null
           destination?: string
+          foreign_national?: boolean | null
           id?: string
           origin?: string
           passenger_count?: number | null
@@ -128,6 +133,7 @@ export type Database = {
           pending_status_by?: string | null
           price_range_max?: number | null
           price_range_min?: number | null
+          private_compartment?: boolean | null
           reservation_code?: string
           selected_time_slots?: string[] | null
           selected_wagon_types?: string[] | null

@@ -52,6 +52,8 @@ const SearchResults = () => {
     departureTimeSlots: [],
     compartmentTypes: [],
     customerNotes: '',
+    privateCompartment: false,
+    foreignNational: false,
   });
 
   const from = searchParams.get('from') || 'tehran';
@@ -114,6 +116,8 @@ const SearchResults = () => {
       priceRangeMin: filters.priceRange[0],
       priceRangeMax: filters.priceRange[1],
       customerNotes: filters.customerNotes,
+      privateCompartment: filters.privateCompartment,
+      foreignNational: filters.foreignNational,
     }));
     
     // Navigate to booking page with search params

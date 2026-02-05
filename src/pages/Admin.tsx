@@ -67,6 +67,9 @@ interface Reservation {
    // Ticket info
    ticket_file_path?: string | null;
    ticket_uploaded_at?: string | null;
+   // Cancel request
+   cancel_requested?: boolean | null;
+   cancel_requested_at?: string | null;
 }
 
 const Admin = () => {
@@ -204,6 +207,8 @@ const Admin = () => {
            refund_at: item.refund_at || null,
            ticket_file_path: item.ticket_file_path || null,
            ticket_uploaded_at: item.ticket_uploaded_at || null,
+           cancel_requested: item.cancel_requested || false,
+           cancel_requested_at: item.cancel_requested_at || null,
         });
       }
 

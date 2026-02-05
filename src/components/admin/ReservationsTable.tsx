@@ -102,6 +102,9 @@ interface Reservation {
    // Ticket info
    ticket_file_path?: string | null;
    ticket_uploaded_at?: string | null;
+   // Cancel request
+   cancel_requested?: boolean | null;
+   cancel_requested_at?: string | null;
 }
 
 interface Employee {
@@ -138,6 +141,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
    const [filterAssignedEmployee, setFilterAssignedEmployee] = useState<string>('all');
    const [filterDateRange, setFilterDateRange] = useState<string>('all');
    const [filterStarred, setFilterStarred] = useState<string>('all');
+   const [filterCancelRequest, setFilterCancelRequest] = useState<string>('all');
    const [sortBy, setSortBy] = useState<string>('created_at_desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -396,7 +400,12 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
        (filterStarred === 'starred' && r.is_starred) ||
        (filterStarred === 'unstarred' && !r.is_starred);
      
-     return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch && matchesDateRange && matchesStarred;
+     // Cancel request filter
+     const matchesCancelRequest = filterCancelRequest === 'all' ||
+       (filterCancelRequest === 'requested' && r.cancel_requested && r.status !== 'cancelled') ||
+       (filterCancelRequest === 'none' && !r.cancel_requested);
+     
+     return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch && matchesDateRange && matchesStarred && matchesCancelRequest;
    });
    
    // Sorting
@@ -591,6 +600,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                    setFilterAssignedEmployee('all');
                    setFilterDateRange('all');
                    setFilterStarred('all');
+                   setFilterCancelRequest('all');
                    setSearchQuery('');
                  }}
                  className="h-9 text-destructive hover:text-destructive/80 gap-1"
@@ -622,6 +632,18 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                    <SelectItem value="all">همه</SelectItem>
                    <SelectItem value="starred">⭐ ستاره‌دار</SelectItem>
                    <SelectItem value="unstarred">بدون ستاره</SelectItem>
+                 </SelectContent>
+               </Select>
+
+               {/* درخواست لغو */}
+               <Select value={filterCancelRequest} onValueChange={setFilterCancelRequest}>
+                 <SelectTrigger className="w-[160px] h-9">
+                   <SelectValue placeholder="درخواست لغو" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه</SelectItem>
+                   <SelectItem value="requested">⚠️ درخواست لغو</SelectItem>
+                   <SelectItem value="none">بدون درخواست</SelectItem>
                  </SelectContent>
                </Select>
                </div>
@@ -831,7 +853,17 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                         </Popover>
                         </div>
                       </TableCell>
-                      <TableCell>{getStatusBadge(reservation.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          {getStatusBadge(reservation.status)}
+                          {reservation.cancel_requested && reservation.status !== 'cancelled' && (
+                            <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 text-[10px] gap-1">
+                              <span className="material-symbols-outlined text-xs">warning</span>
+                              درخواست لغو
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {/* Show ticket upload for confirmed, refund for cancelled */}
                         {reservation.status === 'confirmed' ? (

@@ -39,6 +39,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { RefundDialog } from './RefundDialog';
 import { TicketUploadDialog } from './TicketUploadDialog';
+import { TicketPaymentDialog } from './TicketPaymentDialog';
 
 interface Passenger {
   id: string;
@@ -105,6 +106,11 @@ interface Reservation {
    // Cancel request
    cancel_requested?: boolean | null;
    cancel_requested_at?: string | null;
+   // Ticket payment
+   ticket_payment_status?: string | null;
+   ticket_payment_amount?: number | null;
+   ticket_payment_link?: string | null;
+   ticket_paid_at?: string | null;
 }
 
 interface Employee {
@@ -160,6 +166,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
   const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
   const [ticketReservation, setTicketReservation] = useState<Reservation | null>(null);
  
+  // Ticket payment dialog
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [paymentReservation, setPaymentReservation] = useState<Reservation | null>(null);
+
   // Status change confirmation
   const [pendingStatusLocal, setPendingStatusLocal] = useState<string | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -490,6 +500,12 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
    const openTicketDialog = (reservation: Reservation) => {
      setTicketReservation(reservation);
      setIsTicketDialogOpen(true);
+   };
+
+   // Open ticket payment dialog
+   const openPaymentDialog = (reservation: Reservation) => {
+     setPaymentReservation(reservation);
+     setIsPaymentDialogOpen(true);
    };
  
    // Export to Excel
@@ -865,8 +881,24 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                         </div>
                       </TableCell>
                       <TableCell>
-                        {/* Show ticket upload for confirmed, refund for cancelled */}
-                        {reservation.status === 'confirmed' ? (
+                        {/* Pending: show payment button, Confirmed: show ticket upload, Cancelled: show refund */}
+                        {reservation.status === 'pending' ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={`h-7 text-xs gap-1 ${
+                              reservation.ticket_payment_status === 'paid' 
+                                ? 'text-success border-success/30 hover:bg-success/10' 
+                                : 'text-primary border-primary/30 hover:bg-primary/10'
+                            }`}
+                            onClick={() => openPaymentDialog(reservation)}
+                          >
+                            <span className="material-symbols-outlined text-sm">
+                              {reservation.ticket_payment_status === 'paid' ? 'check_circle' : 'payments'}
+                            </span>
+                            {reservation.ticket_payment_status === 'paid' ? 'پرداخت شده' : 'پرداخت وجه'}
+                          </Button>
+                        ) : reservation.status === 'confirmed' ? (
                           <Button
                             variant="outline"
                             size="sm"
@@ -882,7 +914,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-7 text-xs gap-1 text-orange-600 border-orange-300 hover:bg-orange-50"
+                            className="h-7 text-xs gap-1 text-destructive border-destructive/30 hover:bg-destructive/10"
                             onClick={() => openRefundDialog(reservation)}
                           >
                             <span className="material-symbols-outlined text-sm">payments</span>
@@ -1403,13 +1435,21 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
          onRefundComplete={onRefresh}
        />
        
-       {/* Ticket Upload Dialog */}
-       <TicketUploadDialog
-         open={isTicketDialogOpen}
-         onOpenChange={setIsTicketDialogOpen}
-         reservation={ticketReservation}
-         onUploadComplete={onRefresh}
-       />
+        {/* Ticket Upload Dialog */}
+        <TicketUploadDialog
+          open={isTicketDialogOpen}
+          onOpenChange={setIsTicketDialogOpen}
+          reservation={ticketReservation}
+          onUploadComplete={onRefresh}
+        />
+
+        {/* Ticket Payment Dialog */}
+        <TicketPaymentDialog
+          open={isPaymentDialogOpen}
+          onOpenChange={setIsPaymentDialogOpen}
+          reservation={paymentReservation}
+          onSuccess={onRefresh}
+        />
     </div>
   );
 };

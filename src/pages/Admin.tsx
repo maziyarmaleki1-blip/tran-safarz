@@ -71,6 +71,11 @@ interface Reservation {
    // Cancel request
    cancel_requested?: boolean | null;
    cancel_requested_at?: string | null;
+   // Ticket payment
+   ticket_payment_status?: string | null;
+   ticket_payment_amount?: number | null;
+   ticket_payment_link?: string | null;
+   ticket_paid_at?: string | null;
 }
 
 const Admin = () => {
@@ -210,6 +215,10 @@ const Admin = () => {
            ticket_uploaded_at: item.ticket_uploaded_at || null,
            cancel_requested: item.cancel_requested || false,
            cancel_requested_at: item.cancel_requested_at || null,
+           ticket_payment_status: item.ticket_payment_status || 'pending',
+           ticket_payment_amount: item.ticket_payment_amount || null,
+           ticket_payment_link: item.ticket_payment_link || null,
+           ticket_paid_at: item.ticket_paid_at || null,
         });
       }
 

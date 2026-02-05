@@ -85,6 +85,9 @@ export type Database = {
           selected_time_slots: string[] | null
           selected_wagon_types: string[] | null
           status: string
+          ticket_file_path: string | null
+          ticket_uploaded_at: string | null
+          ticket_uploaded_by: string | null
           total_price: number
           train_name: string | null
           updated_at: string
@@ -128,6 +131,9 @@ export type Database = {
           selected_time_slots?: string[] | null
           selected_wagon_types?: string[] | null
           status?: string
+          ticket_file_path?: string | null
+          ticket_uploaded_at?: string | null
+          ticket_uploaded_by?: string | null
           total_price: number
           train_name?: string | null
           updated_at?: string
@@ -171,6 +177,9 @@ export type Database = {
           selected_time_slots?: string[] | null
           selected_wagon_types?: string[] | null
           status?: string
+          ticket_file_path?: string | null
+          ticket_uploaded_at?: string | null
+          ticket_uploaded_by?: string | null
           total_price?: number
           train_name?: string | null
           updated_at?: string

@@ -64,6 +64,9 @@ interface Reservation {
    refund_method?: string | null;
    refund_by?: string | null;
    refund_at?: string | null;
+   // Ticket info
+   ticket_file_path?: string | null;
+   ticket_uploaded_at?: string | null;
 }
 
 const Admin = () => {
@@ -199,6 +202,8 @@ const Admin = () => {
            refund_method: item.refund_method || null,
            refund_by: item.refund_by || null,
            refund_at: item.refund_at || null,
+           ticket_file_path: item.ticket_file_path || null,
+           ticket_uploaded_at: item.ticket_uploaded_at || null,
         });
       }
 

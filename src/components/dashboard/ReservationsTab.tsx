@@ -1,7 +1,11 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { Reservation } from '@/hooks/useReservations';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 const cities: Record<string, string> = {
   tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
@@ -14,6 +18,8 @@ interface ReservationsTabProps {
 }
 
 export function ReservationsTab({ reservations, loading }: ReservationsTabProps) {
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+ 
   const getStatusBadge = (status: string) => {
     const styles = {
       confirmed: 'bg-success/10 text-success border-success/20',
@@ -29,6 +35,40 @@ export function ReservationsTab({ reservations, loading }: ReservationsTabProps)
     return new Intl.DateTimeFormat('fa-IR').format(date);
   };
 
+  const downloadTicket = async (reservation: Reservation) => {
+    if (!reservation.ticket_file_path) {
+      toast.error('بلیط هنوز آپلود نشده است');
+      return;
+    }
+ 
+    try {
+      setDownloadingId(reservation.id);
+      
+      const { data, error } = await supabase.storage
+        .from('tickets')
+        .download(reservation.ticket_file_path);
+ 
+      if (error) throw error;
+ 
+      // Create download link
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ticket-${reservation.reservation_code}.${reservation.ticket_file_path.split('.').pop()}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+ 
+      toast.success('بلیط دانلود شد');
+    } catch (error) {
+      console.error('Error downloading ticket:', error);
+      toast.error('خطا در دانلود بلیط');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+ 
   if (loading) {
     return (
       <div className="space-y-4">
@@ -74,6 +114,34 @@ export function ReservationsTab({ reservations, loading }: ReservationsTabProps)
             <div><span className="text-muted-foreground">تاریخ: </span>{formatDate(res.departure_date)}</div>
             <div>{getStatusBadge(res.status)}</div>
           </div>
+          {/* Download ticket button */}
+          {res.status === 'confirmed' && res.ticket_file_path && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-success border-success/30 hover:bg-success/10 shrink-0"
+              onClick={() => downloadTicket(res)}
+              disabled={downloadingId === res.id}
+            >
+              {downloadingId === res.id ? (
+                <>
+                  <span className="material-symbols-outlined animate-spin text-sm">refresh</span>
+                  در حال دانلود...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-sm">download</span>
+                  دریافت بلیط
+                </>
+              )}
+            </Button>
+          )}
+          {res.status === 'confirmed' && !res.ticket_file_path && (
+            <div className="text-xs text-muted-foreground flex items-center gap-1 shrink-0">
+              <span className="material-symbols-outlined text-sm">hourglass_empty</span>
+              بلیط در حال آماده‌سازی
+            </div>
+          )}
         </Card>
       ))}
     </div>

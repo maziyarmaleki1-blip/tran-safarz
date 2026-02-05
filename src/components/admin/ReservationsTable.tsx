@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -600,7 +601,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
       <Dialog open={isPassengerDialogOpen} onOpenChange={setIsPassengerDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden p-0" dir="rtl">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+          <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-start justify-between">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <span className="material-symbols-outlined">visibility</span>
@@ -608,6 +609,10 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
               </DialogTitle>
               <DialogDescription>کد رزرو: {selectedReservation?.reservation_code}</DialogDescription>
             </DialogHeader>
+            <DialogClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+              <span className="material-symbols-outlined text-xl">close</span>
+              <span className="sr-only">بستن</span>
+            </DialogClose>
           </div>
 
           {/* Scrollable Content */}

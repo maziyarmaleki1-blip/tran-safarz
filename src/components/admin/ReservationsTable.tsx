@@ -694,7 +694,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                     <TableHead className="text-right">تعداد</TableHead>
                     <TableHead className="text-right">فیلترها</TableHead>
                     <TableHead className="text-right">وضعیت</TableHead>
-                    <TableHead className="text-right">بازگشت وجه</TableHead>
+                    <TableHead className="text-right">بلیط / بازگشت</TableHead>
                     <TableHead className="text-right">تأییدکننده</TableHead>
                     <TableHead className="text-right">در حال پیگیری</TableHead>
                     <TableHead className="text-right">عملیات</TableHead>
@@ -833,24 +833,35 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                       </TableCell>
                       <TableCell>{getStatusBadge(reservation.status)}</TableCell>
                       <TableCell>
-                        {reservation.status === 'cancelled' && !reservation.refund_status && (
+                        {/* Show ticket upload for confirmed, refund for cancelled */}
+                        {reservation.status === 'confirmed' ? (
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-7 text-xs gap-1 text-success border-success/30 hover:bg-success/10"
+                            className={`h-7 text-xs gap-1 ${reservation.ticket_file_path ? 'text-success border-success/30 hover:bg-success/10' : ''}`}
+                            onClick={() => openTicketDialog(reservation)}
+                          >
+                            <span className="material-symbols-outlined text-sm">
+                              {reservation.ticket_file_path ? 'task' : 'upload_file'}
+                            </span>
+                            {reservation.ticket_file_path ? 'بلیط آپلود شده' : 'ارسال بلیط'}
+                          </Button>
+                        ) : reservation.status === 'cancelled' && !reservation.refund_status ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1 text-orange-600 border-orange-300 hover:bg-orange-50"
                             onClick={() => openRefundDialog(reservation)}
                           >
                             <span className="material-symbols-outlined text-sm">payments</span>
                             بازگشت وجه
                           </Button>
-                        )}
-                        {reservation.status === 'cancelled' && reservation.refund_status === 'completed' && (
+                        ) : reservation.status === 'cancelled' && reservation.refund_status === 'completed' ? (
                           <div className="flex items-center gap-1 text-xs text-success">
                             <span className="material-symbols-outlined text-sm">check_circle</span>
                             برگشت شد
                           </div>
-                        )}
-                        {reservation.status !== 'cancelled' && (
+                        ) : (
                           <span className="text-muted-foreground text-xs">-</span>
                         )}
                       </TableCell>
@@ -956,17 +967,6 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                          >
                            <span className={`material-symbols-outlined text-lg ${reservation.internal_notes ? 'text-primary' : 'text-muted-foreground'}`}>
                              {reservation.internal_notes ? 'sticky_note_2' : 'note_add'}
-                           </span>
-                         </Button>
-                         <Button
-                           variant="ghost"
-                           size="sm"
-                           onClick={() => openTicketDialog(reservation)}
-                           className="h-8 w-8 p-0"
-                           title={reservation.ticket_file_path ? 'بلیط آپلود شده' : 'آپلود بلیط'}
-                         >
-                           <span className={`material-symbols-outlined text-lg ${reservation.ticket_file_path ? 'text-success' : 'text-muted-foreground'}`}>
-                             {reservation.ticket_file_path ? 'task' : 'upload_file'}
                            </span>
                          </Button>
                       </TableCell>

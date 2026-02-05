@@ -58,6 +58,9 @@ const SearchResults = () => {
 
   const from = searchParams.get('from') || 'tehran';
   const to = searchParams.get('to') || 'mashhad';
+  const passengerType = searchParams.get('passengerType') || 'regular';
+  const adultsCount = parseInt(searchParams.get('adults') || '1');
+  const childrenCount = parseInt(searchParams.get('children') || '0');
   const dateParam = searchParams.get('date');
   const currentDate = useMemo(() => {
     return dateParam ? new Date(dateParam) : new Date();
@@ -118,6 +121,9 @@ const SearchResults = () => {
       customerNotes: filters.customerNotes,
       privateCompartment: filters.privateCompartment,
       foreignNational: filters.foreignNational,
+      passengerType,
+      adultsCount,
+      childrenCount,
     }));
     
     // Navigate to booking page with search params

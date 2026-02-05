@@ -24,6 +24,9 @@ export interface FilterState {
   customerNotes: string;
   privateCompartment: boolean;
   foreignNational: boolean;
+  passengerType?: string;
+  adultsCount?: number;
+  childrenCount?: number;
 }
 
 const compartmentOptions = [

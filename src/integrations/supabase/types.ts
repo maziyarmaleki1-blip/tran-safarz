@@ -63,6 +63,8 @@ export type Database = {
           destination: string
           foreign_national: boolean | null
           id: string
+          internal_notes: string | null
+          is_starred: boolean | null
           origin: string
           passenger_count: number | null
           passenger_type: string | null
@@ -98,6 +100,8 @@ export type Database = {
           destination: string
           foreign_national?: boolean | null
           id?: string
+          internal_notes?: string | null
+          is_starred?: boolean | null
           origin: string
           passenger_count?: number | null
           passenger_type?: string | null
@@ -133,6 +137,8 @@ export type Database = {
           destination?: string
           foreign_national?: boolean | null
           id?: string
+          internal_notes?: string | null
+          is_starred?: boolean | null
           origin?: string
           passenger_count?: number | null
           passenger_type?: string | null

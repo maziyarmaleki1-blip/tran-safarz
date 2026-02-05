@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+ import { Textarea } from '@/components/ui/textarea';
 import {
   Table,
   TableBody,
@@ -87,6 +88,9 @@ interface Reservation {
   passenger_type?: string;
   adults_count?: number;
   children_count?: number;
+   // Starring and notes
+   is_starred?: boolean;
+   internal_notes?: string | null;
 }
 
 interface Employee {
@@ -121,10 +125,18 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
    const [filterWagonType, setFilterWagonType] = useState<string>('all');
    const [filterApprover, setFilterApprover] = useState<string>('all');
    const [filterAssignedEmployee, setFilterAssignedEmployee] = useState<string>('all');
+   const [filterDateRange, setFilterDateRange] = useState<string>('all');
+   const [filterStarred, setFilterStarred] = useState<string>('all');
+   const [sortBy, setSortBy] = useState<string>('created_at_desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   
+   // Internal notes dialog
+   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+   const [editingNotes, setEditingNotes] = useState<string>('');
+   const [savingNotes, setSavingNotes] = useState(false);
+   
   // Status change confirmation
   const [pendingStatusLocal, setPendingStatusLocal] = useState<string | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -334,7 +346,136 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
             p.nationalId?.includes(searchQuery)
         ));
      return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch;
-  });
+     
+     // Date range filter
+     let matchesDateRange = true;
+     if (filterDateRange !== 'all') {
+       const today = new Date();
+       today.setHours(0, 0, 0, 0);
+       const departureDate = new Date(r.departure_date);
+       departureDate.setHours(0, 0, 0, 0);
+       
+       const tomorrow = new Date(today);
+       tomorrow.setDate(tomorrow.getDate() + 1);
+       
+       const weekEnd = new Date(today);
+       weekEnd.setDate(weekEnd.getDate() + 7);
+       
+       if (filterDateRange === 'today') {
+         matchesDateRange = departureDate.getTime() === today.getTime();
+       } else if (filterDateRange === 'tomorrow') {
+         matchesDateRange = departureDate.getTime() === tomorrow.getTime();
+       } else if (filterDateRange === 'week') {
+         matchesDateRange = departureDate >= today && departureDate <= weekEnd;
+       } else if (filterDateRange === 'past') {
+         matchesDateRange = departureDate < today;
+       }
+     }
+     
+     // Starred filter
+     const matchesStarred = filterStarred === 'all' || 
+       (filterStarred === 'starred' && r.is_starred) ||
+       (filterStarred === 'unstarred' && !r.is_starred);
+     
+     return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch && matchesDateRange && matchesStarred;
+   });
+   
+   // Sorting
+   const sortedReservations = [...filteredReservations].sort((a, b) => {
+     switch (sortBy) {
+       case 'created_at_desc':
+         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+       case 'created_at_asc':
+         return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+       case 'departure_date_desc':
+         return new Date(b.departure_date).getTime() - new Date(a.departure_date).getTime();
+       case 'departure_date_asc':
+         return new Date(a.departure_date).getTime() - new Date(b.departure_date).getTime();
+       case 'passenger_count_desc':
+         return ((b.adults_count || 1) + (b.children_count || 0)) - ((a.adults_count || 1) + (a.children_count || 0));
+       case 'passenger_count_asc':
+         return ((a.adults_count || 1) + (a.children_count || 0)) - ((b.adults_count || 1) + (b.children_count || 0));
+       case 'starred':
+         return (b.is_starred ? 1 : 0) - (a.is_starred ? 1 : 0);
+       default:
+         return 0;
+     }
+   });
+   
+   // Toggle star
+   const toggleStar = async (reservationId: string, currentStarred: boolean) => {
+     try {
+       setUpdatingId(reservationId);
+       const { error } = await supabase
+         .from('reservations')
+         .update({ is_starred: !currentStarred })
+         .eq('id', reservationId);
+       
+       if (error) throw error;
+       toast.success(currentStarred ? 'ستاره برداشته شد' : 'ستاره‌گذاری شد');
+       onRefresh();
+     } catch (error) {
+       console.error('Error toggling star:', error);
+       toast.error('خطا در ستاره‌گذاری');
+     } finally {
+       setUpdatingId(null);
+     }
+   };
+   
+   // Save internal notes
+   const saveInternalNotes = async () => {
+     if (!selectedReservation) return;
+     
+     try {
+       setSavingNotes(true);
+       const { error } = await supabase
+         .from('reservations')
+         .update({ internal_notes: editingNotes })
+         .eq('id', selectedReservation.id);
+       
+       if (error) throw error;
+       toast.success('یادداشت ذخیره شد');
+       setIsNotesDialogOpen(false);
+       onRefresh();
+     } catch (error) {
+       console.error('Error saving notes:', error);
+       toast.error('خطا در ذخیره یادداشت');
+     } finally {
+       setSavingNotes(false);
+     }
+   };
+   
+   // Open notes dialog
+   const openNotesDialog = (reservation: Reservation) => {
+     setSelectedReservation(reservation);
+     setEditingNotes(reservation.internal_notes || '');
+     setIsNotesDialogOpen(true);
+   };
+   
+   // Export to Excel
+   const exportToExcel = () => {
+     const headers = ['کد رزرو', 'تاریخ رزرو', 'مبدأ', 'مقصد', 'تاریخ حرکت', 'بزرگسال', 'کودک', 'نوع سالن', 'وضعیت', 'یادداشت داخلی'];
+     const rows = sortedReservations.map(r => [
+       r.reservation_code,
+       formatDateTime(r.created_at).date + ' ' + formatDateTime(r.created_at).time,
+       getCityName(r.origin),
+       getCityName(r.destination),
+       formatDate(r.departure_date),
+       r.adults_count || 1,
+       r.children_count || 0,
+       r.wagon_type || 'نامشخص',
+       getStatusLabel(r.status),
+       r.internal_notes || ''
+     ]);
+     
+     const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
+     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+     const link = document.createElement('a');
+     link.href = URL.createObjectURL(blob);
+     link.download = `reservations_${new Date().toISOString().split('T')[0]}.csv`;
+     link.click();
+     toast.success('فایل اکسل دانلود شد');
+   };
 
   return (
     <div dir="rtl">
@@ -417,6 +558,8 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                    setFilterStatus('all');
                    setFilterApprover('all');
                    setFilterAssignedEmployee('all');
+                   setFilterDateRange('all');
+                   setFilterStarred('all');
                    setSearchQuery('');
                  }}
                  className="h-9 text-destructive hover:text-destructive/80 gap-1"
@@ -424,18 +567,77 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                  <span className="material-symbols-outlined text-sm">filter_alt_off</span>
                  پاک کردن فیلترها
                </Button>
+               
+               {/* تاریخ حرکت */}
+               <Select value={filterDateRange} onValueChange={setFilterDateRange}>
+                 <SelectTrigger className="w-[140px] h-9">
+                   <SelectValue placeholder="تاریخ حرکت" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه تاریخ‌ها</SelectItem>
+                   <SelectItem value="today">امروز</SelectItem>
+                   <SelectItem value="tomorrow">فردا</SelectItem>
+                   <SelectItem value="week">هفته آینده</SelectItem>
+                   <SelectItem value="past">گذشته</SelectItem>
+                 </SelectContent>
+               </Select>
+ 
+               {/* ستاره‌دار */}
+               <Select value={filterStarred} onValueChange={setFilterStarred}>
+                 <SelectTrigger className="w-[130px] h-9">
+                   <SelectValue placeholder="ستاره" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="all">همه</SelectItem>
+                   <SelectItem value="starred">⭐ ستاره‌دار</SelectItem>
+                   <SelectItem value="unstarred">بدون ستاره</SelectItem>
+                 </SelectContent>
+               </Select>
+               </div>
+           </div>
+         </CardContent>
+       </Card>
+ 
+       {/* Reservations Table */}
+       <Card>
+         <CardHeader>
+           <div className="flex items-center justify-between flex-wrap gap-4">
+             <CardTitle className="flex items-center gap-2">
+               <span className="material-symbols-outlined">list_alt</span>
+               لیست رزروها
+               <Badge variant="secondary" className="text-sm font-bold">
+                 {sortedReservations.length} رزرو
+               </Badge>
+             </CardTitle>
+             <div className="flex items-center gap-3">
+               {/* Sort */}
+               <Select value={sortBy} onValueChange={setSortBy}>
+                 <SelectTrigger className="w-[180px] h-9">
+                   <span className="material-symbols-outlined text-sm ml-1">sort</span>
+                   <SelectValue placeholder="مرتب‌سازی" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="created_at_desc">جدیدترین رزرو</SelectItem>
+                   <SelectItem value="created_at_asc">قدیمی‌ترین رزرو</SelectItem>
+                   <SelectItem value="departure_date_asc">نزدیک‌ترین حرکت</SelectItem>
+                   <SelectItem value="departure_date_desc">دورترین حرکت</SelectItem>
+                   <SelectItem value="passenger_count_desc">بیشترین مسافر</SelectItem>
+                   <SelectItem value="passenger_count_asc">کمترین مسافر</SelectItem>
+                   <SelectItem value="starred">ستاره‌دارها اول</SelectItem>
+                 </SelectContent>
+               </Select>
+               {/* Export Button */}
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={exportToExcel}
+                 className="h-9 gap-1"
+               >
+                 <span className="material-symbols-outlined text-sm">download</span>
+                 خروجی اکسل
+               </Button>
              </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Reservations Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="material-symbols-outlined">list_alt</span>
-            لیست رزروها
-          </CardTitle>
+           </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -453,6 +655,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
               <Table>
                 <TableHeader>
                   <TableRow>
+                     <TableHead className="text-right w-12">⭐</TableHead>
                     <TableHead className="text-right">کد رزرو</TableHead>
                     <TableHead className="text-right">تاریخ رزرو</TableHead>
                     <TableHead className="text-right">مسیر</TableHead>
@@ -466,8 +669,21 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredReservations.map(reservation => (
-                    <TableRow key={reservation.id}>
+                   {sortedReservations.map(reservation => (
+                     <TableRow key={reservation.id} className={reservation.is_starred ? 'bg-amber-50/50 dark:bg-amber-950/20' : ''}>
+                       <TableCell>
+                         <Button
+                           variant="ghost"
+                           size="icon"
+                           className="h-8 w-8"
+                           onClick={() => toggleStar(reservation.id, !!reservation.is_starred)}
+                           disabled={updatingId === reservation.id}
+                         >
+                           <span className={`material-symbols-outlined text-lg ${reservation.is_starred ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                             {reservation.is_starred ? 'star' : 'star_outline'}
+                           </span>
+                         </Button>
+                       </TableCell>
                       <TableCell className="font-medium text-primary">
                         {reservation.reservation_code}
                       </TableCell>
@@ -677,6 +893,17 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                         >
                           <span className="material-symbols-outlined text-lg">visibility</span>
                         </Button>
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => openNotesDialog(reservation)}
+                           className="h-8 w-8 p-0"
+                           title="یادداشت داخلی"
+                         >
+                           <span className={`material-symbols-outlined text-lg ${reservation.internal_notes ? 'text-primary' : 'text-muted-foreground'}`}>
+                             {reservation.internal_notes ? 'sticky_note_2' : 'note_add'}
+                           </span>
+                         </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1035,6 +1262,41 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
           </div>
         </DialogContent>
       </Dialog>
+       
+       {/* Internal Notes Dialog */}
+       <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+         <DialogContent className="max-w-md" dir="rtl">
+           <DialogHeader>
+             <DialogTitle className="flex items-center gap-2">
+               <span className="material-symbols-outlined">sticky_note_2</span>
+               یادداشت داخلی
+             </DialogTitle>
+             <DialogDescription>
+               کد رزرو: {selectedReservation?.reservation_code}
+             </DialogDescription>
+           </DialogHeader>
+           <div className="space-y-4">
+             <Textarea
+               placeholder="یادداشت داخلی را وارد کنید... (فقط کارمندان می‌بینند)"
+               value={editingNotes}
+               onChange={(e) => setEditingNotes(e.target.value)}
+               className="min-h-[120px] resize-none"
+               maxLength={1000}
+             />
+             <p className="text-xs text-muted-foreground text-left" dir="ltr">
+               {editingNotes.length}/1000
+             </p>
+             <div className="flex gap-2 justify-end">
+               <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>
+                 انصراف
+               </Button>
+               <Button onClick={saveInternalNotes} disabled={savingNotes}>
+                 {savingNotes ? 'در حال ذخیره...' : 'ذخیره یادداشت'}
+               </Button>
+             </div>
+           </div>
+         </DialogContent>
+       </Dialog>
     </div>
   );
 };

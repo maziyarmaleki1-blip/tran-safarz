@@ -42,7 +42,7 @@ const TripSummary: React.FC<TripSummaryProps> = ({
   const formatPrice = (p: number) => p.toLocaleString(isRTL ? 'fa-IR' : 'en-US');
 
   return (
-    <div className="bg-gradient-to-r from-sky-500/20 to-emerald-500/20 backdrop-blur-xl rounded-xl p-4 border border-white/30">
+    <div className="bg-white/70 backdrop-blur-2xl rounded-2xl p-4 border border-white/40 shadow-lg">
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Route */}
         <div className="flex items-center gap-3">

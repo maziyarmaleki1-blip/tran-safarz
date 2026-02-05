@@ -621,9 +621,8 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                 {/* Row 1: Route */}
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-primary">route</span>
-                  <span className="text-muted-foreground">مسیر:</span>
                   <span className="font-bold text-lg">
-                    {getCityName(selectedReservation.origin)} → {getCityName(selectedReservation.destination)}
+                    {getCityName(selectedReservation.origin)} به {getCityName(selectedReservation.destination)}
                   </span>
                 </div>
 

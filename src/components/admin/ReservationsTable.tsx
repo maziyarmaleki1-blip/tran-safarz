@@ -598,15 +598,20 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
 
       {/* Passenger Details Dialog */}
       <Dialog open={isPassengerDialogOpen} onOpenChange={setIsPassengerDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <span className="material-symbols-outlined">visibility</span>
-              جزئیات رزرو
-            </DialogTitle>
-            <DialogDescription>کد رزرو: {selectedReservation?.reservation_code}</DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden p-0" dir="rtl">
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <span className="material-symbols-outlined">visibility</span>
+                جزئیات رزرو
+              </DialogTitle>
+              <DialogDescription>کد رزرو: {selectedReservation?.reservation_code}</DialogDescription>
+            </DialogHeader>
+          </div>
 
+          {/* Scrollable Content */}
+          <div className="overflow-y-auto max-h-[calc(80vh-80px)] px-6 pb-6">
           {selectedReservation && (
             <div className="space-y-6">
               {/* Section 1: Summary Info - مشخصات کلی */}
@@ -865,6 +870,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
               </div>
             </div>
           )}
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -69,6 +69,11 @@ interface Reservation {
   assigned_at: string | null;
   assignee_name?: string;
   assigned_employees?: string[];
+  // Pending status change
+  pending_status?: string | null;
+  pending_status_by?: string | null;
+  pending_status_at?: string | null;
+  pending_status_by_name?: string;
   // Selected filters from search
   selected_wagon_types?: string[];
   selected_time_slots?: string[];
@@ -505,7 +510,14 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
                       </TableCell>
                       <TableCell>{getStatusBadge(reservation.status)}</TableCell>
                       <TableCell>
-                        {reservation.confirmer_name ? (
+                        {reservation.pending_status_by_name ? (
+                          <div className="flex items-center gap-1 text-sm">
+                            <span className="material-symbols-outlined text-muted-foreground text-sm">
+                              person
+                            </span>
+                            <span>{reservation.pending_status_by_name}</span>
+                          </div>
+                        ) : reservation.confirmer_name ? (
                           <div className="flex items-center gap-1 text-sm">
                             <span className="material-symbols-outlined text-muted-foreground text-sm">
                               person

@@ -253,32 +253,27 @@ const Payment = () => {
 
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{t('ticketPrice')}</span>
-                  <span>{formatPrice(ticketPrice)} {t('toman')}</span>
+                  <span className="text-muted-foreground">قیمت بلیط (پرداخت جداگانه)</span>
+                  <span className="text-muted-foreground">{formatPrice(ticketPrice)} {t('toman')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{t('passengerCount')}</span>
                   <span>× {passengers}</span>
                 </div>
+                <div className="border-t border-border my-4" />
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">کارمزد خدمات جستجو</span>
+                  <span className="font-medium">کارمزد خدمات جستجو</span>
                   {feeLoading ? (
                     <span className="size-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                  ) : serviceFeeAmount > 0 ? (
-                    <span>{formatPrice(serviceFeeAmount)} {t('toman')}</span>
                   ) : (
-                    <span className="text-success">{t('free')}</span>
+                    <span className="font-medium">{formatPrice(serviceFeeAmount)} {t('toman')}</span>
                   )}
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{t('tax')}</span>
-                  <span className="text-success">{t('free')}</span>
                 </div>
                 <div className="border-t border-border my-4" />
                 <div className="flex justify-between items-center">
-                  <span className="font-bold">{t('totalPrice')}</span>
+                  <span className="font-bold">مبلغ قابل پرداخت</span>
                   <div className="text-left">
-                    <p className="text-2xl font-bold text-primary">{formatPrice(totalPrice)}</p>
+                    <p className="text-2xl font-bold text-primary">{formatPrice(serviceFeeAmount)}</p>
                     <p className="text-xs text-muted-foreground">{t('toman')}</p>
                   </div>
                 </div>

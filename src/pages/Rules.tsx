@@ -31,7 +31,7 @@ const Rules = () => {
         <div className="bg-card/80 backdrop-blur-md py-12 border-b border-border/50">
           <div className="container mx-auto px-4">
             <h1 className="text-3xl font-bold text-center mb-2">قوانین و مقررات</h1>
-            <p className="text-muted-foreground text-center">قوانین استفاده از خدمات سفیر ریل</p>
+            <p className="text-muted-foreground text-center">قوانین استفاده از خدمات safarz</p>
           </div>
         </div>
         <div className="container mx-auto px-4 py-12 max-w-3xl">

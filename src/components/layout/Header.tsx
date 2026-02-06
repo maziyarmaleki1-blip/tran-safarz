@@ -77,7 +77,7 @@ export function Header() {
               <span className="material-symbols-outlined icon-filled">train</span>
             </div>
             <span className="text-xl font-bold text-foreground hidden sm:block">
-              سفیر ریل
+              safarz
             </span>
           </Link>
 

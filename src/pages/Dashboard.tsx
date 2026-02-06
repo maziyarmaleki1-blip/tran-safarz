@@ -60,7 +60,7 @@ const Dashboard = () => {
             <div className="size-10 rounded-lg gradient-primary flex items-center justify-center">
               <span className="material-symbols-outlined icon-filled text-primary-foreground">train</span>
             </div>
-            <span className="text-lg font-bold">سفیر ریل</span>
+            <span className="text-lg font-bold">safarz</span>
           </Link>
         </div>
         <nav className="flex-1 p-4 space-y-1">
@@ -96,7 +96,7 @@ const Dashboard = () => {
           <div className="size-8 rounded-lg gradient-primary flex items-center justify-center">
             <span className="material-symbols-outlined text-sm text-primary-foreground">train</span>
           </div>
-          <span className="font-bold">سفیر ریل</span>
+          <span className="font-bold">safarz</span>
         </Link>
         <div className="flex gap-1">
           {menuItems.map((item) => (

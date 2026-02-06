@@ -108,7 +108,7 @@ const Auth = () => {
             <div className="inline-flex items-center justify-center size-14 rounded-xl gradient-primary mb-4">
               <span className="material-symbols-outlined text-2xl text-primary-foreground icon-filled">train</span>
             </div>
-            <h1 className="text-2xl font-bold">سفیر ریل</h1>
+            <h1 className="text-2xl font-bold">safarz</h1>
           </div>
 
           <Tabs defaultValue="login" className="w-full">

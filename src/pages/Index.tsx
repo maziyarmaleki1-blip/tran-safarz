@@ -41,7 +41,7 @@ const Index = () => {
       <section className="relative z-10 py-10">
         <div className="container mx-auto px-4">
           <div className="bg-white/20 dark:bg-card/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl p-8">
-            <h2 className="text-3xl font-bold text-center mb-8">چرا سفیر ریل؟</h2>
+            <h2 className="text-3xl font-bold text-center mb-8">چرا safarz؟</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 { icon: 'speed', title: 'رزرو سریع', desc: 'در کمتر از ۲ دقیقه بلیط رزرو کنید' },

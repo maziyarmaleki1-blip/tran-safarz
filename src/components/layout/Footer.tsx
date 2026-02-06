@@ -14,10 +14,10 @@ export function Footer() {
               <div className="size-10 rounded-lg gradient-primary flex items-center justify-center text-primary-foreground">
                 <span className="material-symbols-outlined icon-filled">train</span>
               </div>
-              <span className="text-xl font-bold">سفیر ریل</span>
+              <span className="text-xl font-bold">safarz</span>
             </div>
             <p className="text-sidebar-foreground/70 text-sm leading-relaxed">
-              سفیر ریل، پلتفرم رزرو آنلاین بلیط قطار به سراسر ایران. سفری راحت و مطمئن را تجربه کنید.
+              سفر برون مرز - پلتفرم رزرو آنلاین بلیط قطار به سراسر ایران. سفری راحت و مطمئن را تجربه کنید.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">mail</span>
-                <span>info@safirrail.ir</span>
+                <span>info@safarz.ir</span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">location_on</span>
@@ -65,7 +65,7 @@ export function Footer() {
 
         <div className="border-t border-sidebar-border mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-sidebar-foreground/60">
-            © ۱۴۰۳ سفیر ریل - {t('allRightsReserved')}
+            © ۱۴۰۳ safarz - {t('allRightsReserved')}
           </p>
           <div className="flex items-center gap-4">
             <Link to="/privacy" className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">

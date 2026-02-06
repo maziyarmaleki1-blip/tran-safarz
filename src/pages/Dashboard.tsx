@@ -9,6 +9,7 @@ import { ReservationsTab } from '@/components/dashboard/ReservationsTab';
 import { ProfileTab } from '@/components/dashboard/ProfileTab';
 import { SecurityTab } from '@/components/dashboard/SecurityTab';
 import { WalletTab } from '@/components/dashboard/WalletTab';
+import logo from '@/assets/logo.png';
 
 const menuItems = [
   { id: 'reservations', icon: 'confirmation_number', label: 'رزروها' },
@@ -56,11 +57,8 @@ const Dashboard = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-sidebar text-sidebar-foreground hidden lg:flex flex-col fixed right-0 top-0 bottom-0 z-20 border-l border-sidebar-border">
         <div className="p-6 border-b border-sidebar-border">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="size-10 rounded-lg gradient-primary flex items-center justify-center">
-              <span className="material-symbols-outlined icon-filled text-primary-foreground">train</span>
-            </div>
-            <span className="text-lg font-bold">safarz</span>
+          <Link to="/">
+            <img src={logo} alt="safarz" className="h-10" />
           </Link>
         </div>
         <nav className="flex-1 p-4 space-y-1">
@@ -92,11 +90,8 @@ const Dashboard = () => {
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-card border-b border-border p-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="size-8 rounded-lg gradient-primary flex items-center justify-center">
-            <span className="material-symbols-outlined text-sm text-primary-foreground">train</span>
-          </div>
-          <span className="font-bold">safarz</span>
+        <Link to="/">
+          <img src={logo} alt="safarz" className="h-8" />
         </Link>
         <div className="flex gap-1">
           {menuItems.map((item) => (

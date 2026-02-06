@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import logo from '@/assets/logo.png';
 
 export function Footer() {
   const { t } = useLanguage();
@@ -10,11 +11,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="size-10 rounded-lg gradient-primary flex items-center justify-center text-primary-foreground">
-                <span className="material-symbols-outlined icon-filled">train</span>
-              </div>
-              <span className="text-xl font-bold">safarz</span>
+            <div className="mb-4">
+              <img src={logo} alt="safarz - سفر برون مرز" className="h-10 brightness-0 invert" />
             </div>
             <p className="text-sidebar-foreground/70 text-sm leading-relaxed">
               سفر برون مرز - پلتفرم رزرو آنلاین بلیط قطار به سراسر ایران. سفری راحت و مطمئن را تجربه کنید.

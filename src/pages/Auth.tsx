@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import heroImage from '@/assets/hero-train.jpg';
+import logo from '@/assets/logo.png';
 
 const Auth = () => {
   const { t } = useLanguage();
@@ -105,10 +106,7 @@ const Auth = () => {
       <div className="relative z-10 min-h-[70vh] flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md p-6 bg-card/95 backdrop-blur-md border-border/50">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center size-14 rounded-xl gradient-primary mb-4">
-              <span className="material-symbols-outlined text-2xl text-primary-foreground icon-filled">train</span>
-            </div>
-            <h1 className="text-2xl font-bold">safarz</h1>
+            <img src={logo} alt="safarz - سفر برون مرز" className="h-14 mx-auto" />
           </div>
 
           <Tabs defaultValue="login" className="w-full">

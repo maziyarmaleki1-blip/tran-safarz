@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import logo from '@/assets/logo.png';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { Button } from '@/components/ui/button';
@@ -72,13 +73,8 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="size-10 rounded-lg gradient-primary flex items-center justify-center text-primary-foreground shadow-lg group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined icon-filled">train</span>
-            </div>
-            <span className="text-xl font-bold text-foreground hidden sm:block">
-              safarz
-            </span>
+          <Link to="/" className="group">
+            <img src={logo} alt="safarz - سفر برون مرز" className="h-10 group-hover:scale-105 transition-transform" />
           </Link>
 
           {/* Desktop Navigation */}

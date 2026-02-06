@@ -12,7 +12,7 @@ export function Footer() {
           {/* Logo & Description */}
           <div className="col-span-1 md:col-span-2">
             <div className="mb-4">
-              <img src={logo} alt="safarz - سفر برون مرز" className="h-10 brightness-0 invert" />
+              <img src={logo} alt="safarz - سفر برون مرز" className="h-14 brightness-0 invert" />
             </div>
             <p className="text-sidebar-foreground/70 text-sm leading-relaxed">
               سفر برون مرز - پلتفرم رزرو آنلاین بلیط قطار به سراسر ایران. سفری راحت و مطمئن را تجربه کنید.

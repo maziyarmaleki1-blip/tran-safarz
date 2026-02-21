@@ -106,7 +106,7 @@ const Auth = () => {
       <div className="relative z-10 min-h-[70vh] flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md p-6 bg-card/95 backdrop-blur-md border-border/50">
           <div className="text-center mb-6">
-            <img src={logo} alt="safarz - سفر برون مرز" className="h-20 mx-auto" />
+            <img src={logo} alt="safarz - سفر برون مرز" className="h-24 mx-auto" />
           </div>
 
           <Tabs defaultValue="login" className="w-full">

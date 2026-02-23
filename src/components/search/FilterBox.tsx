@@ -199,8 +199,8 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
               <span>{isRtl ? 'تا' : 'To'}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
+              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
             </div>
             <div dir="ltr">
               <Slider

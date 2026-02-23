@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { Clock, Sunrise, Sun, Sunset, Moon, ChevronUp, ChevronDown } from 'lucide-react';
 
@@ -74,10 +75,15 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
 
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>(['0-24']);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([440000, 2450000]);
   const [customerNotes, setCustomerNotes] = useState('');
   const [privateCompartment, setPrivateCompartment] = useState(false);
   const [foreignNational, setForeignNational] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  const formatPrice = useCallback((value: number) => {
+    return new Intl.NumberFormat('fa-IR').format(value);
+  }, []);
 
   useEffect(() => {
     notifyChange({});
@@ -93,7 +99,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
 
   const notifyChange = (newFilters: Partial<FilterState>) => {
     const filters: FilterState = {
-      priceRange: [440000, 2450000],
+      priceRange,
       departureTimeSlots,
       compartmentTypes,
       customerNotes,
@@ -188,12 +194,33 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
 
         {/* بازه قیمت */}
         <Section 
-          title={isRtl ? 'بازه قیمت (تومان)' : 'Price Range'} 
-          defaultOpen={false}
+          title={isRtl ? 'بازه قیمت (تومان)' : 'Price Range (Toman)'} 
+          defaultOpen={true}
         >
-          <p className="text-xs text-muted-foreground">
-            {isRtl ? 'به زودی...' : 'Coming soon...'}
-          </p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
+              <span>{isRtl ? 'تا' : 'To'}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
+            </div>
+            <Slider
+              value={priceRange}
+              min={100000}
+              max={5000000}
+              step={50000}
+              onValueChange={(value) => {
+                markInteracted();
+                const newRange: [number, number] = [value[0], value[1]];
+                setPriceRange(newRange);
+                notifyChange({ priceRange: newRange });
+              }}
+              className="dir-ltr"
+              dir="ltr"
+            />
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+              <span>{formatPrice(100000)}</span>
+              <span>{formatPrice(5000000)}</span>
+            </div>
+          </div>
         </Section>
 
         {/* گزینه‌های اضافی */}

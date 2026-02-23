@@ -38,14 +38,13 @@ const timeSlotOptions = [
   { id: '0-6', label: '۰۰-۰۶', sublabel: 'شب' },
 ];
 
-export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
+export const FilterBox = ({ onFilterChange }: FilterBoxProps) => {
   const { language } = useLanguage();
   const isRtl = language === 'fa';
 
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>(['0-24']);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
-  const [customerNotes, setCustomerNotes] = useState<string>('ترجیحاً قطار آخر شب باشد');
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [customerNotes, setCustomerNotes] = useState<string>('');
 
   // Notify parent on mount with defaults
   useEffect(() => {
@@ -67,7 +66,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const toggleTimeSlot = (id: string) => {
-    setHasInteracted(true);
     let newSlots: string[];
     if (id === '0-24') {
       // Toggle all-day: if already selected, deselect. Otherwise select only 0-24.
@@ -84,7 +82,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const toggleCompartment = (id: string) => {
-    setHasInteracted(true);
     const newTypes = compartmentTypes.includes(id)
       ? compartmentTypes.filter(c => c !== id)
       : [...compartmentTypes, id];
@@ -93,7 +90,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const handleNotesChange = (notes: string) => {
-    if (!hasInteracted) setHasInteracted(true);
     setCustomerNotes(notes);
     notifyChange({ customerNotes: notes });
   };
@@ -101,13 +97,12 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const clearFilters = () => {
     setDepartureTimeSlots(['0-24']);
     setCompartmentTypes([]);
-    setCustomerNotes('ترجیحاً قطار آخر شب باشد');
-    setHasInteracted(false);
+    setCustomerNotes('');
     onFilterChange?.({
       priceRange: [440000, 2450000],
       departureTimeSlots: ['0-24'],
       compartmentTypes: [],
-      customerNotes: 'ترجیحاً قطار آخر شب باشد',
+      customerNotes: '',
       privateCompartment: false,
       foreignNational: false,
     });
@@ -166,12 +161,12 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
           </div>
         </div>
 
-        {/* Compartment Type - Card style */}
+        {/* Compartment Type - Chips */}
         <div>
           <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'نوع سالن' : 'Compartment Type'}
           </Label>
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {compartmentOptions.map((option) => {
               const isSelected = compartmentTypes.includes(option.id);
               return (
@@ -179,18 +174,13 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
                   key={option.id}
                   onClick={() => toggleCompartment(option.id)}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-3 rounded-xl border transition-all text-sm",
+                    "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
                     isSelected
-                      ? "border-primary bg-primary/10 shadow-sm"
-                      : "border-border/40 bg-muted/20 hover:border-primary/40 hover:bg-muted/40"
+                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                      : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <span className="flex items-center gap-2">
-                    <span className={cn("w-4 h-4 rounded border-2 flex items-center justify-center transition-colors", isSelected ? "border-primary bg-primary" : "border-muted-foreground/40")}>
-                      {isSelected && <span className="text-primary-foreground text-[10px]">✓</span>}
-                    </span>
-                    <span className="font-medium">{option.label}</span>
-                  </span>
+                  <span>{option.label}</span>
                   <span className="flex gap-0.5">{renderStars(option.stars)}</span>
                 </button>
               );
@@ -204,10 +194,10 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
             {isRtl ? 'توضیحات تکمیلی (اجباری برای درخواست‌های خاص)' : 'Additional Notes (required for special requests)'}
           </Label>
           <Textarea
-            placeholder={isRtl ? 'مثلاً: اگر بلیط پیدا نشد، روز بعد هم مشکلی ندارد / حتما کوپه دربست باشد...' : 'e.g.: If no ticket found, next day is also fine...'}
+            placeholder={isRtl ? 'ترجیحا قطار آخر شب باشد' : 'Preferably a late night train'}
             value={customerNotes}
             onChange={(e) => handleNotesChange(e.target.value)}
-            className="min-h-[100px] resize-none text-sm"
+            className="min-h-[110px] resize-none text-sm"
             maxLength={500}
           />
           <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
@@ -216,19 +206,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
         </div>
       </div>
 
-      {/* Sticky Submit Button - only visible after interaction */}
-      {hasInteracted && (
-        <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-md rounded-b-2xl animate-in slide-in-from-bottom-2 duration-300">
-          <Button
-            onClick={onSubmit}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 text-base"
-            size="lg"
-          >
-            <span className="material-symbols-outlined ml-2">check_circle</span>
-            {isRtl ? 'ثبت رزرو' : 'Submit Booking'}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

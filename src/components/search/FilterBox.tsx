@@ -10,6 +10,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 interface FilterBoxProps {
@@ -27,6 +29,7 @@ export interface FilterState {
   passengerType?: string;
   adultsCount?: number;
   childrenCount?: number;
+  botDuration?: string;
 }
 
 const compartmentOptions = [
@@ -53,6 +56,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const [customerNotes, setCustomerNotes] = useState<string>('');
   const [privateCompartment, setPrivateCompartment] = useState(false);
   const [foreignNational, setForeignNational] = useState(false);
+  const [botDuration, setBotDuration] = useState<string>('until-departure');
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fa-IR');
@@ -66,6 +70,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
       customerNotes,
       privateCompartment,
       foreignNational,
+      botDuration,
       ...newFilters,
     };
     onFilterChange?.(filters);
@@ -112,6 +117,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
     setCustomerNotes(defaultFilters.customerNotes);
     setPrivateCompartment(false);
     setForeignNational(false);
+    setBotDuration('until-departure');
     onFilterChange?.(defaultFilters);
   };
 
@@ -133,7 +139,44 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
         </Button>
       </div>
 
-      <Accordion type="multiple" defaultValue={['compartment', 'departure', 'price']} className="space-y-1">
+      <Accordion type="multiple" defaultValue={['bot-duration', 'compartment', 'departure', 'price']} className="space-y-1">
+        {/* Bot Duration */}
+        <AccordionItem value="bot-duration" className="border-none">
+          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-orange-500">
+            <span className="flex items-center gap-2">
+              🤖 {isRtl ? 'مدت زمان فعالیت ربات' : 'Bot Active Duration'}
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pt-2 pb-4">
+            <p className="text-xs text-muted-foreground mb-3">
+              {isRtl ? 'ربات تا چه زمانی سایت‌ها را بررسی کند؟' : 'How long should the bot monitor?'}
+            </p>
+            <RadioGroup
+              value={botDuration}
+              onValueChange={(value) => {
+                setBotDuration(value);
+                notifyChange({ botDuration: value });
+              }}
+              className="space-y-3"
+            >
+              <div className="flex items-center gap-3">
+                <RadioGroupItem value="24h-before" id="24h" />
+                <Label htmlFor="24h" className="cursor-pointer text-sm">تا ۲۴ ساعت قبل از حرکت</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <RadioGroupItem value="6h-before" id="6h" />
+                <Label htmlFor="6h" className="cursor-pointer text-sm">تا ۶ ساعت قبل از حرکت</Label>
+              </div>
+              <div className="flex items-center gap-3 bg-primary/5 p-2 rounded-lg border border-primary/20">
+                <RadioGroupItem value="until-departure" id="until-dep" />
+                <Label htmlFor="until-dep" className="cursor-pointer text-sm font-medium text-primary">
+                  تا لحظه حرکت (پیشنهادی) ✨
+                </Label>
+              </div>
+            </RadioGroup>
+          </AccordionContent>
+        </AccordionItem>
+
         {/* Compartment Type - First */}
         <AccordionItem value="compartment" className="border-none">
           <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">

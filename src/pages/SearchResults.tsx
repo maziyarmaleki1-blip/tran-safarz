@@ -9,6 +9,7 @@ import { TrainRow } from '@/components/search/TrainRow';
 import { DateNavigation } from '@/components/search/DateNavigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import heroImage from '@/assets/hero-train.jpg';
 import { format, addDays, subDays } from 'date-fns';
 
@@ -46,7 +47,8 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const isFirstRender = useState(true);
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
     departureTimeSlots: [],
@@ -95,6 +97,12 @@ const SearchResults = () => {
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
+    // Skip the initial mount call
+    if (isFirstRender[0]) {
+      isFirstRender[0] = false;
+    } else {
+      setHasInteracted(true);
+    }
   };
 
   const handlePrevDay = () => {
@@ -195,7 +203,7 @@ const SearchResults = () => {
           <div className="flex gap-4">
             {/* Filter Box - Sidebar (Desktop Only) */}
             <div className="hidden lg:block w-72 shrink-0">
-              <FilterBox onFilterChange={handleFilterChange} onSubmit={handleSubmitBooking} />
+              <FilterBox onFilterChange={handleFilterChange} />
             </div>
 
             {/* Train Rows - Main Content */}
@@ -211,10 +219,7 @@ const SearchResults = () => {
                   </SheetTrigger>
                   <SheetContent side="right" className="w-80 p-0">
                     <div className="p-4">
-                      <FilterBox onFilterChange={handleFilterChange} onSubmit={() => {
-                        setFilterSheetOpen(false);
-                        handleSubmitBooking();
-                      }} />
+                    <FilterBox onFilterChange={handleFilterChange} />
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -243,6 +248,23 @@ const SearchResults = () => {
               </div>
             </div>
           </div>
+        </div>
+      {/* Floating Submit Button */}
+        <div className={cn(
+          "fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
+          hasInteracted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        )}>
+          <Button
+            onClick={() => {
+              setFilterSheetOpen(false);
+              handleSubmitBooking();
+            }}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-14 px-10 text-base rounded-2xl shadow-glow"
+            size="lg"
+          >
+            <span className="material-symbols-outlined ml-2">check_circle</span>
+            {language === 'fa' ? 'ثبت درخواست رزرو' : 'Submit Reservation Request'}
+          </Button>
         </div>
       </div>
     </MainLayout>

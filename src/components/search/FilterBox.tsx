@@ -199,19 +199,10 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              {isRtl ? (
-                <>
-                  <span>تا: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
-                  <span>از: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
-                </>
-              ) : (
-                <>
-                  <span>From: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
-                  <span>To: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
-                </>
-              )}
+              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
+              <span>{isRtl ? 'تا' : 'To'}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
             </div>
-            <div className={cn(isRtl && "[direction:ltr] [transform:scaleX(-1)]")}>
+            <div dir="ltr">
               <Slider
                 value={priceRange}
                 min={100000}
@@ -226,18 +217,9 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                 dir="ltr"
               />
             </div>
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-              {isRtl ? (
-                <>
-                  <span>{formatPrice(5000000)}</span>
-                  <span>{formatPrice(100000)}</span>
-                </>
-              ) : (
-                <>
-                  <span>{formatPrice(100000)}</span>
-                  <span>{formatPrice(5000000)}</span>
-                </>
-              )}
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground" dir="ltr">
+              <span>{formatPrice(100000)}</span>
+              <span>{formatPrice(5000000)}</span>
             </div>
           </div>
         </Section>

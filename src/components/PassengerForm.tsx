@@ -464,26 +464,50 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                   <Smartphone className="size-4 text-sky-500 shrink-0" />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-2">
-                    <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getFieldLabel('mobile')}
-                    </label>
-                    <Input
-                      type="tel"
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
-                      placeholder="09xxxxxxxxx"
-                      className="h-10 text-sm bg-sky-50/80 border-sky-100"
-                      dir="ltr"
-                      maxLength={11}
-                    />
+                <div className="space-y-4">
+                  {/* Mobile input + Send button */}
+                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                    <div className="space-y-2 flex-1 w-full">
+                      <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {getFieldLabel('mobile')}
+                      </label>
+                      <Input
+                        type="tel"
+                        value={mobile}
+                        onChange={(e) => setMobile(e.target.value)}
+                        placeholder="09xxxxxxxxx"
+                        className="h-10 text-sm bg-sky-50/80 border-sky-100"
+                        dir="ltr"
+                        maxLength={11}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="default"
+                      className="h-10 px-6 bg-sky-500 hover:bg-sky-600 text-white whitespace-nowrap w-full sm:w-auto"
+                      onClick={() => {
+                        if (!mobile || mobile.length < 11) {
+                          toast({
+                            title: isRTL ? 'خطا' : 'Error',
+                            description: isRTL ? 'لطفاً شماره موبایل معتبر وارد کنید' : 'Please enter a valid mobile number',
+                            variant: 'destructive',
+                          });
+                          return;
+                        }
+                        toast({
+                          title: isRTL ? 'ارسال پیامک' : 'SMS Sent',
+                          description: isRTL ? `کد تایید به ${mobile} ارسال شد` : `OTP sent to ${mobile}`,
+                        });
+                      }}
+                    >
+                      <Smartphone className="size-4 ml-2" />
+                      {isRTL ? 'ارسال کد تایید' : 'Send OTP'}
+                    </Button>
                   </div>
 
-                  <div className="flex items-center">
-                    <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sm text-sky-700 text-right w-full">
-                      <p>📱 {isRTL ? 'کد تایید ۵ رقمی به شماره موبایل شما پیامک خواهد شد.' : 'A 5-digit OTP will be sent to your mobile.'}</p>
-                    </div>
+                  {/* OTP info box */}
+                  <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sm text-sky-700 text-right">
+                    <p>📱 {isRTL ? 'کد تایید ۵ رقمی به شماره موبایل شما پیامک خواهد شد.' : 'A 5-digit OTP will be sent to your mobile.'}</p>
                   </div>
                 </div>
               </div>

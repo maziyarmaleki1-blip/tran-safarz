@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Clock, Sunrise, Sun, Sunset, Moon } from 'lucide-react';
+import { Clock, Sunrise, Sun, Sunset, Moon, ChevronUp, ChevronDown, Bot } from 'lucide-react';
 
 interface FilterBoxProps {
   onFilterChange?: (filters: FilterState) => void;
@@ -32,12 +31,42 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', label: 'همه', sublabel: '۰-۲۴', icon: Clock },
-  { id: '0-6', label: 'صبح', sublabel: '۰-۶', icon: Sunrise },
-  { id: '6-12', label: 'ظهر', sublabel: '۶-۱۲', icon: Sun },
-  { id: '12-18', label: 'عصر', sublabel: '۱۲-۱۸', icon: Sunset },
-  { id: '18-24', label: 'شب', sublabel: '۱۸-۲۴', icon: Moon },
+  { id: '0-24', sublabel: '۰\n۲۴', icon: Clock },
+  { id: '0-6', sublabel: '۰\n۶', icon: Sunrise },
+  { id: '6-12', sublabel: '۶\n۱۲', icon: Sun },
+  { id: '12-18', sublabel: '۱۲\n۱۸', icon: Sunset },
+  { id: '18-24', sublabel: '۱۸\n۲۴', icon: Moon },
 ];
+
+// Collapsible section component
+const Section = ({ 
+  title, 
+  icon, 
+  defaultOpen = true, 
+  children 
+}: { 
+  title: string; 
+  icon?: React.ReactNode; 
+  defaultOpen?: boolean; 
+  children: React.ReactNode;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-border/30 last:border-b-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between py-3 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          {icon}
+          {title}
+        </span>
+        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+      </button>
+      {isOpen && <div className="pb-4">{children}</div>}
+    </div>
+  );
+};
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
   const { language } = useLanguage();
@@ -45,14 +74,22 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
 
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>(['0-24']);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
-  const [customerNotes, setCustomerNotes] = useState<string>('ترجیحاً قطار آخر شب باشد');
+  const [customerNotes, setCustomerNotes] = useState('');
+  const [privateCompartment, setPrivateCompartment] = useState(false);
+  const [foreignNational, setForeignNational] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  // Notify parent on mount with defaults
   useEffect(() => {
     notifyChange({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const markInteracted = () => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      onHasInteracted?.(true);
+    }
+  };
 
   const notifyChange = (newFilters: Partial<FilterState>) => {
     const filters: FilterState = {
@@ -60,18 +97,15 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
       departureTimeSlots,
       compartmentTypes,
       customerNotes,
-      privateCompartment: false,
-      foreignNational: false,
+      privateCompartment,
+      foreignNational,
       ...newFilters,
     };
     onFilterChange?.(filters);
   };
 
   const toggleTimeSlot = (id: string) => {
-    if (!hasInteracted) {
-      setHasInteracted(true);
-      onHasInteracted?.(true);
-    }
+    markInteracted();
     let newSlots: string[];
     if (id === '0-24') {
       newSlots = departureTimeSlots.includes('0-24') ? [] : ['0-24'];
@@ -86,10 +120,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
   };
 
   const toggleCompartment = (id: string) => {
-    if (!hasInteracted) {
-      setHasInteracted(true);
-      onHasInteracted?.(true);
-    }
+    markInteracted();
     const newTypes = compartmentTypes.includes(id)
       ? compartmentTypes.filter(c => c !== id)
       : [...compartmentTypes, id];
@@ -97,134 +128,139 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
     notifyChange({ compartmentTypes: newTypes });
   };
 
-  const handleNotesChange = (notes: string) => {
-    if (!hasInteracted) {
-      setHasInteracted(true);
-      onHasInteracted?.(true);
-    }
-    setCustomerNotes(notes);
-    notifyChange({ customerNotes: notes });
-  };
-
-  const clearFilters = () => {
-    setDepartureTimeSlots(['0-24']);
-    setCompartmentTypes([]);
-    setCustomerNotes('ترجیحاً قطار آخر شب باشد');
-    setHasInteracted(false);
-    onFilterChange?.({
-      priceRange: [440000, 2450000],
-      departureTimeSlots: ['0-24'],
-      compartmentTypes: [],
-      customerNotes: 'ترجیحاً قطار آخر شب باشد',
-      privateCompartment: false,
-      foreignNational: false,
-    });
-  };
-
-  const renderStars = (count: number) => {
-    return Array.from({ length: count }, (_, i) => (
-      <span key={i} className="text-accent-foreground text-xs" style={{ color: 'hsl(45, 93%, 47%)' }}>★</span>
-    ));
-  };
-
   return (
-    <div className="bg-card/90 backdrop-blur-md rounded-2xl border border-border/50 shadow-soft flex flex-col" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border/50">
-          <h3 className="font-bold text-foreground">
-            {isRtl ? 'جزئیات رزرو' : 'Reservation Details'}
-          </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="text-destructive hover:text-destructive/80 text-xs gap-1"
-          >
-            <span className="material-symbols-outlined text-sm">filter_alt_off</span>
-            {isRtl ? 'پاک‌سازی' : 'Clear'}
-          </Button>
-        </div>
+    <div className="bg-card/90 backdrop-blur-md rounded-2xl border border-border/50 shadow-soft" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
+      <div className="overflow-y-auto p-4">
 
-        {/* Departure Time - Horizontal pills */}
-        <div>
-          <Label className="text-sm font-semibold text-primary mb-3 block">
-            {isRtl ? 'زمان حرکت' : 'Departure Time'}
-          </Label>
+        {/* مدت زمان فعالیت ربات */}
+        <Section 
+          title={isRtl ? 'مدت زمان فعالیت ربات' : 'Bot Activity Duration'} 
+          icon={<Bot size={16} />}
+          defaultOpen={false}
+        >
+          <p className="text-xs text-muted-foreground">
+            {isRtl ? 'تنظیمات مدت زمان جستجوی خودکار' : 'Auto search duration settings'}
+          </p>
+        </Section>
+
+        {/* نوع سالن */}
+        <Section title={isRtl ? 'نوع سالن' : 'Compartment Type'}>
+          <div className="space-y-3">
+            {compartmentOptions.map((option) => {
+              const isSelected = compartmentTypes.includes(option.id);
+              return (
+                <label
+                  key={option.id}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => toggleCompartment(option.id)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <span className="text-sm group-hover:text-primary transition-colors">{option.label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </Section>
+
+        {/* زمان حرکت */}
+        <Section title={isRtl ? 'زمان حرکت (قطار رفت)' : 'Departure Time'}>
+          <p className="text-xs text-muted-foreground mb-3">
+            {isRtl ? 'بازه زمانی حضور در ایستگاه قطار' : 'Time range at the train station'}
+          </p>
           <div className="flex gap-2 justify-between">
             {timeSlotOptions.map((slot) => {
               const isActive = departureTimeSlots.includes(slot.id);
               const IconComp = slot.icon;
+              const [top, bottom] = slot.sublabel.split('\n');
               return (
                 <button
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-lg border text-xs font-medium transition-all aspect-square max-w-[56px]",
+                    "flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg border transition-all aspect-square max-w-[52px]",
                     isActive
-                      ? "border-primary bg-primary/10 text-primary shadow-sm"
-                      : "border-border/50 bg-muted/20 text-muted-foreground hover:border-primary/40 hover:bg-muted/40"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border/50 bg-muted/20 text-muted-foreground hover:border-primary/40"
                   )}
                 >
-                  <IconComp size={16} className={cn(isActive ? "text-primary" : "text-muted-foreground/60")} />
-                  <span className="font-bold text-[11px] leading-none">{slot.sublabel}</span>
+                  <IconComp size={16} />
+                  <div className="flex flex-col items-center leading-none text-[11px] font-bold">
+                    <span>{top}</span>
+                    <span>{bottom}</span>
+                  </div>
                 </button>
               );
             })}
           </div>
-        </div>
+        </Section>
 
-        {/* Compartment Type - Card style */}
-        <div>
-          <Label className="text-sm font-semibold text-primary mb-3 block">
-            {isRtl ? 'نوع سالن' : 'Compartment Type'}
-          </Label>
-          <div className="space-y-2">
-            {compartmentOptions.map((option) => {
-              const isSelected = compartmentTypes.includes(option.id);
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => toggleCompartment(option.id)}
-                  className={cn(
-                    "w-full flex items-center justify-between px-3 py-3 rounded-xl border transition-all text-sm",
-                    isSelected
-                      ? "border-primary bg-primary/10 shadow-sm"
-                      : "border-border/40 bg-muted/20 hover:border-primary/40 hover:bg-muted/40"
-                  )}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className={cn("w-4 h-4 rounded border-2 flex items-center justify-center transition-colors", isSelected ? "border-primary bg-primary" : "border-muted-foreground/40")}>
-                      {isSelected && <span className="text-primary-foreground text-[10px]">✓</span>}
-                    </span>
-                    <span className="font-medium">{option.label}</span>
-                  </span>
-                  <span className="flex gap-0.5">{renderStars(option.stars)}</span>
-                </button>
-              );
-            })}
+        {/* بازه قیمت */}
+        <Section 
+          title={isRtl ? 'بازه قیمت (تومان)' : 'Price Range'} 
+          defaultOpen={false}
+        >
+          <p className="text-xs text-muted-foreground">
+            {isRtl ? 'به زودی...' : 'Coming soon...'}
+          </p>
+        </Section>
+
+        {/* گزینه‌های اضافی */}
+        <Section title={isRtl ? 'گزینه‌های اضافی' : 'Additional Options'}>
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <Checkbox
+                checked={privateCompartment}
+                onCheckedChange={(checked) => {
+                  markInteracted();
+                  setPrivateCompartment(!!checked);
+                  notifyChange({ privateCompartment: !!checked });
+                }}
+              />
+              <span className="text-sm group-hover:text-primary transition-colors">
+                {isRtl ? 'کوپه دربست' : 'Private Compartment'}
+              </span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <Checkbox
+                checked={foreignNational}
+                onCheckedChange={(checked) => {
+                  markInteracted();
+                  setForeignNational(!!checked);
+                  notifyChange({ foreignNational: !!checked });
+                }}
+              />
+              <span className="text-sm group-hover:text-primary transition-colors">
+                {isRtl ? 'اتباع خارجی' : 'Foreign National'}
+              </span>
+            </label>
           </div>
-        </div>
+        </Section>
 
-        {/* Description */}
-        <div>
+        {/* توضیحات خاص */}
+        <div className="pt-3">
           <Label className="text-sm font-semibold text-primary mb-2 block">
-            {isRtl ? 'توضیحات تکمیلی (اجباری برای درخواست‌های خاص)' : 'Additional Notes (required for special requests)'}
+            {isRtl ? 'توضیحات خاص' : 'Special Notes'}
           </Label>
           <Textarea
-            placeholder={isRtl ? 'مثلاً: اگر بلیط پیدا نشد، روز بعد هم مشکلی ندارد / حتما کوپه دربست باشد...' : 'e.g.: If no ticket found, next day is also fine...'}
+            placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
             value={customerNotes}
-            onChange={(e) => handleNotesChange(e.target.value)}
-            className="min-h-[100px] resize-none text-sm"
+            onChange={(e) => {
+              markInteracted();
+              setCustomerNotes(e.target.value);
+              notifyChange({ customerNotes: e.target.value });
+            }}
+            className="min-h-[80px] resize-none text-sm"
             maxLength={500}
           />
           <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
             {customerNotes.length}/500
           </p>
         </div>
-      </div>
 
+      </div>
     </div>
   );
 };

@@ -447,37 +447,22 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
           <div className="px-4 sm:px-8 py-4 sm:py-6 border-t border-white/30 bg-white/20">
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">
-                {/* Existing account toggle */}
-                <div className="flex items-center gap-3 mb-4">
-                  <Checkbox
-                    id="has-account"
-                    checked={hasExistingAccount}
-                    onCheckedChange={(checked) => setHasExistingAccount(checked === true)}
-                  />
-                  <label htmlFor="has-account" className="text-sm text-muted-foreground cursor-pointer">
-                    {isRTL ? 'قبلاً ثبت‌نام کرده‌ام (ورود به حساب موجود)' : 'I already have an account (login)'}
-                  </label>
-                </div>
-
-                <div className="flex items-center gap-2 mb-3 sm:mb-4 text-muted-foreground justify-end">
+                <div className={`flex items-center gap-2 mb-3 text-muted-foreground ${isRTL ? 'justify-end' : 'justify-start'}`}>
                   <p className="text-xs sm:text-sm">
                     {isRTL ? 'شماره موبایل خود را وارد کنید' : 'Enter your mobile number'}
                   </p>
                   <Smartphone className="size-4 text-sky-500 shrink-0" />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-end">
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
                   {/* Mobile input */}
-                  <div className="space-y-2">
-                    <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getFieldLabel('mobile')}
-                    </label>
+                  <div className="flex-1">
                     <Input
                       type="tel"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
                       placeholder="09xxxxxxxxx"
-                      className="h-10 text-sm bg-sky-50/80 border-sky-100"
+                      className="h-12 text-sm bg-sky-50/80 border-sky-100"
                       dir="ltr"
                       maxLength={11}
                     />
@@ -487,7 +472,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                   <Button
                     type="button"
                     variant="default"
-                    className="h-10 bg-sky-500 hover:bg-sky-600 text-white text-sm whitespace-nowrap"
+                    size="sm"
+                    className="h-9 px-4 bg-sky-500 hover:bg-sky-600 text-white text-xs whitespace-nowrap"
                     onClick={() => {
                       if (!mobile || mobile.length < 11) {
                         toast({
@@ -504,31 +490,26 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                       });
                     }}
                   >
-                    <Smartphone className="size-4 ml-1" />
-                    {isRTL ? 'ارسال کد تایید' : 'Send OTP'}
+                    <Smartphone className="size-3.5 ml-1" />
+                    {isRTL ? 'ارسال کد' : 'Send OTP'}
                   </Button>
 
-                  {/* OTP input (appears after sending) */}
-                  {otpSent ? (
-                    <div className="space-y-2">
-                      <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                        {isRTL ? 'کد تایید' : 'OTP Code'}
-                      </label>
-                      <Input
-                        type="text"
-                        value={otpCode}
-                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                        placeholder="_ _ _ _ _"
-                        className="h-10 text-sm bg-sky-50/80 border-sky-100 text-center tracking-widest"
-                        dir="ltr"
-                        maxLength={5}
-                      />
-                    </div>
-                  ) : (
-                    <div className="bg-sky-50 border border-sky-200 rounded-lg p-2.5 text-xs text-sky-700 text-right">
-                      📱 {isRTL ? 'کد تایید ۵ رقمی پیامک خواهد شد' : 'A 5-digit OTP will be sent'}
-                    </div>
-                  )}
+                  {/* OTP input */}
+                  <div className="w-full sm:w-32">
+                    <Input
+                      type="text"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                      placeholder="- - - - -"
+                      className={cn(
+                        "h-12 text-sm text-center tracking-widest border-sky-100",
+                        otpSent ? "bg-sky-50/80" : "bg-muted/30 opacity-50 cursor-not-allowed"
+                      )}
+                      dir="ltr"
+                      maxLength={5}
+                      disabled={!otpSent}
+                    />
+                  </div>
                 </div>
               </div>
 

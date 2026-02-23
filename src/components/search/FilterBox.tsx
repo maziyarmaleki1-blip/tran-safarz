@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Clock } from 'lucide-react';
+import { Clock, Sunrise, Sun, Sunset, Moon } from 'lucide-react';
 
 interface FilterBoxProps {
   onFilterChange?: (filters: FilterState) => void;
@@ -32,11 +32,11 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', label: 'همه', sublabel: '۰۰-۲۴' },
-  { id: '0-6', label: 'صبح', sublabel: '۰۰-۰۶' },
-  { id: '6-12', label: 'ظهر', sublabel: '۰۶-۱۲' },
-  { id: '12-18', label: 'عصر', sublabel: '۱۲-۱۸' },
-  { id: '18-24', label: 'شب', sublabel: '۱۸-۲۴' },
+  { id: '0-24', label: 'همه', sublabel: '۰-۲۴', icon: Clock },
+  { id: '0-6', label: 'صبح', sublabel: '۰-۶', icon: Sunrise },
+  { id: '6-12', label: 'ظهر', sublabel: '۶-۱۲', icon: Sun },
+  { id: '12-18', label: 'عصر', sublabel: '۱۲-۱۸', icon: Sunset },
+  { id: '18-24', label: 'شب', sublabel: '۱۸-۲۴', icon: Moon },
 ];
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
@@ -152,22 +152,24 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
           <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'زمان حرکت' : 'Departure Time'}
           </Label>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {timeSlotOptions.map((slot) => {
               const isActive = departureTimeSlots.includes(slot.id);
+              const IconComp = slot.icon;
               return (
                 <button
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex-1 min-w-0 py-2.5 rounded-lg border text-xs font-medium transition-all flex flex-col items-center gap-1",
+                    "flex items-center gap-1.5 px-3 py-2 rounded-full border text-xs font-medium transition-all whitespace-nowrap",
                     isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-sm"
                       : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <div className="font-bold leading-tight truncate text-xs">{slot.label}</div>
-                  <div className="text-[10px] opacity-70">{slot.sublabel}</div>
+                  <IconComp size={14} className={cn(isActive ? "text-primary-foreground/80" : "text-muted-foreground/60")} />
+                  <span className="font-bold">{slot.label}</span>
+                  <span className={cn("text-[10px]", isActive ? "text-primary-foreground/70" : "text-muted-foreground/50")}>{slot.sublabel}</span>
                 </button>
               );
             })}

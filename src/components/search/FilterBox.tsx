@@ -199,8 +199,8 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
               <span>{isRtl ? 'تا' : 'To'}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
+              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
             </div>
             <Slider
               value={priceRange}
@@ -213,11 +213,11 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                 setPriceRange(newRange);
                 notifyChange({ priceRange: newRange });
               }}
-              className="dir-ltr"
-              dir="ltr"
+              dir={isRtl ? 'rtl' : 'ltr'}
             />
             <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-              <span>{formatPrice(100000)}</span>
+              <span>{formatPrice(isRtl ? 5000000 : 100000)}</span>
+              <span>{formatPrice(isRtl ? 100000 : 5000000)}</span>
               <span>{formatPrice(5000000)}</span>
             </div>
           </div>

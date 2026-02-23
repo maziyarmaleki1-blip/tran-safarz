@@ -40,7 +40,7 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
   const getStatusText = (status?: string) => {
     switch (status) {
       case 'sold_out':
-        return { text: 'تمام شد', className: 'text-destructive' };
+        return { text: 'شکار این بلیط 🎯', className: 'sniper-btn', isButton: true };
       case 'few_left':
         return { text: 'چند صندلی', className: 'text-amber-600' };
       default:
@@ -48,7 +48,20 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
     }
   };
 
-  const statusInfo = getStatusText(train.status);
+  const statusInfo = getStatusText(train.status) as { text: string; className: string; isButton?: boolean };
+
+  const StatusDisplay = () => {
+    if (statusInfo.isButton) {
+      return (
+        <button className="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.4)] transition-all hover:shadow-[0_0_25px_rgba(249,115,22,0.6)]">
+          {statusInfo.text}
+        </button>
+      );
+    }
+    return (
+      <span className={`font-semibold ${statusInfo.className}`}>{statusInfo.text}</span>
+    );
+  };
 
   return (
     <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-xl hover:shadow-md transition-all">
@@ -87,8 +100,8 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
         </div>
 
         {/* Status */}
-        <div className={`text-center min-w-[70px] font-semibold ${statusInfo.className}`}>
-          {statusInfo.text}
+        <div className="text-center min-w-[120px]">
+          <StatusDisplay />
         </div>
       </div>
 
@@ -105,9 +118,7 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
               <p className="text-xs text-muted-foreground">قطار {train.number}</p>
             </div>
           </div>
-          <span className={`text-sm font-semibold ${statusInfo.className}`}>
-            {statusInfo.text}
-          </span>
+          <StatusDisplay />
         </div>
 
         {/* Info Row */}

@@ -124,12 +124,12 @@
    };
  
    // Timeline steps configuration
-   const timelineSteps = [
-     { key: 'submitted', label: 'ثبت درخواست', icon: 'edit_note' },
-     { key: 'confirmed', label: 'تأیید رزرو', icon: 'verified' },
-     { key: 'ticket', label: 'صدور بلیط', icon: 'confirmation_number' },
-     { key: 'travel', label: 'سفر', icon: 'train' },
-   ];
+    const timelineSteps = [
+      { key: 'submitted', label: 'ثبت درخواست', icon: 'edit_note' },
+      { key: 'confirmed', label: stage === 'pending' ? '🤖 رصد ربات' : 'تأیید رزرو', icon: stage === 'pending' ? 'radar' : 'verified' },
+      { key: 'ticket', label: 'صدور بلیط', icon: 'confirmation_number' },
+      { key: 'travel', label: 'سفر', icon: 'train' },
+    ];
  
    const getStepStatus = (stepKey: string) => {
      if (reservation.status === 'cancelled') {
@@ -180,14 +180,19 @@
                </div>
                
                <div className="text-left">
-                 <Badge variant="outline" className={`mb-1 ${
-                   reservation.status === 'confirmed' ? 'bg-success/10 text-success border-success/20' :
-                   reservation.status === 'cancelled' ? 'bg-destructive/10 text-destructive border-destructive/20' :
-                   'bg-gold/10 text-gold-dark border-gold/20'
-                 }`}>
-                   {reservation.status === 'confirmed' ? 'تأیید شده' :
-                    reservation.status === 'cancelled' ? 'لغو شده' : 'در انتظار'}
-                 </Badge>
+                  <Badge variant="outline" className={`mb-1 ${
+                    reservation.status === 'confirmed' ? 'bg-success/10 text-success border-success/20' :
+                    reservation.status === 'cancelled' ? 'bg-destructive/10 text-destructive border-destructive/20' :
+                    'bg-orange-500/10 text-orange-600 border-orange-500/20'
+                  }`}>
+                    {reservation.status === 'confirmed' ? 'تأیید شده' :
+                     reservation.status === 'cancelled' ? 'لغو شده' : (
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        🤖 ربات در حال رصد...
+                      </span>
+                     )}
+                  </Badge>
                  <p className="text-xs text-muted-foreground">کد: {reservation.reservation_code}</p>
                </div>
              </div>
@@ -246,13 +251,21 @@
                  </Button>
                )}
  
-               {/* Ticket in preparation */}
-               {reservation.status === 'confirmed' && !reservation.ticket_file_path && (
-                 <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
-                   <span className="material-symbols-outlined text-sm animate-pulse">hourglass_empty</span>
-                   بلیط در حال آماده‌سازی
-                 </div>
-               )}
+                {/* Bot actively searching */}
+                {reservation.status === 'pending' && (
+                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-500/10 border border-orange-500/20 px-3 py-1.5 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <span>🤖 ربات در حال رصد ثانیه‌ای ظرفیت‌هاست...</span>
+                  </div>
+                )}
+
+                {/* Ticket in preparation */}
+                {reservation.status === 'confirmed' && !reservation.ticket_file_path && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
+                    <span className="material-symbols-outlined text-sm animate-pulse">hourglass_empty</span>
+                    بلیط در حال آماده‌سازی
+                  </div>
+                )}
  
                {/* Request cancellation */}
                {(reservation.status === 'pending' || reservation.status === 'confirmed') && 

@@ -88,6 +88,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     Array(passengerCount).fill(false)
   );
   const [autoFilled, setAutoFilled] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
 
   // Auto-fill first passenger from profile if logged in
   useEffect(() => {
@@ -464,51 +466,69 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                   <Smartphone className="size-4 text-sky-500 shrink-0" />
                 </div>
 
-                <div className="space-y-4">
-                  {/* Mobile input + Send button */}
-                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-                    <div className="space-y-2 flex-1 w-full">
-                      <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                        {getFieldLabel('mobile')}
-                      </label>
-                      <Input
-                        type="tel"
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value)}
-                        placeholder="09xxxxxxxxx"
-                        className="h-10 text-sm bg-sky-50/80 border-sky-100"
-                        dir="ltr"
-                        maxLength={11}
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="default"
-                      className="h-10 px-6 bg-sky-500 hover:bg-sky-600 text-white whitespace-nowrap w-full sm:w-auto"
-                      onClick={() => {
-                        if (!mobile || mobile.length < 11) {
-                          toast({
-                            title: isRTL ? 'خطا' : 'Error',
-                            description: isRTL ? 'لطفاً شماره موبایل معتبر وارد کنید' : 'Please enter a valid mobile number',
-                            variant: 'destructive',
-                          });
-                          return;
-                        }
-                        toast({
-                          title: isRTL ? 'ارسال پیامک' : 'SMS Sent',
-                          description: isRTL ? `کد تایید به ${mobile} ارسال شد` : `OTP sent to ${mobile}`,
-                        });
-                      }}
-                    >
-                      <Smartphone className="size-4 ml-2" />
-                      {isRTL ? 'ارسال کد تایید' : 'Send OTP'}
-                    </Button>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-end">
+                  {/* Mobile input */}
+                  <div className="space-y-2">
+                    <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {getFieldLabel('mobile')}
+                    </label>
+                    <Input
+                      type="tel"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      placeholder="09xxxxxxxxx"
+                      className="h-10 text-sm bg-sky-50/80 border-sky-100"
+                      dir="ltr"
+                      maxLength={11}
+                    />
                   </div>
 
-                  {/* OTP info box */}
-                  <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sm text-sky-700 text-right">
-                    <p>📱 {isRTL ? 'کد تایید ۵ رقمی به شماره موبایل شما پیامک خواهد شد.' : 'A 5-digit OTP will be sent to your mobile.'}</p>
-                  </div>
+                  {/* Send OTP button */}
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="h-10 bg-sky-500 hover:bg-sky-600 text-white text-sm whitespace-nowrap"
+                    onClick={() => {
+                      if (!mobile || mobile.length < 11) {
+                        toast({
+                          title: isRTL ? 'خطا' : 'Error',
+                          description: isRTL ? 'لطفاً شماره موبایل معتبر وارد کنید' : 'Please enter a valid mobile number',
+                          variant: 'destructive',
+                        });
+                        return;
+                      }
+                      setOtpSent(true);
+                      toast({
+                        title: isRTL ? 'ارسال پیامک' : 'SMS Sent',
+                        description: isRTL ? `کد تایید به ${mobile} ارسال شد` : `OTP sent to ${mobile}`,
+                      });
+                    }}
+                  >
+                    <Smartphone className="size-4 ml-1" />
+                    {isRTL ? 'ارسال کد تایید' : 'Send OTP'}
+                  </Button>
+
+                  {/* OTP input (appears after sending) */}
+                  {otpSent ? (
+                    <div className="space-y-2">
+                      <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {isRTL ? 'کد تایید' : 'OTP Code'}
+                      </label>
+                      <Input
+                        type="text"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                        placeholder="_ _ _ _ _"
+                        className="h-10 text-sm bg-sky-50/80 border-sky-100 text-center tracking-widest"
+                        dir="ltr"
+                        maxLength={5}
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-sky-50 border border-sky-200 rounded-lg p-2.5 text-xs text-sky-700 text-right">
+                      📱 {isRTL ? 'کد تایید ۵ رقمی پیامک خواهد شد' : 'A 5-digit OTP will be sent'}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -562,7 +582,7 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
               onClick={handleSubmit}
               className="h-11 px-8 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg"
             >
-              {isRTL ? 'تکمیل رزرو' : 'Complete Booking'}
+              {isRTL ? (user ? 'تکمیل رزرو' : 'ورود و تکمیل رزرو') : (user ? 'Complete Booking' : 'Login & Complete Booking')}
             </Button>
           </div>
         </div>

@@ -62,10 +62,33 @@ const Contact = () => {
                 </div>
               </Card>
             ))}
+
+            {/* Map */}
+            <Card className="overflow-hidden bg-card/95 backdrop-blur-md border-border/50">
+              <div className="p-4 pb-2">
+                <h3 className="font-bold flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">map</span>
+                  موقعیت ما روی نقشه
+                </h3>
+              </div>
+              <div className="px-4 pb-4">
+                <div className="rounded-lg overflow-hidden border border-border/50">
+                  <iframe
+                    title="نقشه آدرس سفرز"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=59.56%2C36.30%2C59.62%2C36.33&layer=mapnik&marker=36.315%2C59.588"
+                    width="100%"
+                    height="280"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </Card>
           </div>
 
           {/* Contact Form */}
-          <Card className="p-6 bg-card/95 backdrop-blur-md border-border/50">
+          <Card className="p-6 bg-card/95 backdrop-blur-md border-border/50 h-fit">
             <h2 className="text-2xl font-bold mb-6">ارسال پیام</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">

@@ -166,25 +166,6 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
         });
         return;
       }
-
-      if (password.length < 6) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? 'رمز عبور باید حداقل 6 کاراکتر باشد' : 'Password must be at least 6 characters',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Only check confirm password if registering new account
-      if (!hasExistingAccount && password !== confirmPassword) {
-        toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? 'رمز عبور و تکرار آن مطابقت ندارند' : 'Passwords do not match',
-          variant: 'destructive',
-        });
-        return;
-      }
     }
 
     // Validate rules acceptance

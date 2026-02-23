@@ -1,16 +1,8 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
@@ -33,52 +25,37 @@ export interface FilterState {
 }
 
 const compartmentOptions = [
-  { id: '6تخته3ستاره', label: '۶ تخته ۳ ستاره' },
-  { id: '4تخته4ستاره', label: '۴ تخته ۴ ستاره' },
-  { id: '4تخته5ستاره', label: '۴ تخته ۵ ستاره' },
+  { id: '6تخته3ستاره', label: '۶ تخته ۳ ستاره', icon: '🛏️' },
+  { id: '4تخته4ستاره', label: '۴ تخته ۴ ستاره', icon: '⭐' },
+  { id: '4تخته5ستاره', label: '۴ تخته ۵ ستاره', icon: '🌟' },
 ];
 
-const timeSlotOptions = [
-  { id: '0-24', label: '۰', sublabel: '۲۴' },
-  { id: '0-6', label: '۰', sublabel: '۶' },
-  { id: '6-12', label: '۶', sublabel: '۱۲' },
-  { id: '12-18', label: '۱۲', sublabel: '۱۸' },
-  { id: '18-24', label: '۱۸', sublabel: '۲۴' },
+const timeSlotCards = [
+  { id: '6-12', label: 'صبح', sublabel: '۶ تا ۱۲', icon: '🌅' },
+  { id: '12-18', label: 'ظهر', sublabel: '۱۲ تا ۱۸', icon: '☀️' },
+  { id: '18-24', label: 'عصر', sublabel: '۱۸ تا ۲۴', icon: '🌇' },
+  { id: '0-6', label: 'شب', sublabel: '۰ تا ۶', icon: '🌙' },
 ];
 
 export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const { language } = useLanguage();
   const isRtl = language === 'fa';
 
-  const [priceRange, setPriceRange] = useState<[number, number]>([440000, 2450000]);
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>([]);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
   const [customerNotes, setCustomerNotes] = useState<string>('');
-  const [privateCompartment, setPrivateCompartment] = useState(false);
-  const [foreignNational, setForeignNational] = useState(false);
-  const [botDuration, setBotDuration] = useState<string>('until-departure');
-
-  const formatPrice = (price: number) => {
-    return price.toLocaleString('fa-IR');
-  };
 
   const notifyChange = (newFilters: Partial<FilterState>) => {
     const filters: FilterState = {
-      priceRange,
+      priceRange: [440000, 2450000],
       departureTimeSlots,
       compartmentTypes,
       customerNotes,
-      privateCompartment,
-      foreignNational,
-      botDuration,
+      privateCompartment: false,
+      foreignNational: false,
       ...newFilters,
     };
     onFilterChange?.(filters);
-  };
-
-  const handlePriceChange = (value: [number, number]) => {
-    setPriceRange(value);
-    notifyChange({ priceRange: value });
   };
 
   const toggleTimeSlot = (id: string) => {
@@ -103,207 +80,119 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const clearFilters = () => {
-    const defaultFilters: FilterState = {
+    setDepartureTimeSlots([]);
+    setCompartmentTypes([]);
+    setCustomerNotes('');
+    onFilterChange?.({
       priceRange: [440000, 2450000],
       departureTimeSlots: [],
       compartmentTypes: [],
       customerNotes: '',
       privateCompartment: false,
       foreignNational: false,
-    };
-    setPriceRange(defaultFilters.priceRange);
-    setDepartureTimeSlots(defaultFilters.departureTimeSlots);
-    setCompartmentTypes(defaultFilters.compartmentTypes);
-    setCustomerNotes(defaultFilters.customerNotes);
-    setPrivateCompartment(false);
-    setForeignNational(false);
-    setBotDuration('until-departure');
-    onFilterChange?.(defaultFilters);
+    });
   };
 
   return (
-    <div className="bg-card/90 backdrop-blur-md rounded-2xl border border-border/50 p-4 shadow-soft sticky top-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
-        <h3 className="font-bold text-foreground">
-          {isRtl ? 'فیلتر نتایج' : 'Filter Results'}
-        </h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={clearFilters}
-          className="text-destructive hover:text-destructive/80 text-xs gap-1"
-        >
-          <span className="material-symbols-outlined text-sm">filter_alt_off</span>
-          {isRtl ? 'لغو فیلترها' : 'Clear'}
-        </Button>
-      </div>
+    <div className="bg-card/90 backdrop-blur-md rounded-2xl border border-border/50 shadow-soft flex flex-col" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-border/50">
+          <h3 className="font-bold text-foreground">
+            {isRtl ? 'جزئیات رزرو' : 'Reservation Details'}
+          </h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="text-destructive hover:text-destructive/80 text-xs gap-1"
+          >
+            <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+            {isRtl ? 'پاک‌سازی' : 'Clear'}
+          </Button>
+        </div>
 
-      <Accordion type="multiple" defaultValue={['bot-duration', 'compartment', 'departure', 'price']} className="space-y-1">
-        {/* Bot Duration */}
-        <AccordionItem value="bot-duration" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-orange-500">
-            <span className="flex items-center gap-2">
-              🤖 {isRtl ? 'مدت زمان فعالیت ربات' : 'Bot Active Duration'}
-            </span>
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            <p className="text-xs text-muted-foreground mb-3">
-              {isRtl ? 'ربات تا چه زمانی سایت‌ها را بررسی کند؟' : 'How long should the bot monitor?'}
-            </p>
-            <RadioGroup
-              value={botDuration}
-              onValueChange={(value) => {
-                setBotDuration(value);
-                notifyChange({ botDuration: value });
-              }}
-              className="space-y-3"
-            >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="24h-before" id="24h" />
-                <Label htmlFor="24h" className="cursor-pointer text-sm">تا ۲۴ ساعت قبل از حرکت</Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="6h-before" id="6h" />
-                <Label htmlFor="6h" className="cursor-pointer text-sm">تا ۶ ساعت قبل از حرکت</Label>
-              </div>
-              <div className="flex items-center gap-3 bg-primary/5 p-2 rounded-lg border border-primary/20">
-                <RadioGroupItem value="until-departure" id="until-dep" />
-                <Label htmlFor="until-dep" className="cursor-pointer text-sm font-medium text-primary">
-                  تا لحظه حرکت (پیشنهادی) ✨
-                </Label>
-              </div>
-            </RadioGroup>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Compartment Type - First */}
-        <AccordionItem value="compartment" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
-            {isRtl ? 'نوع سالن' : 'Compartment Type'}
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            <div className="space-y-3">
-              {compartmentOptions.map((option) => (
-                <label
-                  key={option.id}
-                  className="flex items-center justify-between cursor-pointer text-sm"
-                >
-                  <span>{option.label}</span>
-                  <Checkbox
-                    checked={compartmentTypes.includes(option.id)}
-                    onCheckedChange={() => toggleCompartment(option.id)}
-                  />
-                </label>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Departure Time Slots */}
-        <AccordionItem value="departure" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
-            {isRtl ? 'زمان حرکت (قطار رفت)' : 'Departure Time'}
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            <p className="text-xs text-muted-foreground mb-3">
-              {isRtl ? 'بازه زمانی حضور در ایستگاه قطار' : 'Time range at station'}
-            </p>
-            <div className="grid grid-cols-5 gap-2">
-              {timeSlotOptions.map((slot) => (
+        {/* Departure Time - 2x2 Grid Cards */}
+        <div>
+          <Label className="text-sm font-semibold text-primary mb-3 block">
+            {isRtl ? 'زمان حرکت' : 'Departure Time'}
+          </Label>
+          <div className="grid grid-cols-2 gap-2">
+            {timeSlotCards.map((slot) => {
+              const isActive = departureTimeSlots.includes(slot.id);
+              return (
                 <button
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all",
-                    departureTimeSlots.includes(slot.id)
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 hover:border-primary/50"
+                    "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all min-h-[72px]",
+                    isActive
+                      ? "border-primary bg-primary/10 text-primary shadow-sm"
+                      : "border-border/50 bg-muted/30 hover:border-primary/40 hover:bg-muted/50"
                   )}
                 >
-                  <span className="text-lg mb-1">⏰</span>
-                  <span className="text-base font-bold">{slot.label}</span>
-                  <span className="text-xs text-muted-foreground">{slot.sublabel}</span>
+                  <span className="text-xl mb-1">{slot.icon}</span>
+                  <span className="text-sm font-bold">{slot.label}</span>
+                  <span className="text-[11px] text-muted-foreground">({slot.sublabel})</span>
                 </button>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+              );
+            })}
+          </div>
+        </div>
 
-        {/* Price Range */}
-        <AccordionItem value="price" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
-            {isRtl ? 'بازه قیمت (تومان)' : 'Price Range (Toman)'}
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            <Slider
-              value={priceRange}
-              min={100000}
-              max={3000000}
-              step={50000}
-              onValueChange={(value) => handlePriceChange(value as [number, number])}
-              className="mb-3"
-            />
-            <div className="flex justify-between text-base font-semibold text-foreground" dir="ltr">
-              <span>{formatPrice(priceRange[0])}</span>
-              <span>{formatPrice(priceRange[1])}</span>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Customer Notes */}
-        <AccordionItem value="options" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-semibold hover:no-underline text-primary">
-            {isRtl ? 'گزینه‌های اضافی' : 'Additional Options'}
-          </AccordionTrigger>
-          <AccordionContent className="pt-2 pb-4">
-            {/* Checkboxes */}
-            <div className="space-y-3 mb-4">
-              <label className="flex items-center justify-between cursor-pointer text-sm">
-                <span>{isRtl ? 'کوپه دربست' : 'Private Compartment'}</span>
+        {/* Compartment Type */}
+        <div>
+          <Label className="text-sm font-semibold text-primary mb-3 block">
+            {isRtl ? 'نوع سالن' : 'Compartment Type'}
+          </Label>
+          <div className="space-y-1">
+            {compartmentOptions.map((option) => (
+              <label
+                key={option.id}
+                className={cn(
+                  "flex items-center justify-between cursor-pointer text-sm px-3 py-3 rounded-lg transition-colors",
+                  compartmentTypes.includes(option.id)
+                    ? "bg-primary/5"
+                    : "hover:bg-muted/50"
+                )}
+              >
+                <span className="flex items-center gap-2">
+                  <span>{option.icon}</span>
+                  <span>{option.label}</span>
+                </span>
                 <Checkbox
-                  checked={privateCompartment}
-                  onCheckedChange={(checked) => {
-                    setPrivateCompartment(!!checked);
-                    notifyChange({ privateCompartment: !!checked });
-                  }}
+                  checked={compartmentTypes.includes(option.id)}
+                  onCheckedChange={() => toggleCompartment(option.id)}
                 />
               </label>
-              <label className="flex items-center justify-between cursor-pointer text-sm">
-                <span>{isRtl ? 'اتباع خارجی' : 'Foreign National'}</span>
-                <Checkbox
-                  checked={foreignNational}
-                  onCheckedChange={(checked) => {
-                    setForeignNational(!!checked);
-                    notifyChange({ foreignNational: !!checked });
-                  }}
-                />
-              </label>
-            </div>
+            ))}
+          </div>
+        </div>
 
-            {/* Notes textarea */}
-            <p className="text-xs text-muted-foreground mb-2">
-              {isRtl ? 'توضیحات خاص' : 'Special Notes'}
-            </p>
-            <Textarea
-              placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
-              value={customerNotes}
-              onChange={(e) => handleNotesChange(e.target.value)}
-              className="min-h-[80px] resize-none text-sm"
-              maxLength={500}
-            />
-            <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
-              {customerNotes.length}/500
-            </p>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+        {/* Description */}
+        <div>
+          <Label className="text-sm font-semibold text-primary mb-2 block">
+            {isRtl ? 'توضیحات تکمیلی (اجباری برای درخواست‌های خاص)' : 'Additional Notes (required for special requests)'}
+          </Label>
+          <Textarea
+            placeholder={isRtl ? 'مثلاً: اگر بلیط پیدا نشد، روز بعد هم مشکلی ندارد / حتما کوپه دربست باشد...' : 'e.g.: If no ticket found, next day is also fine...'}
+            value={customerNotes}
+            onChange={(e) => handleNotesChange(e.target.value)}
+            className="min-h-[100px] resize-none text-sm"
+            maxLength={500}
+          />
+          <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
+            {customerNotes.length}/500
+          </p>
+        </div>
+      </div>
 
-      {/* Submit Button */}
-      <div className="mt-6 pt-4 border-t border-border/50">
-        <Button 
+      {/* Sticky Submit Button */}
+      <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-md rounded-b-2xl">
+        <Button
           onClick={onSubmit}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3"
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 text-base"
           size="lg"
         >
           <span className="material-symbols-outlined ml-2">check_circle</span>

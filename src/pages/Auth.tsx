@@ -9,8 +9,10 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { Smartphone, CheckCircle2 } from 'lucide-react';
 import heroImage from '@/assets/hero-train.jpg';
 import logo from '@/assets/logo.png';
+import { cn } from '@/lib/utils';
 
 const Auth = () => {
   const { t } = useLanguage();
@@ -19,16 +21,20 @@ const Auth = () => {
   const { user, signIn, signUp } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  // Form states
-  const [loginPhone, setLoginPhone] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  // Shared states
+  const [phone, setPhone] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+
+  // Register extra fields
   const [registerFirstName, setRegisterFirstName] = useState('');
   const [registerLastName, setRegisterLastName] = useState('');
-  const [registerPhone, setRegisterPhone] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
+
+  // Track active tab
+  const [activeTab, setActiveTab] = useState('login');
 
   // Helper to convert phone to email format for Supabase
-  const phoneToEmail = (phone: string) => `${phone.replace(/\s/g, '')}@phone.local`;
+  const phoneToEmail = (p: string) => `${p.replace(/\s/g, '')}@phone.local`;
 
   // Redirect if already logged in
   useEffect(() => {
@@ -37,61 +43,92 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
+  // Reset OTP state when switching tabs
+  useEffect(() => {
+    setOtpSent(false);
+    setOtpCode('');
+  }, [activeTab]);
+
+  const handleSendOtp = () => {
+    if (!phone || phone.length < 11) {
+      toast({
+        title: 'خطا',
+        description: 'لطفاً شماره موبایل معتبر وارد کنید',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setOtpSent(true);
+    toast({
+      title: 'ارسال پیامک',
+      description: `کد تایید به ${phone} ارسال شد`,
+    });
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (otpCode.length < 5) {
+      toast({ title: 'خطا', description: 'کد تایید ۵ رقمی را وارد کنید', variant: 'destructive' });
+      return;
+    }
     setLoading(true);
-    
-    const email = phoneToEmail(loginPhone);
-    const { error } = await signIn(email, loginPassword);
-    
+
+    // Using OTP code as password for now (simulated)
+    const email = phoneToEmail(phone);
+    const { error } = await signIn(email, otpCode);
+
     if (error) {
-      toast({ 
-        title: 'خطا در ورود', 
-        description: error.message === 'Invalid login credentials' 
-          ? 'شماره موبایل یا رمز عبور اشتباه است' 
-          : error.message,
-        variant: 'destructive'
+      toast({
+        title: 'خطا در ورود',
+        description: 'شماره موبایل یا کد تایید اشتباه است',
+        variant: 'destructive',
       });
     } else {
       toast({ title: 'ورود موفق', description: 'به داشبورد منتقل می‌شوید' });
       navigate('/dashboard');
     }
-    
+
     setLoading(false);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (otpCode.length < 5) {
+      toast({ title: 'خطا', description: 'کد تایید ۵ رقمی را وارد کنید', variant: 'destructive' });
+      return;
+    }
     setLoading(true);
-    
-    const email = phoneToEmail(registerPhone);
-    const { error } = await signUp(email, registerPassword, {
+
+    const email = phoneToEmail(phone);
+    const { error } = await signUp(email, otpCode, {
       first_name: registerFirstName,
       last_name: registerLastName,
-      phone_number: registerPhone,
+      phone_number: phone,
     });
-    
+
     if (error) {
-      toast({ 
-        title: 'خطا در ثبت نام', 
+      toast({
+        title: 'خطا در ثبت نام',
         description: error.message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } else {
-      toast({ 
-        title: 'ثبت نام موفق', 
-        description: 'حساب شما با موفقیت ایجاد شد' 
+      toast({
+        title: 'ثبت نام موفق',
+        description: 'حساب شما با موفقیت ایجاد شد',
       });
       navigate('/dashboard');
     }
-    
+
     setLoading(false);
   };
+
+  const otpValid = otpCode.length === 5;
 
   return (
     <MainLayout>
       {/* Fixed Full-Screen Background */}
-      <div 
+      <div
         className="fixed inset-0 z-0"
         style={{
           backgroundImage: `url(${heroImage})`,
@@ -109,86 +146,160 @@ const Auth = () => {
             <img src={logo} alt="safarz - سفر برون مرز" className="h-28 mx-auto" />
           </div>
 
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs defaultValue="login" className="w-full" onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="login">{t('login')}</TabsTrigger>
               <TabsTrigger value="register">{t('register')}</TabsTrigger>
             </TabsList>
 
+            {/* ===== LOGIN TAB ===== */}
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
+                {/* Phone + Send OTP */}
                 <div className="space-y-2">
-                  <Label>{t('mobile')}</Label>
-                  <Input 
-                    type="tel" 
-                    placeholder="۰۹۱۲۳۴۵۶۷۸۹" 
-                    value={loginPhone}
-                    onChange={(e) => setLoginPhone(e.target.value)}
-                    required 
-                  />
+                  <Label className="flex items-center gap-1.5">
+                    <Smartphone className="size-4 text-sky-500" />
+                    {t('mobile')}
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="tel"
+                      placeholder="09xxxxxxxxx"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="h-11 flex-1"
+                      dir="ltr"
+                      maxLength={11}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-11 px-4 bg-sky-500 hover:bg-sky-600 text-white text-xs whitespace-nowrap"
+                      onClick={handleSendOtp}
+                      disabled={otpSent}
+                    >
+                      {otpSent ? '✓ ارسال شد' : 'ارسال کد'}
+                    </Button>
+                  </div>
                 </div>
+
+                {/* OTP Input */}
                 <div className="space-y-2">
-                  <Label>رمز عبور</Label>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    required 
-                    dir="ltr"
-                  />
+                  <Label>کد تایید پیامکی</Label>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="_ _ _ _ _"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                      className={cn(
+                        "h-11 text-center tracking-widest text-lg",
+                        !otpSent && "opacity-50 cursor-not-allowed",
+                        otpValid && "border-emerald-400 bg-emerald-50/50"
+                      )}
+                      dir="ltr"
+                      maxLength={5}
+                      disabled={!otpSent}
+                    />
+                    {otpValid && (
+                      <CheckCircle2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-500" />
+                    )}
+                  </div>
                 </div>
-                <Button type="submit" className="w-full gradient-primary" disabled={loading}>
+
+                <Button
+                  type="submit"
+                  className="w-full gradient-primary h-11"
+                  disabled={loading || !otpValid}
+                >
                   {loading ? 'در حال ورود...' : t('login')}
                 </Button>
               </form>
             </TabsContent>
 
+            {/* ===== REGISTER TAB ===== */}
             <TabsContent value="register">
               <form onSubmit={handleRegister} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label>{t('firstName')}</Label>
-                    <Input 
-                      placeholder="نام" 
+                    <Input
+                      placeholder="نام"
                       value={registerFirstName}
                       onChange={(e) => setRegisterFirstName(e.target.value)}
-                      required 
+                      required
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>{t('lastName')}</Label>
-                    <Input 
-                      placeholder="نام خانوادگی" 
+                    <Input
+                      placeholder="نام خانوادگی"
                       value={registerLastName}
                       onChange={(e) => setRegisterLastName(e.target.value)}
-                      required 
+                      required
                     />
                   </div>
                 </div>
+
+                {/* Phone + Send OTP */}
                 <div className="space-y-2">
-                  <Label>{t('mobile')}</Label>
-                  <Input 
-                    type="tel" 
-                    placeholder="۰۹۱۲۳۴۵۶۷۸۹" 
-                    value={registerPhone}
-                    onChange={(e) => setRegisterPhone(e.target.value)}
-                    required 
-                  />
+                  <Label className="flex items-center gap-1.5">
+                    <Smartphone className="size-4 text-sky-500" />
+                    {t('mobile')}
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="tel"
+                      placeholder="09xxxxxxxxx"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="h-11 flex-1"
+                      dir="ltr"
+                      maxLength={11}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-11 px-4 bg-sky-500 hover:bg-sky-600 text-white text-xs whitespace-nowrap"
+                      onClick={handleSendOtp}
+                      disabled={otpSent}
+                    >
+                      {otpSent ? '✓ ارسال شد' : 'ارسال کد'}
+                    </Button>
+                  </div>
                 </div>
+
+                {/* OTP Input */}
                 <div className="space-y-2">
-                  <Label>رمز عبور</Label>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    value={registerPassword}
-                    onChange={(e) => setRegisterPassword(e.target.value)}
-                    required 
-                    minLength={6}
-                    dir="ltr"
-                  />
+                  <Label>کد تایید پیامکی</Label>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="_ _ _ _ _"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                      className={cn(
+                        "h-11 text-center tracking-widest text-lg",
+                        !otpSent && "opacity-50 cursor-not-allowed",
+                        otpValid && "border-emerald-400 bg-emerald-50/50"
+                      )}
+                      dir="ltr"
+                      maxLength={5}
+                      disabled={!otpSent}
+                    />
+                    {otpValid && (
+                      <CheckCircle2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-500" />
+                    )}
+                  </div>
                 </div>
-                <Button type="submit" className="w-full gradient-primary" disabled={loading}>
+
+                <Button
+                  type="submit"
+                  className="w-full gradient-primary h-11"
+                  disabled={loading || !otpValid}
+                >
                   {loading ? 'در حال ثبت نام...' : t('register')}
                 </Button>
               </form>

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Clock, Sunrise, Sun, Sunset, Moon } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 interface FilterBoxProps {
   onFilterChange?: (filters: FilterState) => void;
@@ -32,11 +32,11 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', label: '0-24', icon: Clock },
-  { id: '0-6', label: '۰۰-۰۶', icon: Sunrise },
-  { id: '6-12', label: '۰۶-۱۲', icon: Sun },
-  { id: '12-18', label: '۱۲-۱۸', icon: Sunset },
-  { id: '18-24', label: '۱۸-۲۴', icon: Moon },
+  { id: '0-24', label: 'همه', sublabel: '۰۰-۲۴' },
+  { id: '0-6', label: 'صبح', sublabel: '۰۰-۰۶' },
+  { id: '6-12', label: 'ظهر', sublabel: '۰۶-۱۲' },
+  { id: '12-18', label: 'عصر', sublabel: '۱۲-۱۸' },
+  { id: '18-24', label: 'شب', sublabel: '۱۸-۲۴' },
 ];
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
@@ -167,6 +167,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   )}
                 >
                   <div className="font-bold leading-tight truncate text-xs">{slot.label}</div>
+                  <div className="text-[10px] opacity-70">{slot.sublabel}</div>
                 </button>
               );
             })}

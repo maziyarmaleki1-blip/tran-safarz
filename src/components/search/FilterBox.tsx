@@ -199,26 +199,45 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{isRtl ? 'تا' : 'To'}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
-              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
+              {isRtl ? (
+                <>
+                  <span>تا: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
+                  <span>از: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
+                </>
+              ) : (
+                <>
+                  <span>From: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
+                  <span>To: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
+                </>
+              )}
             </div>
-            <Slider
-              value={priceRange}
-              min={100000}
-              max={5000000}
-              step={50000}
-              onValueChange={(value) => {
-                markInteracted();
-                const newRange: [number, number] = [value[0], value[1]];
-                setPriceRange(newRange);
-                notifyChange({ priceRange: newRange });
-              }}
-              dir={isRtl ? 'rtl' : 'ltr'}
-            />
+            <div className={cn(isRtl && "[direction:ltr] [transform:scaleX(-1)]")}>
+              <Slider
+                value={priceRange}
+                min={100000}
+                max={5000000}
+                step={50000}
+                onValueChange={(value) => {
+                  markInteracted();
+                  const newRange: [number, number] = [value[0], value[1]];
+                  setPriceRange(newRange);
+                  notifyChange({ priceRange: newRange });
+                }}
+                dir="ltr"
+              />
+            </div>
             <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-              <span>{formatPrice(isRtl ? 5000000 : 100000)}</span>
-              <span>{formatPrice(isRtl ? 100000 : 5000000)}</span>
-              <span>{formatPrice(5000000)}</span>
+              {isRtl ? (
+                <>
+                  <span>{formatPrice(5000000)}</span>
+                  <span>{formatPrice(100000)}</span>
+                </>
+              ) : (
+                <>
+                  <span>{formatPrice(100000)}</span>
+                  <span>{formatPrice(5000000)}</span>
+                </>
+              )}
             </div>
           </div>
         </Section>

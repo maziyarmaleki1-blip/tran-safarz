@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Clock, Sunrise, Sun, Sunset, Moon, ChevronUp, ChevronDown, Bot } from 'lucide-react';
+import { Clock, Sunrise, Sun, Sunset, Moon, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface FilterBoxProps {
   onFilterChange?: (filters: FilterState) => void;
@@ -21,7 +21,7 @@ export interface FilterState {
   passengerType?: string;
   adultsCount?: number;
   childrenCount?: number;
-  botDuration?: string;
+  
 }
 
 const compartmentOptions = [
@@ -131,17 +131,6 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
   return (
     <div className="bg-card/90 backdrop-blur-md rounded-2xl border border-border/50 shadow-soft" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
       <div className="overflow-y-auto p-4">
-
-        {/* مدت زمان فعالیت ربات */}
-        <Section 
-          title={isRtl ? 'مدت زمان فعالیت ربات' : 'Bot Activity Duration'} 
-          icon={<Bot size={16} />}
-          defaultOpen={false}
-        >
-          <p className="text-xs text-muted-foreground">
-            {isRtl ? 'تنظیمات مدت زمان جستجوی خودکار' : 'Auto search duration settings'}
-          </p>
-        </Section>
 
         {/* نوع سالن */}
         <Section title={isRtl ? 'نوع سالن' : 'Compartment Type'}>

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 interface FilterBoxProps {
   onFilterChange?: (filters: FilterState) => void;
-  onSubmit?: () => void;
+  onHasInteracted?: (interacted: boolean) => void;
 }
 
 export interface FilterState {
@@ -38,7 +38,7 @@ const timeSlotOptions = [
   { id: '0-6', label: '۰۰-۰۶', sublabel: 'شب' },
 ];
 
-export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
+export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
   const { language } = useLanguage();
   const isRtl = language === 'fa';
 
@@ -67,13 +67,14 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const toggleTimeSlot = (id: string) => {
-    setHasInteracted(true);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      onHasInteracted?.(true);
+    }
     let newSlots: string[];
     if (id === '0-24') {
-      // Toggle all-day: if already selected, deselect. Otherwise select only 0-24.
       newSlots = departureTimeSlots.includes('0-24') ? [] : ['0-24'];
     } else {
-      // Remove 0-24 if selecting a specific slot
       const withoutAll = departureTimeSlots.filter(s => s !== '0-24');
       newSlots = withoutAll.includes(id)
         ? withoutAll.filter(s => s !== id)
@@ -84,7 +85,10 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const toggleCompartment = (id: string) => {
-    setHasInteracted(true);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      onHasInteracted?.(true);
+    }
     const newTypes = compartmentTypes.includes(id)
       ? compartmentTypes.filter(c => c !== id)
       : [...compartmentTypes, id];
@@ -93,7 +97,10 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const handleNotesChange = (notes: string) => {
-    if (!hasInteracted) setHasInteracted(true);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      onHasInteracted?.(true);
+    }
     setCustomerNotes(notes);
     notifyChange({ customerNotes: notes });
   };
@@ -144,7 +151,7 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
           <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'زمان حرکت' : 'Departure Time'}
           </Label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-1.5">
             {timeSlotOptions.map((slot) => {
               const isActive = departureTimeSlots.includes(slot.id);
               return (
@@ -152,14 +159,14 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                    "flex-1 min-w-0 py-2 rounded-lg border text-xs font-medium transition-all text-center",
                     isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-sm"
                       : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <div className="font-bold leading-tight">{slot.label}</div>
-                  <div className={cn("text-[10px] leading-tight mt-0.5", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.sublabel}</div>
+                  <div className="font-bold leading-tight truncate">{slot.label}</div>
+                  <div className={cn("text-[10px] leading-tight mt-0.5 truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.sublabel}</div>
                 </button>
               );
             })}
@@ -216,19 +223,6 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
         </div>
       </div>
 
-      {/* Sticky Submit Button - only visible after interaction */}
-      {hasInteracted && (
-        <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-md rounded-b-2xl animate-in slide-in-from-bottom-2 duration-300">
-          <Button
-            onClick={onSubmit}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 text-base"
-            size="lg"
-          >
-            <span className="material-symbols-outlined ml-2">check_circle</span>
-            {isRtl ? 'ثبت رزرو' : 'Submit Booking'}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

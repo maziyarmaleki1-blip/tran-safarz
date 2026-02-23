@@ -229,15 +229,21 @@ const Payment = () => {
                   </Label>
                 </div>
 
-                <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                  <RadioGroupItem value="wallet" id="wallet" />
-                  <Label htmlFor="wallet" className="flex items-center gap-3 cursor-pointer flex-1">
-                    <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
-                    <div>
-                      <p className="font-medium">{t('walletPayment')}</p>
-                      <p className="text-sm text-muted-foreground">{t('walletPaymentDesc')}</p>
-                    </div>
-                  </Label>
+                <div>
+                  <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                    <RadioGroupItem value="wallet" id="wallet" />
+                    <Label htmlFor="wallet" className="flex items-center gap-3 cursor-pointer flex-1">
+                      <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
+                      <div>
+                        <p className="font-medium">{t('walletPayment')}</p>
+                        <p className="text-sm text-muted-foreground">{t('walletPaymentDesc')}</p>
+                      </div>
+                    </Label>
+                  </div>
+                  {/* Trust Signal / Refund Guarantee */}
+                  <div className="bg-green-50 text-green-800 border border-green-200 p-3 rounded-lg mt-2 text-sm text-right">
+                    🛡️ تضمین بازگشت وجه: در صورت عدم موفقیت ربات در شکار بلیط، کل مبلغ (به همراه کارمزد) فوراً به کیف پول شما بازمی‌گردد و قابل برداشت به حساب بانکی است.
+                  </div>
                 </div>
               </RadioGroup>
             </Card>

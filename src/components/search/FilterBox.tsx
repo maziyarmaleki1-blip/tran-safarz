@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -25,25 +25,33 @@ export interface FilterState {
 }
 
 const compartmentOptions = [
-  { id: '6تخته3ستاره', label: '۶ تخته ۳ ستاره', icon: '🛏️' },
-  { id: '4تخته4ستاره', label: '۴ تخته ۴ ستاره', icon: '⭐' },
-  { id: '4تخته5ستاره', label: '۴ تخته ۵ ستاره', icon: '🌟' },
+  { id: '6تخته3ستاره', label: '۶ تخته ۳ ستاره', stars: 3 },
+  { id: '4تخته4ستاره', label: '۴ تخته ۴ ستاره', stars: 4 },
+  { id: '4تخته5ستاره', label: '۴ تخته ۵ ستاره', stars: 5 },
 ];
 
-const timeSlotCards = [
-  { id: '6-12', label: 'صبح', sublabel: '۶ تا ۱۲', icon: '🌅' },
-  { id: '12-18', label: 'ظهر', sublabel: '۱۲ تا ۱۸', icon: '☀️' },
-  { id: '18-24', label: 'عصر', sublabel: '۱۸ تا ۲۴', icon: '🌇' },
-  { id: '0-6', label: 'شب', sublabel: '۰ تا ۶', icon: '🌙' },
+const timeSlotOptions = [
+  { id: '0-24', label: '۰/۲۴', sublabel: 'تمام روز' },
+  { id: '6-12', label: '۰۶-۱۲', sublabel: 'صبح' },
+  { id: '12-18', label: '۱۲-۱۸', sublabel: 'ظهر' },
+  { id: '18-24', label: '۱۸-۲۴', sublabel: 'عصر' },
+  { id: '0-6', label: '۰۰-۰۶', sublabel: 'شب' },
 ];
 
 export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   const { language } = useLanguage();
   const isRtl = language === 'fa';
 
-  const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>([]);
+  const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>(['0-24']);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
-  const [customerNotes, setCustomerNotes] = useState<string>('');
+  const [customerNotes, setCustomerNotes] = useState<string>('ترجیحاً قطار آخر شب باشد');
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  // Notify parent on mount with defaults
+  useEffect(() => {
+    notifyChange({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const notifyChange = (newFilters: Partial<FilterState>) => {
     const filters: FilterState = {
@@ -59,14 +67,24 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const toggleTimeSlot = (id: string) => {
-    const newSlots = departureTimeSlots.includes(id)
-      ? departureTimeSlots.filter(s => s !== id)
-      : [...departureTimeSlots, id];
+    setHasInteracted(true);
+    let newSlots: string[];
+    if (id === '0-24') {
+      // Toggle all-day: if already selected, deselect. Otherwise select only 0-24.
+      newSlots = departureTimeSlots.includes('0-24') ? [] : ['0-24'];
+    } else {
+      // Remove 0-24 if selecting a specific slot
+      const withoutAll = departureTimeSlots.filter(s => s !== '0-24');
+      newSlots = withoutAll.includes(id)
+        ? withoutAll.filter(s => s !== id)
+        : [...withoutAll, id];
+    }
     setDepartureTimeSlots(newSlots);
     notifyChange({ departureTimeSlots: newSlots });
   };
 
   const toggleCompartment = (id: string) => {
+    setHasInteracted(true);
     const newTypes = compartmentTypes.includes(id)
       ? compartmentTypes.filter(c => c !== id)
       : [...compartmentTypes, id];
@@ -75,22 +93,30 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
   };
 
   const handleNotesChange = (notes: string) => {
+    if (!hasInteracted) setHasInteracted(true);
     setCustomerNotes(notes);
     notifyChange({ customerNotes: notes });
   };
 
   const clearFilters = () => {
-    setDepartureTimeSlots([]);
+    setDepartureTimeSlots(['0-24']);
     setCompartmentTypes([]);
-    setCustomerNotes('');
+    setCustomerNotes('ترجیحاً قطار آخر شب باشد');
+    setHasInteracted(false);
     onFilterChange?.({
       priceRange: [440000, 2450000],
-      departureTimeSlots: [],
+      departureTimeSlots: ['0-24'],
       compartmentTypes: [],
-      customerNotes: '',
+      customerNotes: 'ترجیحاً قطار آخر شب باشد',
       privateCompartment: false,
       foreignNational: false,
     });
+  };
+
+  const renderStars = (count: number) => {
+    return Array.from({ length: count }, (_, i) => (
+      <span key={i} className="text-accent-foreground text-xs" style={{ color: 'hsl(45, 93%, 47%)' }}>★</span>
+    ));
   };
 
   return (
@@ -113,60 +139,62 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
           </Button>
         </div>
 
-        {/* Departure Time - 2x2 Grid Cards */}
+        {/* Departure Time - Horizontal pills */}
         <div>
           <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'زمان حرکت' : 'Departure Time'}
           </Label>
-          <div className="grid grid-cols-2 gap-2">
-            {timeSlotCards.map((slot) => {
+          <div className="flex flex-wrap gap-2">
+            {timeSlotOptions.map((slot) => {
               const isActive = departureTimeSlots.includes(slot.id);
               return (
                 <button
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all min-h-[72px]",
+                    "px-3 py-2 rounded-lg border text-xs font-medium transition-all",
                     isActive
-                      ? "border-primary bg-primary/10 text-primary shadow-sm"
-                      : "border-border/50 bg-muted/30 hover:border-primary/40 hover:bg-muted/50"
+                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                      : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <span className="text-xl mb-1">{slot.icon}</span>
-                  <span className="text-sm font-bold">{slot.label}</span>
-                  <span className="text-[11px] text-muted-foreground">({slot.sublabel})</span>
+                  <div className="font-bold leading-tight">{slot.label}</div>
+                  <div className={cn("text-[10px] leading-tight mt-0.5", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.sublabel}</div>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Compartment Type */}
+        {/* Compartment Type - Card style */}
         <div>
           <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'نوع سالن' : 'Compartment Type'}
           </Label>
-          <div className="space-y-1">
-            {compartmentOptions.map((option) => (
-              <label
-                key={option.id}
-                className={cn(
-                  "flex items-center justify-between cursor-pointer text-sm px-3 py-3 rounded-lg transition-colors",
-                  compartmentTypes.includes(option.id)
-                    ? "bg-primary/5"
-                    : "hover:bg-muted/50"
-                )}
-              >
-                <span className="flex items-center gap-2">
-                  <span>{option.icon}</span>
-                  <span>{option.label}</span>
-                </span>
-                <Checkbox
-                  checked={compartmentTypes.includes(option.id)}
-                  onCheckedChange={() => toggleCompartment(option.id)}
-                />
-              </label>
-            ))}
+          <div className="space-y-2">
+            {compartmentOptions.map((option) => {
+              const isSelected = compartmentTypes.includes(option.id);
+              return (
+                <button
+                  key={option.id}
+                  onClick={() => toggleCompartment(option.id)}
+                  className={cn(
+                    "w-full flex items-center justify-between px-3 py-3 rounded-xl border transition-all text-sm",
+                    isSelected
+                      ? "border-primary bg-primary/10 shadow-sm"
+                      : "border-border/40 bg-muted/20 hover:border-primary/40 hover:bg-muted/40"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className={cn("w-4 h-4 rounded border-2 flex items-center justify-center transition-colors", isSelected ? "border-primary bg-primary" : "border-muted-foreground/40")}>
+                      {isSelected && <span className="text-primary-foreground text-[10px]">✓</span>}
+                    </span>
+                    <span className="font-medium">{option.label}</span>
+                  </span>
+                  <span className="flex gap-0.5">{renderStars(option.stars)}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -188,17 +216,19 @@ export const FilterBox = ({ onFilterChange, onSubmit }: FilterBoxProps) => {
         </div>
       </div>
 
-      {/* Sticky Submit Button */}
-      <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-md rounded-b-2xl">
-        <Button
-          onClick={onSubmit}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 text-base"
-          size="lg"
-        >
-          <span className="material-symbols-outlined ml-2">check_circle</span>
-          {isRtl ? 'ثبت رزرو' : 'Submit Booking'}
-        </Button>
-      </div>
+      {/* Sticky Submit Button - only visible after interaction */}
+      {hasInteracted && (
+        <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-md rounded-b-2xl animate-in slide-in-from-bottom-2 duration-300">
+          <Button
+            onClick={onSubmit}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 text-base"
+            size="lg"
+          >
+            <span className="material-symbols-outlined ml-2">check_circle</span>
+            {isRtl ? 'ثبت رزرو' : 'Submit Booking'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -31,11 +31,11 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', label: '۰/۲۴', sublabel: 'تمام روز' },
-  { id: '6-12', label: '۰۶-۱۲', sublabel: 'صبح' },
-  { id: '12-18', label: '۱۲-۱۸', sublabel: 'ظهر' },
   { id: '18-24', label: '۱۸-۲۴', sublabel: 'عصر' },
+  { id: '12-18', label: '۱۲-۱۸', sublabel: 'ظهر' },
+  { id: '6-12', label: '۰۶-۱۲', sublabel: 'صبح' },
   { id: '0-6', label: '۰۰-۰۶', sublabel: 'شب' },
+  { id: '0-24', label: '۰/۲۴', sublabel: 'تمام روز' },
 ];
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {

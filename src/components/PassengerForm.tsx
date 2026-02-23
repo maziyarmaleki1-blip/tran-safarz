@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { ArrowRight, ArrowLeft, Info, Save, UserCheck } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Info, Save, UserCheck, Users, CheckCircle2, Smartphone } from 'lucide-react';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -298,21 +298,30 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     }
 
     const fieldKey = field as keyof PassengerData;
+    const value = passenger[fieldKey] as string;
+    const isNationalId = field === 'nationalId';
+    const isNationalIdValid = isNationalId && value.length === (foreignNational ? 8 : 10);
+
     return (
       <div key={field} className="space-y-2">
         <label className={`block text-sm text-muted-foreground ${textAlign}`}>
           {getFieldLabel(field)}
         </label>
-        <Input
-          value={passenger[fieldKey] as string}
-          onChange={(e) => {
-            const updated = [...passengers];
-            updated[index] = { ...updated[index], [fieldKey]: e.target.value };
-            setPassengers(updated);
-          }}
-          className={cn("h-10 text-sm bg-sky-50/80 border-sky-100", textAlign)}
-          maxLength={field === 'nationalId' ? (foreignNational ? 20 : 10) : undefined}
-        />
+        <div className="relative">
+          <Input
+            value={value}
+            onChange={(e) => {
+              const updated = [...passengers];
+              updated[index] = { ...updated[index], [fieldKey]: e.target.value };
+              setPassengers(updated);
+            }}
+            className={cn("h-10 text-sm bg-sky-50/80 border-sky-100", textAlign, isNationalIdValid && "border-green-400 bg-green-50/50")}
+            maxLength={field === 'nationalId' ? (foreignNational ? 20 : 10) : undefined}
+          />
+          {isNationalIdValid && (
+            <CheckCircle2 className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-green-500" />
+          )}
+        </div>
       </div>
     );
   };
@@ -356,6 +365,26 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
             </h1>
           </div>
         </div>
+
+        {/* Quick Select Saved Passengers Button */}
+        {user && (
+          <div className="px-4 sm:px-8 pt-4 sm:pt-5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-sm border-sky-200 text-sky-700 hover:bg-sky-50"
+              onClick={() => {
+                toast({
+                  title: isRTL ? 'مسافران پیشین' : 'Saved Passengers',
+                  description: isRTL ? 'از بخش هر مسافر می‌توانید انتخاب کنید' : 'Select from each passenger section',
+                });
+              }}
+            >
+              <Users className="size-4" />
+              {isRTL ? '👥 انتخاب از لیست مسافران پیشین' : '👥 Select from previous passengers'}
+            </Button>
+          </div>
+        )}
 
         {/* Passengers Section */}
         <div className="px-4 sm:px-8 py-4 sm:py-6">
@@ -449,14 +478,12 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
 
                 <div className="flex items-center gap-2 mb-3 sm:mb-4 text-muted-foreground justify-end">
                   <p className="text-xs sm:text-sm">
-                    {hasExistingAccount 
-                      ? (isRTL ? 'شماره موبایل و رمز عبور حساب خود را وارد کنید' : 'Enter your account mobile and password')
-                      : (isRTL ? 'با ثبت رزرو، حساب کاربری برای شما ایجاد می‌شود' : 'An account will be created for you upon reservation')}
+                    {isRTL ? 'شماره موبایل خود را وارد کنید' : 'Enter your mobile number'}
                   </p>
-                  <Info className="size-4 text-sky-500 shrink-0" />
+                  <Smartphone className="size-4 text-sky-500 shrink-0" />
                 </div>
 
-                <div className={`grid grid-cols-1 ${hasExistingAccount ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3'} gap-3 sm:gap-4`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-2">
                     <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
                       {getFieldLabel('mobile')}
@@ -472,32 +499,11 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getFieldLabel('password')}
-                    </label>
-                    <Input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className={cn("h-10 text-sm bg-sky-50/80 border-sky-100", isRTL ? 'text-right' : 'text-left')}
-                    />
-                  </div>
-
-                  {/* Only show confirm password for new registrations */}
-                  {!hasExistingAccount && (
-                    <div className="space-y-2">
-                      <label className={`block text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                        {getFieldLabel('confirmPassword')}
-                      </label>
-                      <Input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={cn("h-10 text-sm bg-sky-50/80 border-sky-100", isRTL ? 'text-right' : 'text-left')}
-                      />
+                  <div className="flex items-center">
+                    <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sm text-sky-700 text-right w-full">
+                      <p>📱 {isRTL ? 'کد تایید ۵ رقمی به شماره موبایل شما پیامک خواهد شد.' : 'A 5-digit OTP will be sent to your mobile.'}</p>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 

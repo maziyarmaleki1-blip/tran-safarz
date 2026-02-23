@@ -32,7 +32,7 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', label: '۰/۲۴', icon: Clock },
+  { id: '0-24', label: '0-24', icon: Clock },
   { id: '0-6', label: '۰۰-۰۶', icon: Sunrise },
   { id: '6-12', label: '۰۶-۱۲', icon: Sun },
   { id: '12-18', label: '۱۲-۱۸', icon: Sunset },

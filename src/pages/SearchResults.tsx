@@ -46,7 +46,7 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
     departureTimeSlots: [],
@@ -195,7 +195,7 @@ const SearchResults = () => {
           <div className="flex gap-4">
             {/* Filter Box - Sidebar (Desktop Only) */}
             <div className="hidden lg:block w-72 shrink-0">
-              <FilterBox onFilterChange={handleFilterChange} onSubmit={handleSubmitBooking} />
+              <FilterBox onFilterChange={handleFilterChange} onHasInteracted={setHasInteracted} />
             </div>
 
             {/* Train Rows - Main Content */}
@@ -211,10 +211,7 @@ const SearchResults = () => {
                   </SheetTrigger>
                   <SheetContent side="right" className="w-80 p-0">
                     <div className="p-4">
-                      <FilterBox onFilterChange={handleFilterChange} onSubmit={() => {
-                        setFilterSheetOpen(false);
-                        handleSubmitBooking();
-                      }} />
+                      <FilterBox onFilterChange={handleFilterChange} onHasInteracted={setHasInteracted} />
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -245,6 +242,20 @@ const SearchResults = () => {
           </div>
         </div>
       </div>
+
+      {/* Fixed Bottom Submit Button */}
+      {hasInteracted && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 duration-300">
+          <Button
+            onClick={handleSubmitBooking}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 px-10 text-base rounded-full shadow-lg"
+            size="lg"
+          >
+            <span className="material-symbols-outlined ml-2">check_circle</span>
+            {language === 'fa' ? 'ثبت رزرو' : 'Submit Booking'}
+          </Button>
+        </div>
+      )}
     </MainLayout>
   );
 };

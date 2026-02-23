@@ -128,63 +128,58 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
   };
 
   return (
-    <div className="bg-card rounded-2xl border border-border/30 shadow-lg flex flex-col" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
+    <div className="bg-card/90 backdrop-blur-md rounded-2xl border border-border/50 shadow-soft flex flex-col" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <span className="w-1 h-5 rounded-full bg-primary inline-block" />
+        <div className="flex items-center justify-between pb-3 border-b border-border/50">
+          <h3 className="font-bold text-foreground">
             {isRtl ? 'جزئیات رزرو' : 'Reservation Details'}
           </h3>
           <Button
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="text-muted-foreground hover:text-destructive text-xs gap-1 h-7 px-2"
+            className="text-destructive hover:text-destructive/80 text-xs gap-1"
           >
-            <span className="material-symbols-outlined text-sm">restart_alt</span>
-            {isRtl ? 'بازنشانی' : 'Reset'}
+            <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+            {isRtl ? 'پاک‌سازی' : 'Clear'}
           </Button>
         </div>
 
-        {/* Departure Time */}
-        <div className="space-y-3">
-          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
+        {/* Departure Time - Horizontal pills */}
+        <div>
+          <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'زمان حرکت' : 'Departure Time'}
           </Label>
-          <div className="flex gap-1.5 bg-muted/40 rounded-xl p-1.5">
+          <div className="flex gap-1.5">
             {timeSlotOptions.map((slot) => {
               const isActive = departureTimeSlots.includes(slot.id);
-              const IconComp = slot.icon;
               return (
                 <button
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex-1 min-w-0 py-2.5 rounded-lg text-xs font-medium transition-all flex flex-col items-center gap-1.5",
+                    "flex-1 min-w-0 py-2.5 rounded-lg border text-xs font-medium transition-all flex flex-col items-center gap-1",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:bg-background hover:text-foreground hover:shadow-sm"
+                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                      : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <span className="font-bold text-xs leading-none">{slot.label}</span>
-                  <IconComp size={11} className={cn("transition-colors", isActive ? "text-primary-foreground/70" : "text-muted-foreground/50")} />
+                  <div className="font-bold leading-tight truncate text-xs">{slot.label}</div>
+                  <slot.icon size={12} className={cn(isActive ? "text-primary-foreground/70" : "text-muted-foreground/60")} />
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border/30" />
-
-        {/* Compartment Type */}
-        <div className="space-y-3">
-          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
+        {/* Compartment Type - Card style */}
+        <div>
+          <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'نوع سالن' : 'Compartment Type'}
           </Label>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {compartmentOptions.map((option) => {
               const isSelected = compartmentTypes.includes(option.id);
               return (
@@ -192,22 +187,17 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   key={option.id}
                   onClick={() => toggleCompartment(option.id)}
                   className={cn(
-                    "w-full flex items-center justify-between px-3.5 py-3 rounded-xl transition-all text-sm group",
+                    "w-full flex items-center justify-between px-3 py-3 rounded-xl border transition-all text-sm",
                     isSelected
-                      ? "bg-primary/8 ring-1 ring-primary/30"
-                      : "hover:bg-muted/50"
+                      ? "border-primary bg-primary/10 shadow-sm"
+                      : "border-border/40 bg-muted/20 hover:border-primary/40 hover:bg-muted/40"
                   )}
                 >
-                  <span className="flex items-center gap-2.5">
-                    <span className={cn(
-                      "w-[18px] h-[18px] rounded-md border-2 flex items-center justify-center transition-all",
-                      isSelected
-                        ? "border-primary bg-primary scale-100"
-                        : "border-muted-foreground/30 group-hover:border-muted-foreground/50"
-                    )}>
-                      {isSelected && <span className="text-primary-foreground text-[10px] font-bold">✓</span>}
+                  <span className="flex items-center gap-2">
+                    <span className={cn("w-4 h-4 rounded border-2 flex items-center justify-center transition-colors", isSelected ? "border-primary bg-primary" : "border-muted-foreground/40")}>
+                      {isSelected && <span className="text-primary-foreground text-[10px]">✓</span>}
                     </span>
-                    <span className={cn("font-medium transition-colors", isSelected ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")}>{option.label}</span>
+                    <span className="font-medium">{option.label}</span>
                   </span>
                   <span className="flex gap-0.5">{renderStars(option.stars)}</span>
                 </button>
@@ -216,26 +206,24 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border/30" />
-
         {/* Description */}
-        <div className="space-y-2.5">
-          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
-            {isRtl ? 'توضیحات تکمیلی' : 'Additional Notes'}
+        <div>
+          <Label className="text-sm font-semibold text-primary mb-2 block">
+            {isRtl ? 'توضیحات تکمیلی (اجباری برای درخواست‌های خاص)' : 'Additional Notes (required for special requests)'}
           </Label>
           <Textarea
             placeholder={isRtl ? 'مثلاً: اگر بلیط پیدا نشد، روز بعد هم مشکلی ندارد / حتما کوپه دربست باشد...' : 'e.g.: If no ticket found, next day is also fine...'}
             value={customerNotes}
             onChange={(e) => handleNotesChange(e.target.value)}
-            className="min-h-[90px] resize-none text-sm bg-muted/30 border-border/40 focus:bg-background rounded-xl"
+            className="min-h-[100px] resize-none text-sm"
             maxLength={500}
           />
-          <p className="text-[10px] text-muted-foreground/60 text-left" dir="ltr">
+          <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
             {customerNotes.length}/500
           </p>
         </div>
       </div>
+
     </div>
   );
 };

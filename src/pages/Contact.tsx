@@ -47,9 +47,9 @@ const Contact = () => {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold">اطلاعات تماس</h2>
             {[
-              { icon: 'phone', title: 'تلفن', value: '۰۲۱-۱۲۳۴۵۶۷۸' },
-              { icon: 'mail', title: 'ایمیل', value: 'info@safirrail.ir' },
-              { icon: 'location_on', title: 'آدرس', value: 'تهران، میدان آزادی، خیابان راه‌آهن' },
+              { icon: 'phone', title: 'تلفن', value: '۰۹۱۵۸۸۰۰۵۱۵' },
+              { icon: 'mail', title: 'ایمیل', value: 'info@safarz.ir' },
+              { icon: 'location_on', title: 'آدرس', value: 'مشهد، خیابان کامیاب' },
               { icon: 'schedule', title: 'ساعات کاری', value: 'شنبه تا پنجشنبه ۸ صبح تا ۸ شب' },
             ].map((item, i) => (
               <Card key={i} className="p-4 flex items-center gap-4 bg-card/95 backdrop-blur-md border-border/50">

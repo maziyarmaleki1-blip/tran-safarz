@@ -47,7 +47,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-sidebar-foreground/70">
               <li className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">phone</span>
-                <span dir="ltr">021-12345678</span>
+                <span dir="ltr">09158800515</span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">mail</span>
@@ -55,7 +55,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">location_on</span>
-                <span>تهران، میدان آزادی</span>
+                <span>مشهد، خیابان کامیاب</span>
               </li>
             </ul>
           </div>

@@ -11,6 +11,7 @@ import { StatsCards } from '@/components/admin/StatsCards';
 import { ReservationsTable } from '@/components/admin/ReservationsTable';
 import { EmployeeManagement } from '@/components/admin/EmployeeManagement';
 import ServiceFeeSettings from '@/components/admin/ServiceFeeSettings';
+import RouteFeeManagement from '@/components/admin/RouteFeeManagement';
 import AdminLogin from '@/components/admin/AdminLogin';
 
 interface Passenger {
@@ -285,6 +286,10 @@ const Admin = () => {
                   <span className="material-symbols-outlined text-lg">settings</span>
                   تنظیمات
                 </TabsTrigger>
+                <TabsTrigger value="routes" className="gap-2">
+                  <span className="material-symbols-outlined text-lg">route</span>
+                  کارمزد مسیرها
+                </TabsTrigger>
               </>
             )}
           </TabsList>
@@ -315,6 +320,10 @@ const Admin = () => {
                 <div className="max-w-md">
                   <ServiceFeeSettings />
                 </div>
+              </TabsContent>
+
+              <TabsContent value="routes">
+                <RouteFeeManagement />
               </TabsContent>
             </>
           )}

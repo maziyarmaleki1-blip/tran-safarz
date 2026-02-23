@@ -32,11 +32,11 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', icon: Clock, sublabel: 'تمام روز' },
-  { id: '0-6', icon: Sunrise, sublabel: 'صبح' },
-  { id: '6-12', icon: Sun, sublabel: 'صبح' },
-  { id: '12-18', icon: Sunset, sublabel: 'ظهر' },
-  { id: '18-24', icon: Moon, sublabel: 'عصر' },
+  { id: '0-24', label: '۰/۲۴', icon: Clock },
+  { id: '0-6', label: '۰۰-۰۶', icon: Sunrise },
+  { id: '6-12', label: '۰۶-۱۲', icon: Sun },
+  { id: '12-18', label: '۱۲-۱۸', icon: Sunset },
+  { id: '18-24', label: '۱۸-۲۴', icon: Moon },
 ];
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
@@ -166,8 +166,8 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                       : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <slot.icon size={16} />
-                  <div className={cn("text-[10px] leading-tight truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.sublabel}</div>
+                  <slot.icon size={14} />
+                  <div className={cn("text-[10px] leading-tight truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.label}</div>
                 </button>
               );
             })}

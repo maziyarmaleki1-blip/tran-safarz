@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { Clock, Sunrise, Sun, Sunset, Moon } from 'lucide-react';
 
 interface FilterBoxProps {
   onFilterChange?: (filters: FilterState) => void;
@@ -31,11 +32,11 @@ const compartmentOptions = [
 ];
 
 const timeSlotOptions = [
-  { id: '0-24', label: '۰/۲۴', sublabel: 'تمام روز' },
-  { id: '0-6', label: '۰۰-۰۶', sublabel: 'صبح' },
-  { id: '6-12', label: '۰۶-۱۲', sublabel: 'صبح' },
-  { id: '12-18', label: '۱۲-۱۸', sublabel: 'ظهر' },
-  { id: '18-24', label: '۱۸-۲۴', sublabel: 'عصر' },
+  { id: '0-24', icon: Clock, sublabel: 'تمام روز' },
+  { id: '0-6', icon: Sunrise, sublabel: 'صبح' },
+  { id: '6-12', icon: Sun, sublabel: 'صبح' },
+  { id: '12-18', icon: Sunset, sublabel: 'ظهر' },
+  { id: '18-24', icon: Moon, sublabel: 'عصر' },
 ];
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
@@ -159,14 +160,14 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex-1 min-w-0 py-2 rounded-lg border text-xs font-medium transition-all text-center",
+                    "flex-1 min-w-0 py-2.5 rounded-lg border text-xs font-medium transition-all flex flex-col items-center gap-1",
                     isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-sm"
                       : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
                   )}
                 >
-                  <div className="font-bold leading-tight truncate">{slot.label}</div>
-                  <div className={cn("text-[10px] leading-tight mt-0.5 truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.sublabel}</div>
+                  <slot.icon size={16} />
+                  <div className={cn("text-[10px] leading-tight truncate", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{slot.sublabel}</div>
                 </button>
               );
             })}

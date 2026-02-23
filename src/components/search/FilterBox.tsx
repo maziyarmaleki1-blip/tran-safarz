@@ -167,7 +167,6 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   )}
                 >
                   <div className="font-bold leading-tight truncate text-xs">{slot.label}</div>
-                  <slot.icon size={12} className={cn(isActive ? "text-primary-foreground/70" : "text-muted-foreground/60")} />
                 </button>
               );
             })}

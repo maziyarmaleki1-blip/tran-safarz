@@ -224,6 +224,27 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
           </div>
         </Section>
 
+        {/* توضیحات خاص */}
+        <div className="pt-3 pb-3 border-b border-border/30">
+          <Label className="text-sm font-semibold text-primary mb-2 block">
+            {isRtl ? 'توضیحات خاص' : 'Special Notes'}
+          </Label>
+          <Textarea
+            placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
+            value={customerNotes}
+            onChange={(e) => {
+              markInteracted();
+              setCustomerNotes(e.target.value);
+              notifyChange({ customerNotes: e.target.value });
+            }}
+            className="min-h-[80px] resize-none text-sm"
+            maxLength={500}
+          />
+          <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
+            {customerNotes.length}/500
+          </p>
+        </div>
+
         {/* گزینه‌های اضافی */}
         <Section title={isRtl ? 'گزینه‌های اضافی' : 'Additional Options'}>
           <div className="space-y-3">
@@ -255,27 +276,6 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
             </label>
           </div>
         </Section>
-
-        {/* توضیحات خاص */}
-        <div className="pt-3">
-          <Label className="text-sm font-semibold text-primary mb-2 block">
-            {isRtl ? 'توضیحات خاص' : 'Special Notes'}
-          </Label>
-          <Textarea
-            placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
-            value={customerNotes}
-            onChange={(e) => {
-              markInteracted();
-              setCustomerNotes(e.target.value);
-              notifyChange({ customerNotes: e.target.value });
-            }}
-            className="min-h-[80px] resize-none text-sm"
-            maxLength={500}
-          />
-          <p className="text-xs text-muted-foreground mt-1 text-left" dir="ltr">
-            {customerNotes.length}/500
-          </p>
-        </div>
 
       </div>
     </div>

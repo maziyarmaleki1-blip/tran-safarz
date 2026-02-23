@@ -1,4 +1,10 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface TrainRowProps {
   train: {
@@ -96,7 +102,19 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
         {/* Price */}
         <div className="text-center min-w-[120px]">
           <p className="text-xs text-muted-foreground">{language === 'fa' ? 'ریال' : 'Rial'}</p>
-          <p className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</p>
+          <div className="flex items-center justify-center gap-1">
+            <p className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="material-symbols-outlined text-sm text-muted-foreground/60 cursor-help hover:text-muted-foreground transition-colors">info</span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[220px] text-center text-xs">
+                  <p>قیمت شامل کارمزد خدمات رزرو خودکار است</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
 
         {/* Status */}
@@ -145,8 +163,18 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground">{train.compartmentType}</p>
           <div className="text-left">
-            <span className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</span>
+          <span className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</span>
             <span className="text-xs text-muted-foreground mr-1">ریال</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="material-symbols-outlined text-xs text-muted-foreground/60 cursor-help">info</span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[220px] text-center text-xs">
+                  <p>قیمت شامل کارمزد خدمات رزرو خودکار است</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>

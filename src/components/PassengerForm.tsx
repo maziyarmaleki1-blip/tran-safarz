@@ -90,6 +90,15 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   const [autoFilled, setAutoFilled] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
+  const [otpCountdown, setOtpCountdown] = useState(0);
+  const otpInputRef = React.useRef<HTMLInputElement>(null);
+
+  // OTP countdown timer
+  useEffect(() => {
+    if (otpCountdown <= 0) return;
+    const timer = setTimeout(() => setOtpCountdown(otpCountdown - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [otpCountdown]);
 
   // Auto-fill first passenger from profile if logged in
   useEffect(() => {
@@ -473,7 +482,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                     type="button"
                     variant="default"
                     size="sm"
-                    className="h-9 px-4 bg-sky-500 hover:bg-sky-600 text-white text-xs whitespace-nowrap"
+                    className="h-9 px-4 bg-sky-500 hover:bg-sky-600 text-white text-xs whitespace-nowrap min-w-[110px]"
+                    disabled={otpCountdown > 0}
                     onClick={() => {
                       if (!mobile || mobile.length < 11) {
                         toast({
@@ -484,20 +494,33 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
                         return;
                       }
                       setOtpSent(true);
+                      setOtpCountdown(60);
                       toast({
                         title: isRTL ? 'ارسال پیامک' : 'SMS Sent',
                         description: isRTL ? `کد تایید به ${mobile} ارسال شد` : `OTP sent to ${mobile}`,
                       });
+                      // Auto-focus OTP input
+                      setTimeout(() => otpInputRef.current?.focus(), 100);
                     }}
                   >
-                    <Smartphone className="size-3.5 ml-1" />
-                    {isRTL ? 'ارسال کد' : 'Send OTP'}
+                    {otpCountdown > 0 ? (
+                      <span>{isRTL ? `ارسال مجدد: ${otpCountdown}s` : `Resend: ${otpCountdown}s`}</span>
+                    ) : (
+                      <>
+                        <Smartphone className="size-3.5 ml-1" />
+                        {otpSent 
+                          ? (isRTL ? 'ارسال مجدد' : 'Resend') 
+                          : (isRTL ? 'ارسال کد' : 'Send OTP')}
+                      </>
+                    )}
                   </Button>
 
                   {/* OTP input */}
                   <div className="w-full sm:w-32">
                     <Input
+                      ref={otpInputRef}
                       type="text"
+                      inputMode="numeric"
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                       placeholder="- - - - -"

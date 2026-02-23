@@ -74,7 +74,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="group">
-            <img src={logo} alt="safarz - سفر برون مرز" className="h-16 group-hover:scale-105 transition-transform" />
+            <img src={logo} alt="safarz - سفر برون مرز" className="h-20 group-hover:scale-105 transition-transform" />
           </Link>
 
           {/* Desktop Navigation */}

@@ -152,7 +152,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
           <Label className="text-sm font-semibold text-primary mb-3 block">
             {isRtl ? 'زمان حرکت' : 'Departure Time'}
           </Label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 justify-between">
             {timeSlotOptions.map((slot) => {
               const isActive = departureTimeSlots.includes(slot.id);
               const IconComp = slot.icon;
@@ -161,15 +161,14 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-2 rounded-full border text-xs font-medium transition-all whitespace-nowrap",
+                    "flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-lg border text-xs font-medium transition-all aspect-square max-w-[56px]",
                     isActive
-                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                      : "border-border/60 bg-muted/30 text-muted-foreground hover:border-primary/50 hover:bg-muted/50"
+                      ? "border-primary bg-primary/10 text-primary shadow-sm"
+                      : "border-border/50 bg-muted/20 text-muted-foreground hover:border-primary/40 hover:bg-muted/40"
                   )}
                 >
-                  <IconComp size={14} className={cn(isActive ? "text-primary-foreground/80" : "text-muted-foreground/60")} />
-                  <span className="font-bold">{slot.label}</span>
-                  <span className={cn("text-[10px]", isActive ? "text-primary-foreground/70" : "text-muted-foreground/50")}>{slot.sublabel}</span>
+                  <IconComp size={16} className={cn(isActive ? "text-primary" : "text-muted-foreground/60")} />
+                  <span className="font-bold text-[11px] leading-none">{slot.sublabel}</span>
                 </button>
               );
             })}

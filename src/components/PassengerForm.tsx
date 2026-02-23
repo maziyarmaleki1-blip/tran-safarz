@@ -447,11 +447,11 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
           <div className="px-4 sm:px-8 py-4 sm:py-6 border-t border-white/30 bg-white/20">
             <div className="flex gap-3 sm:gap-4">
               <div className="flex-1">
-                <div className={`flex items-center gap-2 mb-3 text-muted-foreground ${isRTL ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex items-center gap-2 mb-3 text-muted-foreground`} style={{ direction: isRTL ? 'rtl' : 'ltr' }}>
+                  <Smartphone className="size-4 text-sky-500 shrink-0" />
                   <p className="text-xs sm:text-sm">
                     {isRTL ? 'شماره موبایل خود را وارد کنید' : 'Enter your mobile number'}
                   </p>
-                  <Smartphone className="size-4 text-sky-500 shrink-0" />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
@@ -561,7 +561,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
             {/* Submit Button */}
             <Button
               onClick={handleSubmit}
-              className="h-11 px-8 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg"
+              disabled={!acceptRules || (!user && otpCode.length < 5)}
+              className="h-11 px-8 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isRTL ? (user ? 'تکمیل رزرو' : 'ورود و تکمیل رزرو') : (user ? 'Complete Booking' : 'Login & Complete Booking')}
             </Button>

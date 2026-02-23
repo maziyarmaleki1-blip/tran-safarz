@@ -7,7 +7,6 @@ import { formatPersianDate, gregorianToJalali, toPersianDigits } from '@/lib/per
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
 import { TrainRow } from '@/components/search/TrainRow';
 import { DateNavigation } from '@/components/search/DateNavigation';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-train.jpg';
 import { format, addDays, subDays } from 'date-fns';
@@ -45,7 +44,6 @@ const SearchResults = () => {
   const { language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [440000, 2450000],
@@ -191,32 +189,20 @@ const SearchResults = () => {
             </div>
           </div>
 
-          {/* Main Layout */}
+            {/* Mobile Filter - Above Train List */}
+          <div className="lg:hidden mb-4">
+            <FilterBox onFilterChange={handleFilterChange} onHasInteracted={setHasInteracted} />
+          </div>
+
+            {/* Main Layout */}
           <div className="flex gap-4">
-            {/* Filter Box - Sidebar (Desktop Only) */}
+            {/* Filter Box - Sidebar (Desktop/Tablet Only) */}
             <div className="hidden lg:block w-72 shrink-0">
               <FilterBox onFilterChange={handleFilterChange} onHasInteracted={setHasInteracted} />
             </div>
 
             {/* Train Rows - Main Content */}
             <div className="flex-1">
-              {/* Mobile Filter Button */}
-              <div className="lg:hidden mb-3">
-                <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 bg-card/80 backdrop-blur-md">
-                      <span className="material-symbols-outlined text-lg">tune</span>
-                      {language === 'fa' ? 'فیلتر نتایج' : 'Filter Results'}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-80 p-0">
-                    <div className="p-4">
-                      <FilterBox onFilterChange={handleFilterChange} onHasInteracted={setHasInteracted} />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-
               {/* Train List */}
               <div className="space-y-2">
                 {sortedTrains.length === 0 ? (

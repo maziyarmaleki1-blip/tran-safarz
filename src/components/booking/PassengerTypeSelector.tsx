@@ -16,13 +16,12 @@ const PassengerTypeSelector: React.FC<PassengerTypeSelectorProps> = ({
   onChange,
   index,
 }) => {
-  const { language } = useLanguage();
-  const isRTL = language === 'fa';
+  const { t } = useLanguage();
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-gray-600">
-        {isRTL ? 'نوع:' : 'Type:'}
+      <span className="text-sm text-muted-foreground">
+        {t('type')}
       </span>
       <div className="flex gap-1">
         <Button
@@ -32,12 +31,12 @@ const PassengerTypeSelector: React.FC<PassengerTypeSelectorProps> = ({
           onClick={() => onChange('adult')}
           className={`h-7 px-2 text-xs gap-1 ${
             type === 'adult' 
-              ? 'bg-sky-500 hover:bg-sky-600 text-white' 
-              : 'bg-transparent border-sky-200 hover:bg-sky-50'
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
+              : 'bg-transparent border-primary/20 hover:bg-primary/5'
           }`}
         >
           <User className="size-3" />
-          {isRTL ? 'بزرگسال' : 'Adult'}
+          {t('adult')}
         </Button>
         <Button
           type="button"
@@ -46,12 +45,12 @@ const PassengerTypeSelector: React.FC<PassengerTypeSelectorProps> = ({
           onClick={() => onChange('child')}
           className={`h-7 px-2 text-xs gap-1 ${
             type === 'child' 
-              ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-              : 'bg-transparent border-orange-200 hover:bg-orange-50'
+              ? 'bg-accent hover:bg-accent/90 text-accent-foreground' 
+              : 'bg-transparent border-accent/20 hover:bg-accent/5'
           }`}
         >
           <Baby className="size-3" />
-          {isRTL ? 'کودک' : 'Child'}
+          {t('child')}
         </Button>
       </div>
     </div>

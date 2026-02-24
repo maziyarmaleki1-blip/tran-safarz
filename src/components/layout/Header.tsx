@@ -56,7 +56,7 @@ export function Header() {
 
   // Only show admin link to staff members
   const navLinks = isStaff
-    ? [...baseNavLinks, { href: '/admin', label: 'مدیریت' }]
+    ? [...baseNavLinks, { href: '/admin', label: t('management') }]
     : baseNavLinks;
 
   const isActive = (path: string) => location.pathname === path;
@@ -111,6 +111,9 @@ export function Header() {
                 <DropdownMenuItem onClick={() => setLanguage('en')}>
                   English
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('ar')}>
+                  العربية
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -140,14 +143,14 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
-                          مدیریت
+                           {t('management')}
                         </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                       <span className="material-symbols-outlined text-lg">logout</span>
-                      خروج
+                      {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -207,14 +210,14 @@ export function Header() {
                       >
                         {t('dashboard')}
                       </Link>
-                      <button
+                    <button
                         onClick={() => {
                           handleSignOut();
                           setMobileMenuOpen(false);
                         }}
                         className="px-4 py-3 rounded-lg font-medium text-destructive hover:bg-destructive/10 text-start"
                       >
-                        خروج از حساب
+                        {t('logoutAccount')}
                       </button>
                     </>
                   ) : (

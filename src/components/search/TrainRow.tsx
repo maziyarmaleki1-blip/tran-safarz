@@ -39,7 +39,7 @@ const cities: Record<string, string> = {
 };
 
 export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
   
   const formatPrice = (price: number) => price.toLocaleString('fa-IR');
   
@@ -81,12 +81,12 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
         {/* Date & Time */}
         <div className="text-center min-w-[100px]">
           <p className="text-xs text-muted-foreground">{date}</p>
-          <p className="text-lg font-bold">{language === 'fa' ? 'ساعت' : 'Time'} {train.departure}</p>
+          <p className="text-lg font-bold">{t('time')} {train.departure}</p>
         </div>
 
         {/* Train Number */}
         <div className="text-center min-w-[80px]">
-          <p className="text-xs text-muted-foreground">{language === 'fa' ? 'شماره قطار' : 'Train No.'}</p>
+          <p className="text-xs text-muted-foreground">{t('trainNo')}</p>
           <p className="text-lg font-bold">{train.number}</p>
         </div>
 
@@ -101,7 +101,7 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
 
         {/* Price */}
         <div className="text-center min-w-[120px]">
-          <p className="text-xs text-muted-foreground">{language === 'fa' ? 'ریال' : 'Rial'}</p>
+          <p className="text-xs text-muted-foreground">{t('rial')}</p>
           <div className="flex items-center justify-center gap-1">
             <p className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</p>
             <TooltipProvider>
@@ -142,7 +142,7 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
         {/* Info Row */}
         <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3 text-sm">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">{language === 'fa' ? 'حرکت' : 'Dep'}</p>
+            <p className="text-xs text-muted-foreground">{t('dep')}</p>
             <p className="font-bold">{train.departure}</p>
           </div>
           <div className="text-center">
@@ -154,7 +154,7 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
             </div>
           </div>
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">{language === 'fa' ? 'ورود' : 'Arr'}</p>
+            <p className="text-xs text-muted-foreground">{t('arr')}</p>
             <p className="font-bold">{train.arrival}</p>
           </div>
         </div>
@@ -164,7 +164,7 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
           <p className="text-xs text-muted-foreground">{train.compartmentType}</p>
           <div className="text-left">
           <span className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</span>
-            <span className="text-xs text-muted-foreground mr-1">ریال</span>
+            <span className="text-xs text-muted-foreground mr-1">{t('rial')}</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>

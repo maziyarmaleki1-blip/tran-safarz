@@ -61,12 +61,11 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   onSubmit,
   onBack,
 }) => {
-  const { language } = useLanguage();
+  const { language, t, isRTL } = useLanguage();
   const { user } = useAuth();
   const { profile } = useProfile();
   const { savePassenger } = useSavedPassengers();
   const { toast } = useToast();
-  const isRTL = language === 'fa';
   
   const [passengers, setPassengers] = useState<PassengerData[]>(
     Array(passengerCount).fill(null).map(() => ({
@@ -119,10 +118,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
       
       if (profile.first_name) {
         toast({
-          title: isRTL ? 'پر شدن خودکار' : 'Auto-filled',
-          description: isRTL 
-            ? 'اطلاعات شما از پروفایل وارد شد' 
-            : 'Your info was filled from profile',
+          title: t('autoFilled'),
+          description: t('autoFilledDesc'),
         });
       }
     }
@@ -148,7 +145,7 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     setPassengers(updated);
     
     toast({
-      title: isRTL ? 'مسافر انتخاب شد' : 'Passenger selected',
+      title: t('passengerSelected'),
       description: `${saved.first_name} ${saved.last_name}`,
     });
   };
@@ -159,8 +156,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
       const p = passengers[i];
       if (!p.firstName || !p.lastName || !p.nationalId) {
         toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: `${isRTL ? 'اطلاعات مسافر' : 'Passenger info'} ${i + 1} ${isRTL ? 'ناقص است' : 'is incomplete'}`,
+          title: t('error'),
+          description: `${t('passengerInfoIncomplete')} ${i + 1} ${t('isIncomplete')}`,
           variant: 'destructive',
         });
         return;
@@ -171,8 +168,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     if (!user) {
       if (!mobile || mobile.length < 10) {
         toast({
-          title: isRTL ? 'خطا' : 'Error',
-          description: isRTL ? 'شماره موبایل نامعتبر است' : 'Invalid mobile number',
+          title: t('error'),
+          description: t('invalidMobile'),
           variant: 'destructive',
         });
         return;
@@ -182,8 +179,8 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
     // Validate rules acceptance
     if (!acceptRules) {
       toast({
-        title: isRTL ? 'خطا' : 'Error',
-        description: isRTL ? 'لطفاً قوانین و شرایط را بپذیرید' : 'Please accept the terms and conditions',
+        title: t('error'),
+        description: t('acceptTerms'),
         variant: 'destructive',
       });
       return;
@@ -208,19 +205,20 @@ const PassengerForm: React.FC<PassengerFormProps> = ({
   };
 
   const getFieldLabel = (field: string) => {
-    const labels: Record<string, { fa: string; en: string }> = {
-      firstName: { fa: 'نام', en: 'First Name' },
-      lastName: { fa: 'نام خانوادگی', en: 'Last Name' },
+    const labels: Record<string, { fa: string; en: string; ar: string }> = {
+      firstName: { fa: 'نام', en: 'First Name', ar: 'الاسم الأول' },
+      lastName: { fa: 'نام خانوادگی', en: 'Last Name', ar: 'اسم العائلة' },
       nationalId: { 
         fa: foreignNational ? 'شماره پاسپورت' : 'کد ملی', 
-        en: foreignNational ? 'Passport Number' : 'National ID' 
+        en: foreignNational ? 'Passport Number' : 'National ID',
+        ar: foreignNational ? 'رقم جواز السفر' : 'رقم الهوية',
       },
-      birthDate: { fa: 'تاریخ تولد', en: 'Birth Date' },
-      mobile: { fa: 'شماره موبایل', en: 'Mobile' },
-      password: { fa: 'رمز عبور', en: 'Password' },
-      confirmPassword: { fa: 'تکرار رمز عبور', en: 'Confirm Password' },
+      birthDate: { fa: 'تاریخ تولد', en: 'Birth Date', ar: 'تاريخ الميلاد' },
+      mobile: { fa: 'شماره موبایل', en: 'Mobile', ar: 'رقم الجوال' },
+      password: { fa: 'رمز عبور', en: 'Password', ar: 'كلمة المرور' },
+      confirmPassword: { fa: 'تکرار رمز عبور', en: 'Confirm Password', ar: 'تأكيد كلمة المرور' },
     };
-    return isRTL ? labels[field]?.fa : labels[field]?.en;
+    return labels[field]?.[language] || labels[field]?.en || field;
   };
 
   const renderPassengerField = (field: string, index: number, passenger: PassengerData) => {

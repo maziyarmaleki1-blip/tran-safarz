@@ -30,9 +30,8 @@ const SavedPassengerSelector: React.FC<SavedPassengerSelectorProps> = ({
   onSelect,
   excludeIds = [],
 }) => {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
   const { user } = useAuth();
-  const isRTL = language === 'fa';
   const [savedPassengers, setSavedPassengers] = useState<SavedPassenger[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -80,7 +79,7 @@ const SavedPassengerSelector: React.FC<SavedPassengerSelectorProps> = ({
         }}
       >
         <SelectTrigger className="h-8 text-xs bg-sky-50/80 border-sky-100 w-[180px]">
-          <SelectValue placeholder={isRTL ? 'انتخاب از لیست' : 'Select saved'} />
+          <SelectValue placeholder={t('selectFromList')} />
         </SelectTrigger>
         <SelectContent>
           {availablePassengers.map((p) => (

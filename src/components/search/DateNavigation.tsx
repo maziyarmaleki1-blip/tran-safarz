@@ -8,7 +8,7 @@ interface DateNavigationProps {
 }
 
 export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNavigationProps) => {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="flex items-center gap-2">
@@ -18,7 +18,7 @@ export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNaviga
         onClick={onPrevDay}
         className="bg-card/80 hover:bg-card text-xs"
       >
-        {language === 'fa' ? 'روز قبل' : 'Previous Day'}
+        {t('previousDay')}
       </Button>
       
       <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-lg px-4 py-2">
@@ -31,7 +31,7 @@ export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNaviga
         onClick={onNextDay}
         className="bg-card/80 hover:bg-card text-xs"
       >
-        {language === 'fa' ? 'روز بعد' : 'Next Day'}
+        {t('nextDay')}
       </Button>
     </div>
   );

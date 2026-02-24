@@ -70,8 +70,7 @@ const Section = ({
 };
 
 export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) => {
-  const { language } = useLanguage();
-  const isRtl = language === 'fa';
+  const { t } = useLanguage();
 
   const [departureTimeSlots, setDepartureTimeSlots] = useState<string[]>(['0-24']);
   const [compartmentTypes, setCompartmentTypes] = useState<string[]>([]);
@@ -139,7 +138,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
       <div className="overflow-y-auto p-4">
 
         {/* نوع سالن */}
-        <Section title={isRtl ? 'نوع سالن' : 'Compartment Type'}>
+        <Section title={t('compartmentType')}>
           <div className="space-y-3">
             {compartmentOptions.map((option) => {
               const isSelected = compartmentTypes.includes(option.id);
@@ -161,9 +160,9 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         </Section>
 
         {/* زمان حرکت */}
-        <Section title={isRtl ? 'زمان حرکت (قطار رفت)' : 'Departure Time'}>
+        <Section title={t('departureTime')}>
           <p className="text-xs text-muted-foreground mb-3">
-            {isRtl ? 'بازه زمانی حضور در ایستگاه قطار' : 'Time range at the train station'}
+            {t('departureTimeDesc')}
           </p>
           <div className="flex gap-2 justify-between">
             {timeSlotOptions.map((slot) => {
@@ -194,13 +193,13 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
 
         {/* بازه قیمت */}
         <Section 
-          title={isRtl ? 'بازه قیمت (تومان)' : 'Price Range (Toman)'} 
+          title={t('priceRange')} 
           defaultOpen={true}
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{isRtl ? 'تا' : 'To'}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
-              <span>{isRtl ? 'از' : 'From'}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
+              <span>{t('toLabel')}: <span className="font-bold text-foreground">{formatPrice(priceRange[1])}</span></span>
+              <span>{t('fromLabel')}: <span className="font-bold text-foreground">{formatPrice(priceRange[0])}</span></span>
             </div>
             <div dir="ltr">
               <Slider
@@ -227,10 +226,10 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         {/* توضیحات خاص */}
         <div className="pt-3 pb-3 border-b border-border/30">
           <Label className="text-sm font-semibold text-primary mb-2 block">
-            {isRtl ? 'توضیحات خاص' : 'Special Notes'}
+            {t('specialNotes')}
           </Label>
           <Textarea
-            placeholder={isRtl ? 'اگر توضیحات یا درخواست خاصی دارید اینجا بنویسید...' : 'Write any special requests here...'}
+            placeholder={t('specialNotesPlaceholder')}
             value={customerNotes}
             onChange={(e) => {
               markInteracted();
@@ -246,7 +245,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         </div>
 
         {/* گزینه‌های اضافی */}
-        <Section title={isRtl ? 'گزینه‌های اضافی' : 'Additional Options'}>
+        <Section title={t('additionalOptions')}>
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer group">
               <Checkbox
@@ -258,7 +257,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                 }}
               />
               <span className="text-sm group-hover:text-primary transition-colors">
-                {isRtl ? 'کوپه دربست' : 'Private Compartment'}
+                {t('privateCompartment')}
               </span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer group">
@@ -271,7 +270,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                 }}
               />
               <span className="text-sm group-hover:text-primary transition-colors">
-                {isRtl ? 'اتباع خارجی' : 'Foreign National'}
+                {t('foreignNational')}
               </span>
             </label>
           </div>

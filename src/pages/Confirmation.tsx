@@ -3,6 +3,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ProcessSteps } from '@/components/ProcessSteps';
 import heroImage from '@/assets/hero-train.jpg';
 
 const cities: Record<string, string> = {
@@ -96,51 +97,8 @@ const Confirmation = () => {
           </div>
         </Card>
 
-        {/* Steps Info */}
-        <Card className="p-6 mb-6 bg-card/95 backdrop-blur-md border-border/50">
-          <h2 className="font-bold text-lg flex items-center gap-2 mb-4">
-            <span className="material-symbols-outlined text-primary">timeline</span>
-            مراحل بعدی
-          </h2>
-          <div className="space-y-4">
-            <div className="flex gap-3">
-              <div className="size-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-success text-lg">check</span>
-              </div>
-              <div>
-                <p className="font-medium text-sm">ثبت درخواست</p>
-                <p className="text-xs text-muted-foreground">درخواست شما با موفقیت ثبت شد</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="size-8 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-warning text-lg">search</span>
-              </div>
-              <div>
-                <p className="font-medium text-sm">جستجوی بلیط</p>
-                <p className="text-xs text-muted-foreground">تیم ما در حال پیدا کردن بهترین بلیط برای شماست</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="size-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-muted-foreground text-lg">payments</span>
-              </div>
-              <div>
-                <p className="font-medium text-sm">پرداخت مابقی</p>
-                <p className="text-xs text-muted-foreground">پس از پیدا شدن بلیط، مابقی مبلغ از شما دریافت خواهد شد</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="size-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-muted-foreground text-lg">confirmation_number</span>
-              </div>
-              <div>
-                <p className="font-medium text-sm">دریافت بلیط</p>
-                <p className="text-xs text-muted-foreground">بلیط نهایی در داشبورد شما قابل مشاهده و دانلود خواهد بود</p>
-              </div>
-            </div>
-          </div>
-        </Card>
+        {/* Process Steps */}
+        <ProcessSteps activeStep={4} className="mb-6" />
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">

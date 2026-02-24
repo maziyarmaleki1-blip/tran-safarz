@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { formatPersianDate, gregorianToJalali, toPersianDigits } from '@/lib/persianDate';
 
 import { FilterBox, FilterState } from '@/components/search/FilterBox';
+import { ProcessSteps } from '@/components/ProcessSteps';
 import { TrainRow } from '@/components/search/TrainRow';
 import { DateNavigation } from '@/components/search/DateNavigation';
 import { Button } from '@/components/ui/button';
@@ -179,37 +180,7 @@ const SearchResults = () => {
             </div>
 
               {/* Step-by-Step Process Guide */}
-            <div className="mt-4 bg-muted/40 border border-border/50 rounded-xl p-4">
-              <p className="text-xs font-semibold text-muted-foreground mb-3 text-center">{t('howItWorks')}</p>
-              <div className="grid grid-cols-5 gap-1 sm:gap-2 relative">
-                {[
-                  { icon: 'edit_note', title: t('step1Title'), desc: t('step1Desc'), active: true },
-                  { icon: 'badge', title: t('step2Title'), desc: t('step2Desc'), active: false },
-                  { icon: 'payments', title: t('step3Title'), desc: t('step3Desc'), active: false },
-                  { icon: 'manage_search', title: t('step4Title'), desc: t('step4Desc'), active: false },
-                  { icon: 'confirmation_number', title: t('step5Title'), desc: t('step5Desc'), active: false },
-                ].map((step, i) => (
-                  <div key={i} className="flex flex-col items-center text-center gap-1.5 relative">
-                    {i < 4 && (
-                      <div className="hidden sm:block absolute top-5 start-[calc(50%+16px)] w-[calc(100%-32px)] h-0.5 bg-border/60 z-0" />
-                    )}
-                    <div className={`relative z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                      step.active
-                        ? 'bg-primary text-primary-foreground shadow-md'
-                        : 'bg-muted border border-border text-muted-foreground'
-                    }`}>
-                      <span className="material-symbols-outlined text-lg sm:text-xl">{step.icon}</span>
-                    </div>
-                    <span className={`text-[10px] sm:text-xs font-bold leading-tight ${step.active ? 'text-primary' : 'text-foreground'}`}>
-                      {step.title}
-                    </span>
-                    <span className="text-[9px] sm:text-[10px] text-muted-foreground leading-tight hidden sm:block">
-                      {step.desc}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ProcessSteps activeStep={1} className="mt-4" />
           </div>
 
             {/* Mobile Filter - Above Train List */}

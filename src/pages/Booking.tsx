@@ -1,6 +1,7 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ProcessSteps } from '@/components/ProcessSteps';
 import PassengerForm, { PassengerData, UserCredentials } from '@/components/PassengerForm';
 import heroTrain from '@/assets/hero-train.jpg';
 
@@ -56,7 +57,8 @@ const Booking = () => {
         
       {/* Content */}
       <div className="relative z-10 min-h-screen" dir={direction}>
-        <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[calc(100vh-80px)]">
+        <div className="container mx-auto px-4 py-8">
+          <ProcessSteps activeStep={2} className="mb-6 max-w-4xl mx-auto" />
           <PassengerForm
             passengerCount={passengers}
             foreignNational={foreignNational}

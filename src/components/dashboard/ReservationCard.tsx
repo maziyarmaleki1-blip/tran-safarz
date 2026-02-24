@@ -10,10 +10,7 @@ import { Reservation } from '@/hooks/useReservations';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+import { getCityNameFa } from '@/lib/constants';
 
 interface ReservationCardProps {
   reservation: Reservation;
@@ -117,7 +114,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
                   <span className="material-symbols-outlined text-primary text-2xl">train</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">{cities[reservation.origin] || reservation.origin} {t('toCity')} {cities[reservation.destination] || reservation.destination}</h3>
+                  <h3 className="font-bold text-lg">{getCityNameFa(reservation.origin)} {t('toCity')} {getCityNameFa(reservation.destination)}</h3>
                   <p className="text-sm text-muted-foreground">{formatDate(reservation.departure_date)}{reservation.passenger_count && ` · ${reservation.passenger_count} ${t('passengerLabel')}`}</p>
                 </div>
               </div>

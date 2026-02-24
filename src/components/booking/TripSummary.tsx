@@ -12,16 +12,7 @@ interface TripSummaryProps {
   price?: number;
 }
 
-const cities: Record<string, { fa: string; en: string }> = {
-  tehran: { fa: 'تهران', en: 'Tehran' },
-  mashhad: { fa: 'مشهد', en: 'Mashhad' },
-  isfahan: { fa: 'اصفهان', en: 'Isfahan' },
-  shiraz: { fa: 'شیراز', en: 'Shiraz' },
-  tabriz: { fa: 'تبریز', en: 'Tabriz' },
-  yazd: { fa: 'یزد', en: 'Yazd' },
-  ahvaz: { fa: 'اهواز', en: 'Ahvaz' },
-  bandarabbas: { fa: 'بندرعباس', en: 'Bandar Abbas' },
-};
+import { getCityName } from '@/lib/constants';
 
 const TripSummary: React.FC<TripSummaryProps> = ({
   from,
@@ -34,10 +25,7 @@ const TripSummary: React.FC<TripSummaryProps> = ({
   const { language } = useLanguage();
   const isRTL = language === 'fa';
 
-  const getCityName = (code: string) => {
-    const city = cities[code.toLowerCase()];
-    return city ? (isRTL ? city.fa : city.en) : code;
-  };
+  const getCity = (code: string) => getCityName(code, isRTL ? 'fa' : 'en');
 
   const formatPrice = (p: number) => p.toLocaleString(isRTL ? 'fa-IR' : 'en-US');
 
@@ -50,11 +38,11 @@ const TripSummary: React.FC<TripSummaryProps> = ({
             <MapPin className="size-5 text-sky-600" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800">{getCityName(from)}</span>
+            <span className="font-bold text-gray-800">{getCity(from)}</span>
             <span className="material-symbols-outlined text-gray-400 text-sm">
               {isRTL ? 'arrow_back' : 'arrow_forward'}
             </span>
-            <span className="font-bold text-gray-800">{getCityName(to)}</span>
+            <span className="font-bold text-gray-800">{getCity(to)}</span>
           </div>
         </div>
 

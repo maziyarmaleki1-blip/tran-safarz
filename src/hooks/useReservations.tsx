@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { getCityNameFa } from '@/lib/constants';
 
 export interface Reservation {
   id: string;
@@ -38,10 +39,7 @@ export interface Reservation {
   ticket_paid_at?: string | null;
 }
 
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+
 
 const getStatusLabel = (status: string, ticketPaymentStatus?: string | null, ticketFilePath?: string | null) => {
   if (status === 'cancelled') return '❌ رزرو شما لغو شد';
@@ -114,20 +112,20 @@ export function useReservations() {
           if (old.status !== updated.status) {
             const msg = getStatusLabel(updated.status, updated.ticket_payment_status, updated.ticket_file_path);
             if (msg) {
-              const route = `${cities[updated.origin] || updated.origin} به ${cities[updated.destination] || updated.destination}`;
+              const route = `${getCityNameFa(updated.origin)} به ${getCityNameFa(updated.destination)}`;
               toast.info(msg, { description: route, duration: 8000 });
             }
           } else if (old.ticket_file_path !== updated.ticket_file_path && updated.ticket_file_path) {
-            const route = `${cities[updated.origin] || updated.origin} به ${cities[updated.destination] || updated.destination}`;
+            const route = `${getCityNameFa(updated.origin)} به ${getCityNameFa(updated.destination)}`;
             toast.success('🎫 بلیط شما آماده مشاهده است!', { description: route, duration: 8000 });
           } else if (old.ticket_payment_status !== updated.ticket_payment_status) {
             const msg = getStatusLabel(updated.status, updated.ticket_payment_status, updated.ticket_file_path);
             if (msg) {
-              const route = `${cities[updated.origin] || updated.origin} به ${cities[updated.destination] || updated.destination}`;
+              const route = `${getCityNameFa(updated.origin)} به ${getCityNameFa(updated.destination)}`;
               toast.info(msg, { description: route, duration: 8000 });
             }
           } else if (!old.ticket_payment_link && updated.ticket_payment_link) {
-            const route = `${cities[updated.origin] || updated.origin} به ${cities[updated.destination] || updated.destination}`;
+            const route = `${getCityNameFa(updated.origin)} به ${getCityNameFa(updated.destination)}`;
             toast.info('💳 لینک پرداخت ارسال شد', { description: route, duration: 8000 });
           }
         }

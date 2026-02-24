@@ -1,3 +1,4 @@
+import { getCityNameFa } from '@/lib/constants';
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -119,16 +120,7 @@ interface Employee {
   role: string;
 }
 
-const cities: Record<string, string> = {
-  tehran: 'تهران',
-  mashhad: 'مشهد',
-  isfahan: 'اصفهان',
-  shiraz: 'شیراز',
-  tabriz: 'تبریز',
-  yazd: 'یزد',
-  ahvaz: 'اهواز',
-  bandarabbas: 'بندرعباس',
-};
+
 
 interface ReservationsTableProps {
   reservations: Reservation[];
@@ -350,7 +342,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
     return '۱۸-۲۴';
   };
 
-  const getCityName = (key: string) => cities[key] || key;
+  const getCityName = (key: string) => getCityNameFa(key);
 
   const handleViewPassengers = (reservation: Reservation) => {
     setSelectedReservation(reservation);

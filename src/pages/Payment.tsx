@@ -15,18 +15,9 @@ import heroImage from '@/assets/hero-train.jpg';
 import BookingReview from '@/components/payment/BookingReview';
 import { ProcessSteps } from '@/components/ProcessSteps';
 
-const trains: Record<number, { name: string; number: string; departure: string; arrival: string; duration: string; price: number }> = {
-  1: { name: 'فدک', number: '301', departure: '06:00', arrival: '16:30', duration: '10:30', price: 250000 },
-  2: { name: 'غزال', number: '302', departure: '08:30', arrival: '18:45', duration: '10:15', price: 320000 },
-  3: { name: 'پردیس', number: '303', departure: '14:00', arrival: '23:30', duration: '9:30', price: 450000 },
-  4: { name: 'سبز', number: '304', departure: '20:00', arrival: '06:15', duration: '10:15', price: 280000 },
-  5: { name: 'نور', number: '305', departure: '22:30', arrival: '08:45', duration: '10:15', price: 350000 },
-};
+import { BOOKING_TRAINS, getCityNameFa } from '@/lib/constants';
 
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+const trains = BOOKING_TRAINS;
 
 const Payment = () => {
   const { t } = useLanguage();
@@ -123,7 +114,7 @@ const Payment = () => {
           user_id: user.id,
           type: 'purchase',
           amount: totalPayable,
-          description: `خرید بلیط ${cities[from] || from} → ${cities[to] || to}`,
+          description: `خرید بلیط ${getCityNameFa(from)} → ${getCityNameFa(to)}`,
         });
 
       if (transactionError) throw transactionError;

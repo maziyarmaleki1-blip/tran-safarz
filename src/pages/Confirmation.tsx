@@ -6,10 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ProcessSteps } from '@/components/ProcessSteps';
 import heroImage from '@/assets/hero-train.jpg';
 
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+import { getCityNameFa } from '@/lib/constants';
 
 const Confirmation = () => {
   const { t } = useLanguage();
@@ -79,7 +76,7 @@ const Confirmation = () => {
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">مسیر</span>
-              <span className="font-medium">{cities[from] || from} → {cities[to] || to}</span>
+              <span className="font-medium">{getCityNameFa(from)} → {getCityNameFa(to)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">تعداد مسافران</span>

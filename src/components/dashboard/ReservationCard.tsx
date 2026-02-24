@@ -33,6 +33,8 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
   const [downloadingTicket, setDownloadingTicket] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [requestingCancel, setRequestingCancel] = useState(false);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -276,23 +278,16 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
                 </div>
               )}
 
-              {/* Payment link for remainder */}
-              {stage === 'awaiting_payment' && reservation.ticket_payment_link && (
+              {/* Pay remainder */}
+              {stage === 'awaiting_payment' && (
                 <Button
                   size="sm"
                   className="gap-2"
-                  onClick={() => window.open(reservation.ticket_payment_link!, '_blank')}
+                  onClick={() => setIsPaymentDialogOpen(true)}
                 >
                   <span className="material-symbols-outlined text-sm">payments</span>
                   پرداخت مابقی ({reservation.ticket_payment_amount ? formatPrice(reservation.ticket_payment_amount) : ''})
                 </Button>
-              )}
-
-              {stage === 'awaiting_payment' && !reservation.ticket_payment_link && (
-                <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-lg">
-                  <span className="material-symbols-outlined text-sm">info</span>
-                  لینک پرداخت مابقی به زودی برای شما ارسال می‌شود
-                </div>
               )}
 
               {/* Preparing ticket */}
@@ -507,6 +502,109 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
                   ثبت درخواست لغو
                 </>
               )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Method Dialog */}
+      <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">payments</span>
+              انتخاب روش پرداخت مابقی
+            </DialogTitle>
+            <DialogDescription>
+              مبلغ قابل پرداخت: {reservation.ticket_payment_amount ? formatPrice(reservation.ticket_payment_amount) : ''}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-2">
+            {/* Gateway */}
+            <button
+              onClick={() => setSelectedPaymentMethod('gateway')}
+              className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors text-right ${
+                selectedPaymentMethod === 'gateway' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-primary">credit_card</span>
+              <div className="flex-1">
+                <p className="font-medium text-sm">پرداخت آنلاین (درگاه بانکی)</p>
+                <p className="text-xs text-muted-foreground">اتصال مستقیم به درگاه پرداخت</p>
+              </div>
+              <div className={`size-5 rounded-full border-2 flex items-center justify-center ${
+                selectedPaymentMethod === 'gateway' ? 'border-primary' : 'border-muted-foreground/30'
+              }`}>
+                {selectedPaymentMethod === 'gateway' && <div className="size-3 rounded-full bg-primary" />}
+              </div>
+            </button>
+
+            {/* Card to Card */}
+            <button
+              onClick={() => setSelectedPaymentMethod('card_transfer')}
+              className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors text-right ${
+                selectedPaymentMethod === 'card_transfer' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-primary">swap_horiz</span>
+              <div className="flex-1">
+                <p className="font-medium text-sm">کارت به کارت</p>
+                <p className="text-xs text-muted-foreground">انتقال وجه به شماره کارت</p>
+              </div>
+              <div className={`size-5 rounded-full border-2 flex items-center justify-center ${
+                selectedPaymentMethod === 'card_transfer' ? 'border-primary' : 'border-muted-foreground/30'
+              }`}>
+                {selectedPaymentMethod === 'card_transfer' && <div className="size-3 rounded-full bg-primary" />}
+              </div>
+            </button>
+
+            {/* Wallet */}
+            <button
+              onClick={() => setSelectedPaymentMethod('wallet')}
+              className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors text-right ${
+                selectedPaymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
+              <div className="flex-1">
+                <p className="font-medium text-sm">کیف پول</p>
+                <p className="text-xs text-muted-foreground">پرداخت از موجودی کیف پول</p>
+              </div>
+              <div className={`size-5 rounded-full border-2 flex items-center justify-center ${
+                selectedPaymentMethod === 'wallet' ? 'border-primary' : 'border-muted-foreground/30'
+              }`}>
+                {selectedPaymentMethod === 'wallet' && <div className="size-3 rounded-full bg-primary" />}
+              </div>
+            </button>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setIsPaymentDialogOpen(false);
+                setSelectedPaymentMethod(null);
+              }}
+            >
+              انصراف
+            </Button>
+            <Button
+              className="flex-1 gap-2"
+              disabled={!selectedPaymentMethod}
+              onClick={() => {
+                if (selectedPaymentMethod === 'gateway' && reservation.ticket_payment_link) {
+                  window.open(reservation.ticket_payment_link, '_blank');
+                } else {
+                  toast.info('درخواست پرداخت شما ثبت شد. پشتیبانی به زودی با شما تماس خواهد گرفت.');
+                }
+                setIsPaymentDialogOpen(false);
+                setSelectedPaymentMethod(null);
+              }}
+            >
+              <span className="material-symbols-outlined text-sm">check</span>
+              تأیید و پرداخت
             </Button>
           </div>
         </DialogContent>

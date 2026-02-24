@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,8 +30,8 @@ interface ReservationCardProps {
 }
 
 export function ReservationCard({ reservation, onRefresh }: ReservationCardProps) {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [downloadingTicket, setDownloadingTicket] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [requestingCancel, setRequestingCancel] = useState(false);
 
@@ -60,7 +61,8 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
     if (reservation.status === 'pending') return 'searching';
     if (reservation.status === 'confirmed') {
       if (reservation.ticket_file_path) return 'ticket_ready';
-      if (reservation.ticket_payment_status === 'paid') return 'preparing_ticket';
+      if (reservation.ticket_payment_status === 'confirmed') return 'ticket_ready';
+      if (reservation.ticket_payment_status === 'paid') return 'awaiting_confirmation';
       return 'awaiting_payment';
     }
     return 'searching';
@@ -84,7 +86,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
     const stageMap: Record<string, number> = {
       searching: 1,
       awaiting_payment: 2,
-      preparing_ticket: 2,
+      awaiting_confirmation: 2,
       ticket_ready: 3,
     };
     const stepMap: Record<string, number> = {
@@ -107,7 +109,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
       case 'cancelled': return 'bg-destructive';
       case 'ticket_ready': return 'bg-success';
       case 'awaiting_payment': return 'bg-primary';
-      case 'preparing_ticket': return 'bg-primary';
+      case 'awaiting_confirmation': return 'bg-primary';
       case 'searching': return 'bg-warning';
       default: return 'bg-muted';
     }
@@ -127,20 +129,20 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
       case 'awaiting_payment':
         return (
           <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-            💳 در انتظار پرداخت مابقی
+            💳 در انتظار پرداخت
           </Badge>
         );
-      case 'preparing_ticket':
+      case 'awaiting_confirmation':
         return (
           <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
             <span className="material-symbols-outlined text-sm ml-1 animate-pulse">hourglass_empty</span>
-            در حال آماده‌سازی بلیط
+            پرداخت شده · در انتظار تأیید
           </Badge>
         );
       case 'ticket_ready':
         return (
           <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-            ✅ بلیط آماده دریافت
+            ✅ بلیط آماده مشاهده
           </Badge>
         );
       case 'cancelled':
@@ -154,29 +156,8 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
     }
   };
 
-  const downloadTicket = async () => {
-    if (!reservation.ticket_file_path) return;
-    try {
-      setDownloadingTicket(true);
-      const { data, error } = await supabase.storage
-        .from('tickets')
-        .download(reservation.ticket_file_path);
-      if (error) throw error;
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ticket-${reservation.reservation_code}.${reservation.ticket_file_path.split('.').pop()}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success('بلیط دانلود شد');
-    } catch (error) {
-      console.error('Error downloading ticket:', error);
-      toast.error('خطا در دانلود بلیط');
-    } finally {
-      setDownloadingTicket(false);
-    }
+  const viewTicket = () => {
+    navigate(`/ticket?id=${reservation.id}`);
   };
 
   const requestCancellation = async () => {
@@ -291,30 +272,27 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
               {stage === 'awaiting_payment' && !reservation.ticket_payment_link && (
                 <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-lg">
                   <span className="material-symbols-outlined text-sm">info</span>
-                  لینک پرداخت مابقی به زودی برای شما ارسال می‌شود
+                  در انتظار پرداخت · لینک پرداخت به زودی ارسال می‌شود
                 </div>
               )}
 
-              {/* Preparing ticket */}
-              {stage === 'preparing_ticket' && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
+              {/* Awaiting confirmation after payment */}
+              {stage === 'awaiting_confirmation' && (
+                <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-lg">
                   <span className="material-symbols-outlined text-sm animate-pulse">hourglass_empty</span>
-                  بلیط در حال آماده‌سازی است
+                  پرداخت انجام شده · در انتظار تأیید و نمایش بلیط
                 </div>
               )}
 
-              {/* Download ticket */}
-              {stage === 'ticket_ready' && reservation.ticket_file_path && (
+              {/* View ticket */}
+              {stage === 'ticket_ready' && (
                 <Button
                   size="sm"
                   className="gap-2 bg-success hover:bg-success/90"
-                  onClick={downloadTicket}
-                  disabled={downloadingTicket}
+                  onClick={viewTicket}
                 >
-                  <span className="material-symbols-outlined text-sm">
-                    {downloadingTicket ? 'refresh' : 'download'}
-                  </span>
-                  {downloadingTicket ? 'در حال دانلود...' : 'دریافت بلیط'}
+                  <span className="material-symbols-outlined text-sm">visibility</span>
+                  مشاهده بلیط
                 </Button>
               )}
 

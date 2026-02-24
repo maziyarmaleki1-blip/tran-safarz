@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_methods: {
+        Row: {
+          bank_name: string | null
+          card_holder_name: string | null
+          card_number: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_order: number | null
+          gateway_provider: string | null
+          id: string
+          is_active: boolean
+          merchant_id: string | null
+          min_balance: number | null
+          name: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          bank_name?: string | null
+          card_holder_name?: string | null
+          card_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number | null
+          gateway_provider?: string | null
+          id?: string
+          is_active?: boolean
+          merchant_id?: string | null
+          min_balance?: number | null
+          name: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          bank_name?: string | null
+          card_holder_name?: string | null
+          card_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number | null
+          gateway_provider?: string | null
+          id?: string
+          is_active?: boolean
+          merchant_id?: string | null
+          min_balance?: number | null
+          name?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           balance: number | null

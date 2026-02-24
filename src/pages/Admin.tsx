@@ -14,6 +14,7 @@ import { EmployeeManagement } from '@/components/admin/EmployeeManagement';
 import RouteFeeManagement from '@/components/admin/RouteFeeManagement';
 import AdminLogin from '@/components/admin/AdminLogin';
 import SupportTab from '@/components/admin/SupportTab';
+import PaymentMethodsManagement from '@/components/admin/PaymentMethodsManagement';
 
 interface Passenger {
   id: string;
@@ -125,7 +126,7 @@ const Admin = () => {
       
       // Admins get all permissions, employees get their assigned permissions
       const userPermissions = hasAdminRole 
-        ? ['reservations', 'support', 'employees', 'routes']
+        ? ['reservations', 'support', 'employees', 'routes', 'payments']
         : (roles?.[0] as any)?.permissions || ['reservations'];
 
       setIsAdmin(hasAdminRole);
@@ -292,7 +293,7 @@ const Admin = () => {
                 پشتیبانی
               </TabsTrigger>
             )}
-            {isAdmin && (
+          {isAdmin && (
               <>
                 <TabsTrigger value="employees" className="gap-2">
                   <span className="material-symbols-outlined text-lg">group</span>
@@ -301,6 +302,10 @@ const Admin = () => {
                 <TabsTrigger value="routes" className="gap-2">
                   <span className="material-symbols-outlined text-lg">route</span>
                   کارمزد مسیرها
+                </TabsTrigger>
+                <TabsTrigger value="payments" className="gap-2">
+                  <span className="material-symbols-outlined text-lg">payments</span>
+                  روش‌های پرداخت
                 </TabsTrigger>
               </>
             )}
@@ -340,6 +345,9 @@ const Admin = () => {
               </TabsContent>
               <TabsContent value="routes">
                 <RouteFeeManagement />
+              </TabsContent>
+              <TabsContent value="payments">
+                <PaymentMethodsManagement />
               </TabsContent>
             </>
           )}

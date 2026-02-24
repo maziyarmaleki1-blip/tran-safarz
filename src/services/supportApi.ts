@@ -82,6 +82,7 @@ export async function sendMessage(req: SendMessageRequest): Promise<SendMessageR
     id: uid(),
     conversationId: req.conversationId,
     sender: req.sender,
+    senderName: req.senderName,
     content: req.content,
     timestamp: now(),
     status: 'sent',
@@ -93,6 +94,10 @@ export async function sendMessage(req: SendMessageRequest): Promise<SendMessageR
   if (conv) {
     conv.lastMessage = req.content;
     conv.lastMessageAt = msg.timestamp;
+    if (req.sender === 'operator' && !conv.assignedOperator && req.senderName) {
+      conv.assignedOperator = req.senderName;
+      conv.status = 'active';
+    }
   }
 
   // Simulate status progression

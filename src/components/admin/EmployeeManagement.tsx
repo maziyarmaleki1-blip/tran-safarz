@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,7 @@ interface Employee {
   id: string;
   user_id: string;
   role: 'admin' | 'employee';
+  permissions: string[];
   created_at: string;
   profile?: {
     first_name: string | null;
@@ -42,6 +44,11 @@ interface Employee {
     email: string | null;
   };
 }
+
+const AVAILABLE_PERMISSIONS = [
+  { key: 'reservations', label: 'رزروها', icon: 'confirmation_number' },
+  { key: 'support', label: 'پشتیبانی', icon: 'headset_mic' },
+] as const;
 
 interface EmployeeManagementProps {
   isAdmin: boolean;
@@ -179,6 +186,38 @@ export const EmployeeManagement = ({ isAdmin }: EmployeeManagementProps) => {
     }
   };
 
+  const handleTogglePermission = async (employee: Employee, permKey: string) => {
+    if (employee.role === 'admin') return; // Admins always have all permissions
+    
+    const current = employee.permissions || ['reservations'];
+    const updated = current.includes(permKey)
+      ? current.filter(p => p !== permKey)
+      : [...current, permKey];
+    
+    // Must have at least one permission
+    if (updated.length === 0) {
+      toast.error('کارمند باید حداقل یک دسترسی داشته باشد');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('user_roles')
+        .update({ permissions: updated } as any)
+        .eq('id', employee.id);
+
+      if (error) throw error;
+
+      setEmployees(prev => prev.map(e => 
+        e.id === employee.id ? { ...e, permissions: updated } : e
+      ));
+      toast.success('دسترسی‌ها به‌روزرسانی شد');
+    } catch (error) {
+      console.error('Error updating permissions:', error);
+      toast.error('خطا در به‌روزرسانی دسترسی‌ها');
+    }
+  };
+
   const getRoleBadge = (role: string) => {
     if (role === 'admin') {
       return (
@@ -239,6 +278,7 @@ export const EmployeeManagement = ({ isAdmin }: EmployeeManagementProps) => {
                   <TableHead className="text-right">نام</TableHead>
                   <TableHead className="text-right">موبایل</TableHead>
                   <TableHead className="text-right">نقش</TableHead>
+                  <TableHead className="text-right">دسترسی‌ها</TableHead>
                   <TableHead className="text-right">تاریخ عضویت</TableHead>
                   <TableHead className="text-right">عملیات</TableHead>
                 </TableRow>
@@ -253,6 +293,23 @@ export const EmployeeManagement = ({ isAdmin }: EmployeeManagementProps) => {
                       {employee.profile?.phone_number || '-'}
                     </TableCell>
                     <TableCell>{getRoleBadge(employee.role)}</TableCell>
+                    <TableCell>
+                      {employee.role === 'admin' ? (
+                        <span className="text-xs text-muted-foreground">دسترسی کامل</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {AVAILABLE_PERMISSIONS.map(perm => (
+                            <label key={perm.key} className="flex items-center gap-1.5 cursor-pointer">
+                              <Checkbox
+                                checked={(employee.permissions || ['reservations']).includes(perm.key)}
+                                onCheckedChange={() => handleTogglePermission(employee, perm.key)}
+                              />
+                              <span className="text-xs">{perm.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>{formatDate(employee.created_at)}</TableCell>
                     <TableCell>
                       <Button
@@ -269,7 +326,7 @@ export const EmployeeManagement = ({ isAdmin }: EmployeeManagementProps) => {
                 ))}
                 {employees.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       هیچ کارمندی ثبت نشده است
                     </TableCell>
                   </TableRow>

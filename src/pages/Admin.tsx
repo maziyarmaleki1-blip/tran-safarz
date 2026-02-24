@@ -88,6 +88,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isStaff, setIsStaff] = useState(false);
+  const [permissions, setPermissions] = useState<string[]>([]);
   const [checkingRole, setCheckingRole] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -113,7 +114,7 @@ const Admin = () => {
       setCheckingRole(true);
       const { data: roles, error } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('role, permissions')
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -121,9 +122,15 @@ const Admin = () => {
       const userRoles = roles?.map(r => r.role) || [];
       const hasAdminRole = userRoles.includes('admin');
       const hasStaffRole = userRoles.includes('admin') || userRoles.includes('employee');
+      
+      // Admins get all permissions, employees get their assigned permissions
+      const userPermissions = hasAdminRole 
+        ? ['reservations', 'support', 'employees', 'settings', 'routes']
+        : (roles?.[0] as any)?.permissions || ['reservations'];
 
       setIsAdmin(hasAdminRole);
       setIsStaff(hasStaffRole);
+      setPermissions(userPermissions);
 
       if (!hasStaffRole) {
         setIsAuthenticated(false);
@@ -271,12 +278,20 @@ const Admin = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="reservations" className="space-y-6">
+        <Tabs defaultValue={permissions[0] || 'reservations'} className="space-y-6">
           <TabsList>
-            <TabsTrigger value="reservations" className="gap-2">
-              <span className="material-symbols-outlined text-lg">confirmation_number</span>
-              رزروها
-            </TabsTrigger>
+            {permissions.includes('reservations') && (
+              <TabsTrigger value="reservations" className="gap-2">
+                <span className="material-symbols-outlined text-lg">confirmation_number</span>
+                رزروها
+              </TabsTrigger>
+            )}
+            {permissions.includes('support') && (
+              <TabsTrigger value="support" className="gap-2 relative">
+                <span className="material-symbols-outlined text-lg">headset_mic</span>
+                پشتیبانی
+              </TabsTrigger>
+            )}
             {isAdmin && (
               <>
                 <TabsTrigger value="employees" className="gap-2">
@@ -291,52 +306,49 @@ const Admin = () => {
                   <span className="material-symbols-outlined text-lg">route</span>
                   کارمزد مسیرها
                 </TabsTrigger>
-                <TabsTrigger value="support" className="gap-2 relative">
-                  <span className="material-symbols-outlined text-lg">headset_mic</span>
-                  پشتیبانی
-                </TabsTrigger>
               </>
             )}
           </TabsList>
 
-          <TabsContent value="reservations" className="space-y-6">
-            <StatsCards
-              total={totalReservations}
-              confirmed={confirmedReservations}
-              pending={pendingReservations}
-              cancelled={cancelledReservations}
-            />
+          {permissions.includes('reservations') && (
+            <TabsContent value="reservations" className="space-y-6">
+              <StatsCards
+                total={totalReservations}
+                confirmed={confirmedReservations}
+                pending={pendingReservations}
+                cancelled={cancelledReservations}
+              />
+              <ReservationsTable
+                reservations={reservations}
+                loading={loading}
+                onRefresh={fetchAllReservations}
+                isAdmin={isAdmin}
+              />
+            </TabsContent>
+          )}
 
-            <ReservationsTable
-              reservations={reservations}
-              loading={loading}
-              onRefresh={fetchAllReservations}
-              isAdmin={isAdmin}
-            />
-          </TabsContent>
+          {permissions.includes('support') && (
+            <TabsContent value="support">
+              <SupportTab
+                isAdmin={isAdmin}
+                currentUserId={user?.id}
+                currentUserName={user?.email?.split('@')[0]}
+              />
+            </TabsContent>
+          )}
 
           {isAdmin && (
             <>
               <TabsContent value="employees">
                 <EmployeeManagement isAdmin={isAdmin} />
               </TabsContent>
-
               <TabsContent value="settings">
                 <div className="max-w-md">
                   <ServiceFeeSettings />
                 </div>
               </TabsContent>
-
               <TabsContent value="routes">
                 <RouteFeeManagement />
-              </TabsContent>
-
-              <TabsContent value="support">
-                <SupportTab
-                  isAdmin={isAdmin}
-                  currentUserId={user?.id}
-                  currentUserName={user?.email?.split('@')[0]}
-                />
               </TabsContent>
             </>
           )}

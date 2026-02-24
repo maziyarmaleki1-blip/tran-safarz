@@ -33,7 +33,7 @@ export function ReservationsTab({ reservations, loading, onRefresh }: Reservatio
   if (loading) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold mb-6">رزروهای من</h1>
+        <h1 className="text-2xl font-bold mb-6">درخواست‌های من</h1>
         {[1, 2, 3].map((i) => (
           <Card key={i} className="p-4">
             <div className="flex items-center gap-4">
@@ -52,10 +52,10 @@ export function ReservationsTab({ reservations, loading, onRefresh }: Reservatio
   if (reservations.length === 0) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold mb-6">رزروهای من</h1>
+        <h1 className="text-2xl font-bold mb-6">درخواست‌های من</h1>
         <Card className="p-8 text-center">
           <span className="material-symbols-outlined text-4xl text-muted-foreground mb-4">confirmation_number</span>
-          <p className="text-muted-foreground">هنوز رزروی ندارید</p>
+          <p className="text-muted-foreground">هنوز درخواستی ثبت نکردید</p>
         </Card>
       </div>
     );
@@ -63,7 +63,7 @@ export function ReservationsTab({ reservations, loading, onRefresh }: Reservatio
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold mb-2">رزروهای من</h1>
+      <h1 className="text-2xl font-bold mb-2">درخواست‌های من</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">

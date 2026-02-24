@@ -12,7 +12,7 @@ import { WalletTab } from '@/components/dashboard/WalletTab';
 import logo from '@/assets/logo.png';
 
 const menuItems = [
-  { id: 'reservations', icon: 'confirmation_number', label: 'رزروها' },
+  { id: 'reservations', icon: 'confirmation_number', label: 'درخواست‌ها' },
   { id: 'profile', icon: 'person', label: 'پروفایل' },
   { id: 'security', icon: 'lock', label: 'امنیت' },
   { id: 'wallet', icon: 'account_balance_wallet', label: 'کیف پول' },

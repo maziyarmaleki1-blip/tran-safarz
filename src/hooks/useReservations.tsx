@@ -30,6 +30,11 @@ export interface Reservation {
   // Cancel request
   cancel_requested?: boolean | null;
   cancel_requested_at?: string | null;
+  // Ticket payment
+  ticket_payment_status?: string | null;
+  ticket_payment_amount?: number | null;
+  ticket_payment_link?: string | null;
+  ticket_paid_at?: string | null;
 }
 
 export function useReservations() {

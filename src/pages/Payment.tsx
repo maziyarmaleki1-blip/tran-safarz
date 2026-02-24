@@ -122,7 +122,7 @@ const Payment = () => {
           user_id: user.id,
           type: 'purchase',
           amount: totalPayable,
-          description: `خرید بلیط ${cities[from]} → ${cities[to]}`,
+          description: `خرید بلیط ${cities[from] || from} → ${cities[to] || to}`,
         });
 
       if (transactionError) throw transactionError;

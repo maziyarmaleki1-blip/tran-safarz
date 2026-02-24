@@ -374,12 +374,13 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
       (r.passengers &&
         r.passengers.some(
           p =>
-            p.firstName?.includes(searchQuery) ||
-            p.lastName?.includes(searchQuery) ||
+            p.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.nationalId?.includes(searchQuery) ||
             p.mobile?.includes(searchQuery)
         ));
-     return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch;
+      
+      // Early return removed to allow subsequent filters to run
      
      // Date range filter
      let matchesDateRange = true;

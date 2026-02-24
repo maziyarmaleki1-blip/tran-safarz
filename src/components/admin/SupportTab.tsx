@@ -133,6 +133,7 @@ export default function SupportTab({ isAdmin, currentUserId, currentUserName }: 
       conversationId: selected.id,
       content: text,
       sender: 'operator',
+      senderName: currentUserName || 'اپراتور',
     });
     setMessages(prev => [...prev, res.message]);
   };

@@ -37,6 +37,7 @@ export interface SendMessageRequest {
   conversationId: string;
   content: string;
   sender: SenderType;
+  senderName?: string;
 }
 
 export interface SendMessageResponse {

@@ -195,12 +195,14 @@ const translations: Translations = {
   // Booking Process Steps
   step1Title: { fa: 'ثبت درخواست', en: 'Submit Request', ar: 'تقديم الطلب' },
   step1Desc: { fa: 'فیلترها را انتخاب و رزرو ثبت کنید', en: 'Select filters & submit booking', ar: 'اختر الفلاتر وأرسل الحجز' },
-  step2Title: { fa: 'جستجوی بلیط', en: 'Ticket Search', ar: 'البحث عن التذكرة' },
-  step2Desc: { fa: 'ربات ما بلیط را برایتان پیدا می‌کند', en: 'Our bot finds your ticket', ar: 'يبحث الروبوت عن تذكرتك' },
-  step3Title: { fa: 'پرداخت مابقی', en: 'Pay Remaining', ar: 'دفع المتبقي' },
-  step3Desc: { fa: 'مبلغ باقی‌مانده را پرداخت کنید', en: 'Pay the remaining amount', ar: 'ادفع المبلغ المتبقي' },
-  step4Title: { fa: 'دریافت بلیط', en: 'Get Ticket', ar: 'استلام التذكرة' },
-  step4Desc: { fa: 'بلیط خود را دانلود یا چاپ کنید', en: 'Download or print your ticket', ar: 'حمّل أو اطبع تذكرتك' },
+  step2Title: { fa: 'وارد کردن مشخصات', en: 'Enter Details', ar: 'إدخال البيانات' },
+  step2Desc: { fa: 'اطلاعات مسافران را وارد کنید', en: 'Enter passenger information', ar: 'أدخل معلومات المسافرين' },
+  step3Title: { fa: 'پرداخت بیعانه', en: 'Pay Deposit', ar: 'دفع العربون' },
+  step3Desc: { fa: 'بیعانه و کارمزد را پرداخت کنید', en: 'Pay the deposit & service fee', ar: 'ادفع العربون ورسوم الخدمة' },
+  step4Title: { fa: 'جستجو خودکار', en: 'Auto Search', ar: 'بحث تلقائي' },
+  step4Desc: { fa: 'ربات ما بلیط را برایتان پیدا می‌کند', en: 'Our bot finds your ticket', ar: 'يبحث الروبوت عن تذكرتك' },
+  step5Title: { fa: 'دریافت بلیط', en: 'Get Ticket', ar: 'استلام التذكرة' },
+  step5Desc: { fa: 'بلیط خود را دانلود یا چاپ کنید', en: 'Download or print your ticket', ar: 'حمّل أو اطبع تذكرتك' },
   howItWorks: { fa: 'مراحل شکار بلیط', en: 'How It Works', ar: 'كيف يعمل' },
 };
 

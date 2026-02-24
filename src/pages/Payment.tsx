@@ -182,6 +182,17 @@ const Payment = () => {
                     </Label>
                   </div>
 
+                  <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'card_transfer' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                    <RadioGroupItem value="card_transfer" id="card_transfer" />
+                    <Label htmlFor="card_transfer" className="flex items-center gap-3 cursor-pointer flex-1">
+                      <span className="material-symbols-outlined text-primary">swap_horiz</span>
+                      <div>
+                        <p className="font-medium">کارت به کارت</p>
+                        <p className="text-sm text-muted-foreground">انتقال وجه مستقیم به شماره کارت</p>
+                      </div>
+                    </Label>
+                  </div>
+
                   <div>
                     <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                       <RadioGroupItem value="wallet" id="wallet" />
@@ -193,7 +204,7 @@ const Payment = () => {
                         </div>
                       </Label>
                     </div>
-                    <div className="bg-green-50 text-green-800 border border-green-200 p-3 rounded-lg mt-2 text-sm text-right">
+                    <div className="bg-muted/50 text-foreground border border-border p-3 rounded-lg mt-2 text-sm text-right">
                       🛡️ تضمین بازگشت وجه: در صورت عدم موفقیت ربات در شکار بلیط، کل مبلغ (به همراه کارمزد) فوراً به کیف پول شما باز می‌گردد یا طبق سیکل پایا به حساب بانکی واریز می‌شود.
                     </div>
                   </div>

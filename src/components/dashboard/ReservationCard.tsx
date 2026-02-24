@@ -197,7 +197,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
                 </div>
                 <div>
                   <h3 className="font-bold text-lg">
-                    {cities[reservation.origin] || reservation.origin} → {cities[reservation.destination] || reservation.destination}
+                    {cities[reservation.origin] || reservation.origin} به {cities[reservation.destination] || reservation.destination}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {formatDate(reservation.departure_date)}
@@ -442,7 +442,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">مسیر:</span>
               <span className="font-medium">
-                {cities[reservation.origin] || reservation.origin} → {cities[reservation.destination] || reservation.destination}
+                {cities[reservation.origin] || reservation.origin} به {cities[reservation.destination] || reservation.destination}
               </span>
             </div>
             <div className="flex justify-between text-sm">

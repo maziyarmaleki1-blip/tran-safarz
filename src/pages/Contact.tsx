@@ -74,7 +74,7 @@ const Contact = () => {
               <div className="px-4 pb-4">
                 <div className="rounded-lg overflow-hidden border border-border/50">
                   <iframe
-                    title="نقشه آدرس سفرز"
+                    title="نقشه آدرس سفر بدون مرز"
                     src="https://www.openstreetmap.org/export/embed.html?bbox=59.6050%2C36.2880%2C59.6150%2C36.2940&layer=mapnik&marker=36.2910%2C59.6100"
                     width="100%"
                     height="280"

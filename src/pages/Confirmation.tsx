@@ -46,7 +46,7 @@ const Confirmation = () => {
             <span className="material-symbols-outlined text-success text-5xl">check_circle</span>
           </div>
           <h1 className="text-2xl font-bold text-success mb-2">درخواست شکار بلیط ثبت شد!</h1>
-          <p className="text-muted-foreground">تیم ما در حال پیگیری بلیط شماست</p>
+          <p className="text-card-foreground bg-card/80 backdrop-blur-sm rounded-lg px-4 py-2 inline-block">تیم ما در حال پیگیری بلیط شماست</p>
         </div>
 
         {/* Tracking Code */}
@@ -153,10 +153,12 @@ const Confirmation = () => {
         </div>
 
         {/* Help Note */}
-        <p className="text-sm text-muted-foreground text-center mt-6 flex items-center justify-center gap-2">
-          <span className="material-symbols-outlined text-sm">info</span>
-          در صورت عدم موفقیت در شکار بلیط، کل مبلغ بیعانه به شما بازگردانده خواهد شد
-        </p>
+        <div className="bg-card/80 backdrop-blur-sm rounded-lg px-4 py-3 text-center mt-6">
+          <p className="text-sm text-card-foreground flex items-center justify-center gap-2">
+            <span className="material-symbols-outlined text-sm">info</span>
+            در صورت عدم موفقیت در شکار بلیط، کل مبلغ بیعانه به شما بازگردانده خواهد شد
+          </p>
+        </div>
       </div>
     </MainLayout>
   );

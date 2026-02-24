@@ -61,17 +61,35 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-sidebar-border mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-sidebar-foreground/60">
-            © ۱۴۰۳ safarz - {t('allRightsReserved')}
-          </p>
-          <div className="flex items-center gap-4">
-            <Link to="/privacy" className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
-              {t('privacyPolicy')}
-            </Link>
-            <Link to="/terms" className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
-              {t('termsOfService')}
-            </Link>
+        {/* Trust Badges */}
+        <div className="border-t border-sidebar-border mt-8 pt-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            {/* eNamad & Payment Badges - Left Side */}
+            <div className="flex items-center gap-4">
+              <div className="w-28 h-32 rounded-lg border-2 border-dashed border-sidebar-foreground/30 bg-sidebar-foreground/5 flex flex-col items-center justify-center gap-2 text-sidebar-foreground/40">
+                <span className="material-symbols-outlined text-2xl">verified</span>
+                <span className="text-[10px] text-center leading-tight">نماد اعتماد<br/>الکترونیکی</span>
+              </div>
+              <div className="w-28 h-32 rounded-lg border-2 border-dashed border-sidebar-foreground/30 bg-sidebar-foreground/5 flex flex-col items-center justify-center gap-2 text-sidebar-foreground/40">
+                <span className="material-symbols-outlined text-2xl">credit_card</span>
+                <span className="text-[10px] text-center leading-tight">مجوز درگاه<br/>پرداخت</span>
+              </div>
+            </div>
+
+            {/* Copyright & Links */}
+            <div className="flex flex-col items-end gap-3">
+              <div className="flex items-center gap-4">
+                <Link to="/privacy" className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
+                  {t('privacyPolicy')}
+                </Link>
+                <Link to="/terms" className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
+                  {t('termsOfService')}
+                </Link>
+              </div>
+              <p className="text-sm text-sidebar-foreground/60">
+                © ۱۴۰۴ safarz - {t('allRightsReserved')}
+              </p>
+            </div>
           </div>
         </div>
       </div>

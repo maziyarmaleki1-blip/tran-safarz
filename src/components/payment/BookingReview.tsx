@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { formatPersianDate, gregorianToJalali, toPersianDigits } from '@/lib/persianDate';
+import { getCityNameFa } from '@/lib/constants';
 
 interface PassengerInfo {
   firstName: string;
@@ -37,10 +38,7 @@ interface BookingReviewProps {
   dateStr?: string;
 }
 
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+
 
 const wagonTypeLabels: Record<string, string> = {
   'compartment-6': 'کوپه ۶ نفره',
@@ -90,8 +88,8 @@ const BookingReview: React.FC<BookingReviewProps> = ({
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <InfoCell icon="my_location" label="مبدأ" value={cities[from] || from} />
-          <InfoCell icon="location_on" label="مقصد" value={cities[to] || to} />
+          <InfoCell icon="my_location" label="مبدأ" value={getCityNameFa(from)} />
+          <InfoCell icon="location_on" label="مقصد" value={getCityNameFa(to)} />
           <InfoCell icon="calendar_month" label="تاریخ" value={formatDate()} />
           <InfoCell icon="group" label="تعداد" value={`${toPersianDigits(adultsCount)} بزرگسال${childrenCount > 0 ? ` و ${toPersianDigits(childrenCount)} کودک` : ''}`} />
         </div>

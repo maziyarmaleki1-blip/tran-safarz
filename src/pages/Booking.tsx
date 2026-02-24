@@ -5,13 +5,9 @@ import { ProcessSteps } from '@/components/ProcessSteps';
 import PassengerForm, { PassengerData, UserCredentials } from '@/components/PassengerForm';
 import heroTrain from '@/assets/hero-train.jpg';
 
-const trains: Record<number, { name: string; price: number }> = {
-  1: { name: 'فدک', price: 250000 },
-  2: { name: 'غزال', price: 320000 },
-  3: { name: 'پردیس', price: 450000 },
-  4: { name: 'سبز', price: 280000 },
-  5: { name: 'نور', price: 350000 },
-};
+import { BOOKING_TRAINS } from '@/lib/constants';
+
+const trains = BOOKING_TRAINS;
 
 const Booking = () => {
   const { language } = useLanguage();

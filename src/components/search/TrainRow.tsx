@@ -25,18 +25,7 @@ interface TrainRowProps {
   to: string;
 }
 
-const cities: Record<string, string> = {
-  tehran: 'تهران',
-  mashhad: 'مشهد',
-  isfahan: 'اصفهان',
-  shiraz: 'شیراز',
-  tabriz: 'تبریز',
-  yazd: 'یزد',
-  ahvaz: 'اهواز',
-  bandarabbas: 'بندرعباس',
-  kermanshah: 'کرمانشاه',
-  qom: 'قم',
-};
+// Cities imported from shared constants (currently unused in this component but kept for reference)
 
 export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
   const { t } = useLanguage();

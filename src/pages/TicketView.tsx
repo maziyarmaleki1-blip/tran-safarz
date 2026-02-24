@@ -8,10 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import logo from '@/assets/logo.png';
 
-const cities: Record<string, string> = {
-  tehran: 'تهران', mashhad: 'مشهد', isfahan: 'اصفهان', shiraz: 'شیراز',
-  tabriz: 'تبریز', yazd: 'یزد', ahvaz: 'اهواز', bandarabbas: 'بندرعباس',
-};
+import { getCityNameFa } from '@/lib/constants';
 
 const TicketView = () => {
   const [searchParams] = useSearchParams();
@@ -169,7 +166,7 @@ const TicketView = () => {
                 </div>
                 <div>
                   <h2 className="font-bold text-lg">
-                    {cities[reservation.origin] || reservation.origin} → {cities[reservation.destination] || reservation.destination}
+                    {getCityNameFa(reservation.origin)} → {getCityNameFa(reservation.destination)}
                   </h2>
                   <p className="text-sm text-muted-foreground">
                     {formatDate(reservation.departure_date)}

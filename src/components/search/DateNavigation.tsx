@@ -16,7 +16,7 @@ export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNaviga
         variant="outline"
         size="sm"
         onClick={onPrevDay}
-        className="bg-card/80 hover:bg-card text-xs"
+        className="bg-card/80 hover:bg-card text-xs min-h-[40px] px-3"
       >
         {t('previousDay')}
       </Button>
@@ -29,7 +29,7 @@ export const DateNavigation = ({ currentDate, onPrevDay, onNextDay }: DateNaviga
         variant="outline"
         size="sm"
         onClick={onNextDay}
-        className="bg-card/80 hover:bg-card text-xs"
+        className="bg-card/80 hover:bg-card text-xs min-h-[40px] px-3"
       >
         {t('nextDay')}
       </Button>

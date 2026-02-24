@@ -145,12 +145,12 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
               return (
                 <label
                   key={option.id}
-                  className="flex items-center gap-3 cursor-pointer group"
+                  className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1"
                 >
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={() => toggleCompartment(option.id)}
-                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    className="size-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                   <span className="text-sm group-hover:text-primary transition-colors">{option.label}</span>
                 </label>
@@ -174,7 +174,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   key={slot.id}
                   onClick={() => toggleTimeSlot(slot.id)}
                   className={cn(
-                    "flex-1 flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg border transition-all aspect-square max-w-[52px]",
+                    "flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-lg border transition-all aspect-square max-w-[56px] min-h-[48px]",
                     isActive
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border/50 bg-muted/20 text-muted-foreground hover:border-primary/40"
@@ -247,7 +247,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
         {/* گزینه‌های اضافی */}
         <Section title={t('additionalOptions')}>
           <div className="space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer group">
+            <label className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
               <Checkbox
                 checked={privateCompartment}
                 onCheckedChange={(checked) => {
@@ -255,12 +255,13 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   setPrivateCompartment(!!checked);
                   notifyChange({ privateCompartment: !!checked });
                 }}
+                className="size-5"
               />
               <span className="text-sm group-hover:text-primary transition-colors">
                 {t('privateCompartment')}
               </span>
             </label>
-            <label className="flex items-center gap-3 cursor-pointer group">
+            <label className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
               <Checkbox
                 checked={foreignNational}
                 onCheckedChange={(checked) => {
@@ -268,6 +269,7 @@ export const FilterBox = ({ onFilterChange, onHasInteracted }: FilterBoxProps) =
                   setForeignNational(!!checked);
                   notifyChange({ foreignNational: !!checked });
                 }}
+                className="size-5"
               />
               <span className="text-sm group-hover:text-primary transition-colors">
                 {t('foreignNational')}

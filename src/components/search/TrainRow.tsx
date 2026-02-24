@@ -124,51 +124,51 @@ export const TrainRow = ({ train, date, from, to }: TrainRowProps) => {
       </div>
 
       {/* Mobile Layout */}
-      <div className="md:hidden p-4 space-y-3">
+      <div className="md:hidden p-5 space-y-4">
         {/* Header Row: Logo + Name + Status */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-muted/50 rounded-lg flex items-center justify-center">
+            <div className="w-11 h-11 bg-muted/50 rounded-xl flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-xl text-primary">train</span>
             </div>
             <div>
-              <p className="font-semibold text-sm">{train.rating || '۵ ستاره'} {train.name}</p>
-              <p className="text-xs text-muted-foreground">قطار {train.number}</p>
+              <p className="font-semibold text-base leading-tight">{train.rating || '۵ ستاره'} {train.name}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('trainNo')} {train.number}</p>
             </div>
           </div>
           <StatusDisplay />
         </div>
 
         {/* Info Row */}
-        <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3 text-sm">
+        <div className="flex items-center justify-between bg-muted/30 rounded-xl p-4">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">{t('dep')}</p>
-            <p className="font-bold">{train.departure}</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('dep')}</p>
+            <p className="font-bold text-lg">{train.departure}</p>
           </div>
-          <div className="text-center">
-            <p className="text-xs text-muted-foreground">{train.duration}</p>
-            <div className="flex items-center gap-1">
-              <div className="w-6 border-t border-dashed border-muted-foreground/50" />
-              <span className="material-symbols-outlined text-xs text-muted-foreground">arrow_back</span>
-              <div className="w-6 border-t border-dashed border-muted-foreground/50" />
+          <div className="text-center flex-1 px-2">
+            <p className="text-xs text-muted-foreground mb-1">{train.duration}</p>
+            <div className="flex items-center justify-center gap-1">
+              <div className="w-8 border-t border-dashed border-muted-foreground/50" />
+              <span className="material-symbols-outlined text-sm text-muted-foreground">arrow_back</span>
+              <div className="w-8 border-t border-dashed border-muted-foreground/50" />
             </div>
           </div>
           <div className="text-center">
-            <p className="text-xs text-muted-foreground">{t('arr')}</p>
-            <p className="font-bold">{train.arrival}</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('arr')}</p>
+            <p className="font-bold text-lg">{train.arrival}</p>
           </div>
         </div>
 
         {/* Bottom Row: Compartment + Price */}
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">{train.compartmentType}</p>
-          <div className="text-left">
-          <span className="text-lg font-bold text-accent">{formatPrice(train.price * 10)}</span>
-            <span className="text-xs text-muted-foreground mr-1">{t('rial')}</span>
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-sm text-muted-foreground">{train.compartmentType}</p>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xl font-bold text-accent">{formatPrice(train.price * 10)}</span>
+            <span className="text-xs text-muted-foreground">{t('rial')}</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="material-symbols-outlined text-xs text-muted-foreground/60 cursor-help">info</span>
+                  <span className="material-symbols-outlined text-sm text-muted-foreground/60 cursor-help p-1">info</span>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[220px] text-center text-xs">
                   <p>قیمت شامل کارمزد خدمات رزرو خودکار است</p>

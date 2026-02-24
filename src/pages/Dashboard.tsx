@@ -53,7 +53,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-muted/30">
+    <div className="min-h-screen flex bg-muted/30" dir="rtl">
       {/* Sidebar */}
       <aside className="w-64 bg-sidebar text-sidebar-foreground hidden lg:flex flex-col fixed right-0 top-0 bottom-0 z-20 border-l border-sidebar-border">
         <div className="p-6 border-b border-sidebar-border">

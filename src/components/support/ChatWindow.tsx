@@ -94,7 +94,7 @@ export function ChatWindow({ onClose }: { onClose: () => void }) {
             </span>
           </div>
           <div>
-            <p className="font-semibold text-sm">پشتیبانی سفرز</p>
+            <p className="font-semibold text-sm">پشتیبانی سفر بدون مرز</p>
             <p className="text-[11px] opacity-80">
               {mode === 'ai' ? 'ربات هوشمند' : 'اپراتور انسانی'} · آنلاین
             </p>

@@ -56,7 +56,7 @@ mockMessages = [
   { id: uid(), conversationId: 'conv-1', sender: 'bot', content: 'سلام! برای چه تاریخی بلیط نیاز دارید؟', timestamp: now(), status: 'delivered' },
   { id: uid(), conversationId: 'conv-2', sender: 'user', content: 'سلام، مشکل پرداخت دارم', timestamp: now(), status: 'seen' },
   { id: uid(), conversationId: 'conv-2', sender: 'user', content: 'پرداختم موفق نبوده ولی مبلغ کسر شده', timestamp: now(), status: 'seen' },
-  { id: uid(), conversationId: 'conv-2', sender: 'operator', senderName: 'پشتیبان سفرز', content: 'سلام، لطفاً شماره پیگیری رو ارسال کنید', timestamp: now(), status: 'delivered' },
+  { id: uid(), conversationId: 'conv-2', sender: 'operator', senderName: 'پشتیبان سفر بدون مرز', content: 'سلام، لطفاً شماره پیگیری رو ارسال کنید', timestamp: now(), status: 'delivered' },
 ];
 
 // Bot responses pool
@@ -117,7 +117,7 @@ export async function simulateReply(conversationId: string, mode: 'ai' | 'human'
     id: uid(),
     conversationId,
     sender: mode === 'ai' ? 'bot' : 'operator',
-    senderName: mode === 'human' ? 'پشتیبان سفرز' : undefined,
+    senderName: mode === 'human' ? 'پشتیبان سفر بدون مرز' : undefined,
     content: botResponses[Math.floor(Math.random() * botResponses.length)],
     timestamp: now(),
     status: 'delivered',

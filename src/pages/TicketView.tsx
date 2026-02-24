@@ -5,6 +5,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import logo from '@/assets/logo.png';
 
@@ -286,6 +292,55 @@ const TicketView = () => {
                     <span className="material-symbols-outlined text-sm">link</span>
                     کپی لینک
                   </Button>
+
+                  {/* Send Ticket Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="gap-2 flex-1 sm:flex-none">
+                        <span className="material-symbols-outlined text-sm">send</span>
+                        ارسال بلیط
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (ticketUrl) {
+                            const subject = encodeURIComponent(`بلیط قطار - کد ${reservation.reservation_code}`);
+                            const body = encodeURIComponent(`بلیط قطار ${getCityNameFa(reservation.origin)} به ${getCityNameFa(reservation.destination)}\nکد رهگیری: ${reservation.reservation_code}\n\nلینک دانلود بلیط:\n${ticketUrl}`);
+                            window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+                          }
+                        }}
+                        className="gap-2 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-lg">email</span>
+                        ارسال با ایمیل
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (ticketUrl) {
+                            const text = encodeURIComponent(`بلیط قطار ${getCityNameFa(reservation.origin)} به ${getCityNameFa(reservation.destination)}\nکد: ${reservation.reservation_code}\n${ticketUrl}`);
+                            window.open(`https://wa.me/?text=${text}`, '_blank');
+                          }
+                        }}
+                        className="gap-2 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-lg">chat</span>
+                        ارسال با واتس‌اپ
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (ticketUrl) {
+                            const text = encodeURIComponent(`بلیط قطار ${getCityNameFa(reservation.origin)} به ${getCityNameFa(reservation.destination)}\nکد: ${reservation.reservation_code}\n${ticketUrl}`);
+                            window.open(`https://t.me/share/url?url=${encodeURIComponent(ticketUrl)}&text=${text}`, '_blank');
+                          }
+                        }}
+                        className="gap-2 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-lg">telegram</span>
+                        ارسال با تلگرام
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             ) : (

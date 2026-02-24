@@ -87,9 +87,10 @@ export function SearchBox() {
   const getCityLabel = (city: typeof cities[0]) => 
     language === 'fa' ? city.labelFa : city.labelEn;
 
-  const dateLabels = {
+  const dateLabels: Record<string, { departure: string; return: string }> = {
     fa: { departure: 'تاریخ رفت', return: 'تاریخ برگشت' },
     en: { departure: 'Departure', return: 'Return' },
+    ar: { departure: 'تاريخ الذهاب', return: 'تاريخ العودة' },
   };
 
   return (
@@ -170,13 +171,13 @@ export function SearchBox() {
                 )}
               >
                 {departureDate 
-                  ? (language === 'fa' ? formatPersianDate(departureDate) : format(departureDate, "PP", { locale: enUS }))
+                  ? (language !== 'en' ? formatPersianDate(departureDate) : format(departureDate, "PP", { locale: enUS }))
                   : <span>{t('selectDate')}</span>
                 }
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              {language === 'fa' ? (
+              {language !== 'en' ? (
                 <PersianCalendar
                   selected={departureDate}
                   onSelect={(d) => {
@@ -220,13 +221,13 @@ export function SearchBox() {
                   )}
                 >
                   {returnDate 
-                    ? (language === 'fa' ? formatPersianDate(returnDate) : format(returnDate, "PP", { locale: enUS }))
+                    ? (language !== 'en' ? formatPersianDate(returnDate) : format(returnDate, "PP", { locale: enUS }))
                     : <span>{t('selectDate')}</span>
                   }
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                {language === 'fa' ? (
+                {language !== 'en' ? (
                   <PersianCalendar
                     selected={returnDate}
                     onSelect={(d) => {
@@ -286,7 +287,7 @@ export function SearchBox() {
             className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
           />
           <label htmlFor="privateCompartment" className="text-sm font-medium cursor-pointer">
-            {language === 'fa' ? 'کوپه دربست' : 'Private Compartment'}
+            {t('privateCompartment')}
           </label>
         </div>
 
@@ -298,7 +299,7 @@ export function SearchBox() {
             className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
           />
           <label htmlFor="foreignNational" className="text-sm font-medium cursor-pointer">
-            {language === 'fa' ? 'اتباع خارجی' : 'Foreign National'}
+            {t('foreignNational')}
           </label>
         </div>
       </div>

@@ -41,7 +41,7 @@ const formatPersianFullDate = (date: Date) => {
 };
 
 const SearchResults = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -209,7 +209,7 @@ const SearchResults = () => {
                   <div className="bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl p-8 text-center">
                     <span className="material-symbols-outlined text-4xl text-muted-foreground mb-2">search_off</span>
                     <p className="text-muted-foreground">
-                      {language === 'fa' ? 'قطاری با این فیلترها یافت نشد' : 'No trains found with these filters'}
+                      {t('noTrainsFound')}
                     </p>
                   </div>
                 ) : (
@@ -238,7 +238,7 @@ const SearchResults = () => {
             size="lg"
           >
             <span className="material-symbols-outlined ml-2">check_circle</span>
-            {language === 'fa' ? 'ثبت رزرو' : 'Submit Booking'}
+            {t('submitBooking')}
           </Button>
         </div>
       )}

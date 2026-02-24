@@ -9,20 +9,20 @@ interface SortOptionsProps {
 }
 
 export const SortOptions = ({ activeSort, onSortChange }: SortOptionsProps) => {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
 
   const sortOptions: { value: SortOption; label: string }[] = [
-    { value: 'default', label: language === 'fa' ? 'پیش فرض' : 'Default' },
-    { value: 'departure', label: language === 'fa' ? 'ساعت حرکت' : 'Departure' },
-    { value: 'cheapest', label: language === 'fa' ? 'ارزانترین' : 'Cheapest' },
-    { value: 'expensive', label: language === 'fa' ? 'گرانترین' : 'Most Expensive' },
-    { value: 'owner', label: language === 'fa' ? 'مالک' : 'Owner' },
+    { value: 'default', label: t('sortDefault') },
+    { value: 'departure', label: t('sortDeparture') },
+    { value: 'cheapest', label: t('sortCheapest') },
+    { value: 'expensive', label: t('sortExpensive') },
+    { value: 'owner', label: t('sortOwner') },
   ];
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-sm text-muted-foreground ml-2">
-        {language === 'fa' ? 'نمایش بر اساس' : 'Sort by'}:
+        {t('sortBy')}:
       </span>
       {sortOptions.map((option) => (
         <Button

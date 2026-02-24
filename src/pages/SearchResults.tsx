@@ -181,16 +181,16 @@ const SearchResults = () => {
               {/* Step-by-Step Process Guide */}
             <div className="mt-4 bg-muted/40 border border-border/50 rounded-xl p-4">
               <p className="text-xs font-semibold text-muted-foreground mb-3 text-center">{t('howItWorks')}</p>
-              <div className="grid grid-cols-4 gap-1 sm:gap-2 relative">
+              <div className="grid grid-cols-5 gap-1 sm:gap-2 relative">
                 {[
                   { icon: 'edit_note', title: t('step1Title'), desc: t('step1Desc'), active: true },
-                  { icon: 'manage_search', title: t('step2Title'), desc: t('step2Desc'), active: false },
+                  { icon: 'badge', title: t('step2Title'), desc: t('step2Desc'), active: false },
                   { icon: 'payments', title: t('step3Title'), desc: t('step3Desc'), active: false },
-                  { icon: 'confirmation_number', title: t('step4Title'), desc: t('step4Desc'), active: false },
+                  { icon: 'manage_search', title: t('step4Title'), desc: t('step4Desc'), active: false },
+                  { icon: 'confirmation_number', title: t('step5Title'), desc: t('step5Desc'), active: false },
                 ].map((step, i) => (
                   <div key={i} className="flex flex-col items-center text-center gap-1.5 relative">
-                    {/* Connector line */}
-                    {i < 3 && (
+                    {i < 4 && (
                       <div className="hidden sm:block absolute top-5 start-[calc(50%+16px)] w-[calc(100%-32px)] h-0.5 bg-border/60 z-0" />
                     )}
                     <div className={`relative z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${

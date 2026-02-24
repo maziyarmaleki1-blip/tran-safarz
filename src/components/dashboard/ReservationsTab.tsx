@@ -62,7 +62,7 @@ export function ReservationsTab({ reservations, loading, onRefresh }: Reservatio
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="rtl">
       <h1 className="text-2xl font-bold mb-2">درخواست‌های من</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

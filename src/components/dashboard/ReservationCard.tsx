@@ -184,7 +184,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden" dir="rtl">
         <div className={`h-1.5 ${getHeaderColor()}`} />
 
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
@@ -206,7 +206,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
                 </div>
               </div>
 
-              <div className="text-left space-y-1">
+              <div className="text-end space-y-1">
                 {getStatusBadge()}
                 <p className="text-xs text-muted-foreground">کد: {reservation.reservation_code}</p>
               </div>
@@ -335,7 +335,7 @@ export function ReservationCard({ reservation, onRefresh }: ReservationCardProps
               )}
 
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1 mr-auto">
+                <Button variant="ghost" size="sm" className="gap-1 ms-auto">
                   <span className="material-symbols-outlined text-sm transition-transform" style={{
                     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)'
                   }}>

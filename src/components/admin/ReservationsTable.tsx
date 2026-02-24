@@ -376,7 +376,8 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
           p =>
             p.firstName?.includes(searchQuery) ||
             p.lastName?.includes(searchQuery) ||
-            p.nationalId?.includes(searchQuery)
+            p.nationalId?.includes(searchQuery) ||
+            p.mobile?.includes(searchQuery)
         ));
      return matchesStatus && matchesWagonType && matchesApprover && matchesAssignedEmployee && matchesSearch;
      
@@ -542,7 +543,7 @@ export const ReservationsTable = ({ reservations, loading, onRefresh, isAdmin }:
              {/* Row 1: Search */}
             <div className="flex-1">
               <Input
-                placeholder="جستجو با کد رزرو یا نام مسافر..."
+                placeholder="جستجو با کد رزرو، نام مسافر یا شماره موبایل..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="h-10"

@@ -46,6 +46,7 @@ let mockConversations: Conversation[] = [
     lastMessageAt: now(),
     unreadCount: 3,
     createdAt: now(),
+    assignedOperator: undefined,
   },
 ];
 

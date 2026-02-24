@@ -13,6 +13,7 @@ import { EmployeeManagement } from '@/components/admin/EmployeeManagement';
 import ServiceFeeSettings from '@/components/admin/ServiceFeeSettings';
 import RouteFeeManagement from '@/components/admin/RouteFeeManagement';
 import AdminLogin from '@/components/admin/AdminLogin';
+import SupportTab from '@/components/admin/SupportTab';
 
 interface Passenger {
   id: string;
@@ -290,6 +291,10 @@ const Admin = () => {
                   <span className="material-symbols-outlined text-lg">route</span>
                   کارمزد مسیرها
                 </TabsTrigger>
+                <TabsTrigger value="support" className="gap-2 relative">
+                  <span className="material-symbols-outlined text-lg">headset_mic</span>
+                  پشتیبانی
+                </TabsTrigger>
               </>
             )}
           </TabsList>
@@ -324,6 +329,14 @@ const Admin = () => {
 
               <TabsContent value="routes">
                 <RouteFeeManagement />
+              </TabsContent>
+
+              <TabsContent value="support">
+                <SupportTab
+                  isAdmin={isAdmin}
+                  currentUserId={user?.id}
+                  currentUserName={user?.email?.split('@')[0]}
+                />
               </TabsContent>
             </>
           )}

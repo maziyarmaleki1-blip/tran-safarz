@@ -42,11 +42,13 @@ const Confirmation = () => {
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-2xl">
         {/* Success Header */}
         <div className="text-center mb-8">
-          <div className="size-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-success text-5xl">check_circle</span>
+          <div className="bg-card/80 backdrop-blur-sm rounded-2xl px-6 py-6 inline-block">
+            <div className="size-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-success text-5xl">check_circle</span>
+            </div>
+            <h1 className="text-2xl font-bold text-success mb-2">درخواست شکار بلیط ثبت شد!</h1>
+            <p className="text-card-foreground">تیم ما در حال پیگیری بلیط شماست</p>
           </div>
-          <h1 className="text-2xl font-bold text-success mb-2">درخواست شکار بلیط ثبت شد!</h1>
-          <p className="text-card-foreground bg-card/80 backdrop-blur-sm rounded-lg px-4 py-2 inline-block">تیم ما در حال پیگیری بلیط شماست</p>
         </div>
 
         {/* Tracking Code */}

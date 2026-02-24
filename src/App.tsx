@@ -17,6 +17,7 @@ import Rules from "./pages/Rules";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import OperatorDashboard from "./pages/OperatorDashboard";
+import TicketView from "./pages/TicketView";
 import { ChatWidget } from "./components/support/ChatWidget";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/rules" element={<Rules />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/support" element={<OperatorDashboard />} />
+            <Route path="/ticket" element={<TicketView />} />
             <Route path="*" element={<NotFound />} />
             </Routes>
             <ChatWidget />

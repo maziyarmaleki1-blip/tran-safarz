@@ -32,7 +32,7 @@ const Booking = () => {
   const handleSubmit = (passengerData: PassengerData[], credentials: UserCredentials) => {
     sessionStorage.setItem('passengerData', JSON.stringify(passengerData));
     sessionStorage.setItem('userCredentials', JSON.stringify(credentials));
-    navigate(`/payment?train=${trainId}&from=${from}&to=${to}&passengers=${passengers}`);
+    navigate(`/payment?train=${trainId}&from=${from}&to=${to}&passengers=${passengers}&date=${dateParam || ''}`);
   };
 
   const handleBack = () => {

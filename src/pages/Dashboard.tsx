@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { ReservationsTab } from '@/components/dashboard/ReservationsTab';
 import { ProfileTab } from '@/components/dashboard/ProfileTab';
-import { SecurityTab } from '@/components/dashboard/SecurityTab';
+
 import { WalletTab } from '@/components/dashboard/WalletTab';
 import { ProcessSteps } from '@/components/ProcessSteps';
 import logo from '@/assets/logo.png';
@@ -25,7 +25,6 @@ const Dashboard = () => {
   const menuItems = [
     { id: 'reservations', icon: 'confirmation_number', label: t('reservations') },
     { id: 'profile', icon: 'person', label: t('profile') },
-    { id: 'security', icon: 'lock', label: t('security') },
     { id: 'wallet', icon: 'account_balance_wallet', label: t('wallet') },
   ];
 
@@ -123,7 +122,7 @@ const Dashboard = () => {
           {activeTab === 'profile' && (
             <ProfileTab profile={profile} loading={profileLoading} onUpdate={updateProfile} />
           )}
-          {activeTab === 'security' && <SecurityTab />}
+          
           {activeTab === 'wallet' && (
             <WalletTab profile={profile} transactions={transactions} loadingProfile={profileLoading} loadingTransactions={transactionsLoading} onRefresh={() => { fetchProfile(); fetchTransactions(); }} />
           )}

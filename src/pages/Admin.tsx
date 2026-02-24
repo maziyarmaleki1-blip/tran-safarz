@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { StatsCards } from '@/components/admin/StatsCards';
 import { ReservationsTable } from '@/components/admin/ReservationsTable';
 import { EmployeeManagement } from '@/components/admin/EmployeeManagement';
-import ServiceFeeSettings from '@/components/admin/ServiceFeeSettings';
+
 import RouteFeeManagement from '@/components/admin/RouteFeeManagement';
 import AdminLogin from '@/components/admin/AdminLogin';
 import SupportTab from '@/components/admin/SupportTab';
@@ -125,7 +125,7 @@ const Admin = () => {
       
       // Admins get all permissions, employees get their assigned permissions
       const userPermissions = hasAdminRole 
-        ? ['reservations', 'support', 'employees', 'settings', 'routes']
+        ? ['reservations', 'support', 'employees', 'routes']
         : (roles?.[0] as any)?.permissions || ['reservations'];
 
       setIsAdmin(hasAdminRole);
@@ -298,10 +298,6 @@ const Admin = () => {
                   <span className="material-symbols-outlined text-lg">group</span>
                   کارمندان
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="gap-2">
-                  <span className="material-symbols-outlined text-lg">settings</span>
-                  تنظیمات
-                </TabsTrigger>
                 <TabsTrigger value="routes" className="gap-2">
                   <span className="material-symbols-outlined text-lg">route</span>
                   کارمزد مسیرها
@@ -341,11 +337,6 @@ const Admin = () => {
             <>
               <TabsContent value="employees">
                 <EmployeeManagement isAdmin={isAdmin} />
-              </TabsContent>
-              <TabsContent value="settings">
-                <div className="max-w-md">
-                  <ServiceFeeSettings />
-                </div>
               </TabsContent>
               <TabsContent value="routes">
                 <RouteFeeManagement />

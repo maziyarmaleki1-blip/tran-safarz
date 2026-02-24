@@ -15,6 +15,7 @@ import RouteFeeManagement from '@/components/admin/RouteFeeManagement';
 import AdminLogin from '@/components/admin/AdminLogin';
 import SupportTab from '@/components/admin/SupportTab';
 import PaymentMethodsManagement from '@/components/admin/PaymentMethodsManagement';
+import DepositSettingsManagement from '@/components/admin/DepositSettingsManagement';
 
 interface Passenger {
   id: string;
@@ -126,7 +127,7 @@ const Admin = () => {
       
       // Admins get all permissions, employees get their assigned permissions
       const userPermissions = hasAdminRole 
-        ? ['reservations', 'support', 'employees', 'routes', 'payments']
+        ? ['reservations', 'support', 'employees', 'routes', 'payments', 'deposits']
         : (roles?.[0] as any)?.permissions || ['reservations'];
 
       setIsAdmin(hasAdminRole);
@@ -307,6 +308,10 @@ const Admin = () => {
                   <span className="material-symbols-outlined text-lg">payments</span>
                   روش‌های پرداخت
                 </TabsTrigger>
+                <TabsTrigger value="deposits" className="gap-2">
+                  <span className="material-symbols-outlined text-lg">savings</span>
+                  بیعانه
+                </TabsTrigger>
               </>
             )}
           </TabsList>
@@ -348,6 +353,9 @@ const Admin = () => {
               </TabsContent>
               <TabsContent value="payments">
                 <PaymentMethodsManagement />
+              </TabsContent>
+              <TabsContent value="deposits">
+                <DepositSettingsManagement />
               </TabsContent>
             </>
           )}

@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      deposit_settings: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          wagon_type: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          wagon_type: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          wagon_type?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           bank_name: string | null

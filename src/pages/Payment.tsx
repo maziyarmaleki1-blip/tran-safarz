@@ -171,38 +171,38 @@ const Payment = () => {
                 </h2>
 
                 <RadioGroup dir="rtl" value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
-                  <div className={`flex flex-row-reverse items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex flex-row-reverse items-center gap-3 cursor-pointer flex-1">
+                  <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                    <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1 text-right">
                       <span className="material-symbols-outlined text-primary">credit_card</span>
-                      <div className="text-right">
+                      <div>
                         <p className="font-medium">{t('cardPayment')}</p>
                         <p className="text-sm text-muted-foreground">{t('cardPaymentDesc')}</p>
                       </div>
                     </Label>
+                    <RadioGroupItem value="card" id="card" />
                   </div>
 
-                  <div className={`flex flex-row-reverse items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'card_transfer' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                    <RadioGroupItem value="card_transfer" id="card_transfer" />
-                    <Label htmlFor="card_transfer" className="flex flex-row-reverse items-center gap-3 cursor-pointer flex-1">
+                  <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'card_transfer' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                    <Label htmlFor="card_transfer" className="flex items-center gap-3 cursor-pointer flex-1 text-right">
                       <span className="material-symbols-outlined text-primary">swap_horiz</span>
-                      <div className="text-right">
+                      <div>
                         <p className="font-medium">کارت به کارت</p>
                         <p className="text-sm text-muted-foreground">انتقال وجه مستقیم به شماره کارت</p>
                       </div>
                     </Label>
+                    <RadioGroupItem value="card_transfer" id="card_transfer" />
                   </div>
 
                   <div>
-                    <div className={`flex flex-row-reverse items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                      <RadioGroupItem value="wallet" id="wallet" />
-                      <Label htmlFor="wallet" className="flex flex-row-reverse items-center gap-3 cursor-pointer flex-1">
+                    <div className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-colors cursor-pointer ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                      <Label htmlFor="wallet" className="flex items-center gap-3 cursor-pointer flex-1 text-right">
                         <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
-                        <div className="text-right">
+                        <div>
                           <p className="font-medium">{t('walletPayment')}</p>
                           <p className="text-sm text-muted-foreground">{t('walletPaymentDesc')}</p>
                         </div>
                       </Label>
+                      <RadioGroupItem value="wallet" id="wallet" />
                     </div>
                     <div className="bg-muted/50 text-foreground border border-border p-3 rounded-lg mt-2 text-sm text-right">
                       🛡️ تضمین بازگشت وجه: در صورت عدم موفقیت ربات در شکار بلیط، کل مبلغ (به همراه کارمزد) فوراً به کیف پول شما باز می‌گردد یا طبق سیکل پایا به حساب بانکی واریز می‌شود.

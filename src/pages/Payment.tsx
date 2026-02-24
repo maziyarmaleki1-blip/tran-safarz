@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useServiceFee } from '@/hooks/useServiceFee';
+import { useDepositSettings } from '@/hooks/useDepositSettings';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -31,6 +32,7 @@ const Payment = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const { serviceFee, calculateFee, loading: feeLoading } = useServiceFee();
+  const { deposits, loading: depositLoading, wagonTypeLabels } = useDepositSettings();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -45,7 +47,27 @@ const Payment = () => {
   const train = trains[trainId] || trains[1];
   const ticketPrice = train.price * passengers;
   const serviceFeeAmount = calculateFee(ticketPrice);
-  const totalPrice = ticketPrice + serviceFeeAmount;
+
+  // Get deposit: check sessionStorage for selected wagon types
+  const filtersData = sessionStorage.getItem('selectedFilters');
+  const selectedFilters = filtersData ? JSON.parse(filtersData) : null;
+  const selectedWagonTypes: string[] = selectedFilters?.compartmentTypes || [];
+  
+  // Use the highest deposit among selected wagon types, or default to first active deposit
+  const getDepositPerPerson = (): number => {
+    if (deposits.length === 0) return 0;
+    if (selectedWagonTypes.length > 0) {
+      const matching = deposits.filter(d => selectedWagonTypes.includes(d.wagon_type) && d.is_active);
+      if (matching.length > 0) return Math.max(...matching.map(d => d.amount));
+    }
+    // Default: use the lowest active deposit
+    const active = deposits.filter(d => d.is_active);
+    return active.length > 0 ? Math.min(...active.map(d => d.amount)) : 0;
+  };
+
+  const depositPerPerson = getDepositPerPerson();
+  const totalDeposit = depositPerPerson * passengers;
+  const totalPayable = totalDeposit + serviceFeeAmount;
 
   const formatPrice = (price: number) => price.toLocaleString('fa-IR');
 
@@ -77,7 +99,7 @@ const Payment = () => {
           train_name: train.name,
           wagon_type: 'عادی',
           passenger_count: passengers,
-          total_price: totalPrice,
+          total_price: totalPayable,
           status: 'confirmed',
           passengers: parsedPassengers,
           selected_wagon_types: selectedFilters?.compartmentTypes || [],
@@ -99,7 +121,7 @@ const Payment = () => {
         .insert({
           user_id: user.id,
           type: 'purchase',
-          amount: totalPrice,
+          amount: totalPayable,
           description: `خرید بلیط ${cities[from]} → ${cities[to]}`,
         });
 
@@ -108,7 +130,7 @@ const Payment = () => {
       sessionStorage.removeItem('passengerData');
       sessionStorage.removeItem('userCredentials');
 
-      navigate(`/confirmation?code=${trackingCode}&train=${trainId}&from=${from}&to=${to}&passengers=${passengers}`);
+      navigate(`/confirmation?code=${trackingCode}&train=${trainId}&from=${from}&to=${to}&passengers=${passengers}&deposit=${totalDeposit}`);
     } catch (error: any) {
       console.error('Payment error:', error);
       toast({ title: 'خطا در ثبت رزرو', description: error.message, variant: 'destructive' });
@@ -222,12 +244,20 @@ const Payment = () => {
 
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">قیمت بلیط (پرداخت جداگانه)</span>
-                    <span className="text-muted-foreground">{formatPrice(ticketPrice)} {t('toman')}</span>
+                    <span className="text-muted-foreground">بیعانه (هر نفر)</span>
+                    {depositLoading ? (
+                      <span className="size-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                    ) : (
+                      <span className="text-muted-foreground">{formatPrice(depositPerPerson)} {t('toman')}</span>
+                    )}
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{t('passengerCount')}</span>
                     <span>× {passengers}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">جمع بیعانه</span>
+                    <span className="text-muted-foreground">{formatPrice(totalDeposit)} {t('toman')}</span>
                   </div>
                   <div className="border-t border-border my-4" />
                   <div className="flex justify-between text-sm">
@@ -242,9 +272,12 @@ const Payment = () => {
                   <div className="flex justify-between items-center">
                     <span className="font-bold">مبلغ قابل پرداخت</span>
                     <div className="text-left">
-                      <p className="text-2xl font-bold text-primary">{formatPrice(serviceFeeAmount)}</p>
+                      <p className="text-2xl font-bold text-primary">{formatPrice(totalPayable)}</p>
                       <p className="text-xs text-muted-foreground">{t('toman')}</p>
                     </div>
+                  </div>
+                  <div className="bg-muted/50 text-foreground border border-border p-3 rounded-lg text-sm text-right mt-2">
+                    💡 پس از پیدا شدن بلیط، مابقی مبلغ (قیمت بلیط - بیعانه) از شما دریافت خواهد شد.
                   </div>
                 </div>
 

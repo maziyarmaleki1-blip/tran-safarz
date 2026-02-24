@@ -191,6 +191,17 @@ const translations: Translations = {
   fromLabel: { fa: 'از', en: 'From', ar: 'من' },
   logoutAccount: { fa: 'خروج از حساب', en: 'Logout', ar: 'تسجيل الخروج' },
   management: { fa: 'مدیریت', en: 'Management', ar: 'الإدارة' },
+
+  // Booking Process Steps
+  step1Title: { fa: 'ثبت درخواست', en: 'Submit Request', ar: 'تقديم الطلب' },
+  step1Desc: { fa: 'فیلترها را انتخاب و رزرو ثبت کنید', en: 'Select filters & submit booking', ar: 'اختر الفلاتر وأرسل الحجز' },
+  step2Title: { fa: 'جستجوی بلیط', en: 'Ticket Search', ar: 'البحث عن التذكرة' },
+  step2Desc: { fa: 'ربات ما بلیط را برایتان پیدا می‌کند', en: 'Our bot finds your ticket', ar: 'يبحث الروبوت عن تذكرتك' },
+  step3Title: { fa: 'پرداخت مابقی', en: 'Pay Remaining', ar: 'دفع المتبقي' },
+  step3Desc: { fa: 'مبلغ باقی‌مانده را پرداخت کنید', en: 'Pay the remaining amount', ar: 'ادفع المبلغ المتبقي' },
+  step4Title: { fa: 'دریافت بلیط', en: 'Get Ticket', ar: 'استلام التذكرة' },
+  step4Desc: { fa: 'بلیط خود را دانلود یا چاپ کنید', en: 'Download or print your ticket', ar: 'حمّل أو اطبع تذكرتك' },
+  howItWorks: { fa: 'مراحل شکار بلیط', en: 'How It Works', ar: 'كيف يعمل' },
 };
 
 interface LanguageContextType {

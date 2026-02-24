@@ -149,7 +149,7 @@ const Payment = () => {
         <div className="container mx-auto px-4 py-8 max-w-5xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Review Details */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-5">
               <BookingReview
                 from={from}
                 to={to}
@@ -163,7 +163,7 @@ const Payment = () => {
               />
 
               {/* Payment Methods */}
-              <Card className="p-5 mt-5 bg-card/95 backdrop-blur-md border-border/50 overflow-hidden relative">
+              <Card className="p-5 bg-card/95 backdrop-blur-md border-border/50 overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-1.5 h-full bg-primary rounded-r-lg" />
                 <h2 className="font-bold text-lg mb-4 flex items-center gap-2 pr-3">
                   <span className="material-symbols-outlined text-primary">payments</span>

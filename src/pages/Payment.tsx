@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import heroImage from '@/assets/hero-train.jpg';
 import BookingReview from '@/components/payment/BookingReview';
+import { ProcessSteps } from '@/components/ProcessSteps';
 
 const trains: Record<number, { name: string; number: string; departure: string; arrival: string; duration: string; price: number }> = {
   1: { name: 'فدک', number: '301', departure: '06:00', arrival: '16:30', duration: '10:30', price: 250000 },
@@ -169,6 +170,7 @@ const Payment = () => {
         </div>
 
         <div className="container mx-auto px-4 py-8 max-w-5xl">
+          <ProcessSteps activeStep={3} className="mb-6" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Review Details */}
             <div className="lg:col-span-2 space-y-5">

@@ -6,6 +6,7 @@ import { useReservations } from '@/hooks/useReservations';
 import { useTransactions } from '@/hooks/useTransactions';
 import { Link } from 'react-router-dom';
 import { ReservationsTab } from '@/components/dashboard/ReservationsTab';
+import { ProcessSteps } from '@/components/ProcessSteps';
 import { ProfileTab } from '@/components/dashboard/ProfileTab';
 import { SecurityTab } from '@/components/dashboard/SecurityTab';
 import { WalletTab } from '@/components/dashboard/WalletTab';
@@ -109,6 +110,9 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 lg:mr-64 p-6 pt-20 lg:pt-6">
         <div className="max-w-4xl mx-auto">
+          {activeTab === 'reservations' && (
+            <ProcessSteps activeStep={4} className="mb-6" />
+          )}
           {activeTab === 'reservations' && (
             <ReservationsTab reservations={reservations} loading={reservationsLoading} onRefresh={fetchReservations} />
           )}

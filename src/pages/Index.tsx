@@ -1,5 +1,6 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SearchBox } from '@/components/search/SearchBox';
+import { ProcessSteps } from '@/components/ProcessSteps';
 import { useLanguage } from '@/contexts/LanguageContext';
 import heroImage from '@/assets/hero-train.jpg';
 
@@ -34,6 +35,7 @@ const Index = () => {
             <p className="text-xl text-white/80 max-w-2xl mx-auto">{t('heroSubtitle')}</p>
           </div>
           <SearchBox />
+          <ProcessSteps activeStep={1} className="mt-6 max-w-6xl mx-auto" />
         </div>
       </section>
 

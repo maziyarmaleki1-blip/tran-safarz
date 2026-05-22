@@ -167,7 +167,7 @@ const PaymentMethodsManagement = () => {
       if (editingMethod) {
         const { error } = await supabase
           .from('payment_methods')
-          .update(payload)
+          .update(payload as any)
           .eq('id', editingMethod.id);
         if (error) throw error;
         toast.success('روش پرداخت با موفقیت ویرایش شد');

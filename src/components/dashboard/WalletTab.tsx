@@ -49,8 +49,7 @@ export function WalletTab({ profile, transactions, loadingProfile, loadingTransa
     setProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     try {
-      const newBalance = (profile?.balance || 0) + amount;
-      const { error: balanceError } = await supabase.from('profiles').update({ balance: newBalance }).eq('id', user.id);
+      const { error: balanceError } = await supabase.rpc('increment_balance', { _user_id: user.id, _amount: amount });
       if (balanceError) throw balanceError;
       const { error: txError } = await supabase.from('transactions').insert({ user_id: user.id, type: 'deposit', amount, description: t('depositToWallet') });
       if (txError) throw txError;
@@ -69,8 +68,7 @@ export function WalletTab({ profile, transactions, loadingProfile, loadingTransa
     setProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     try {
-      const newBalance = (profile?.balance || 0) - amount;
-      const { error: balanceError } = await supabase.from('profiles').update({ balance: newBalance }).eq('id', user.id);
+      const { error: balanceError } = await supabase.rpc('decrement_balance', { _user_id: user.id, _amount: amount });
       if (balanceError) throw balanceError;
       const { error: txError } = await supabase.from('transactions').insert({ user_id: user.id, type: 'withdraw', amount, description: `${t('withdraw')} ${cardNumber.slice(-4)}****` });
       if (txError) throw txError;

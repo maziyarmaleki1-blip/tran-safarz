@@ -62,38 +62,28 @@
      try {
        setProcessing(true);
  
-       if (refundMethod === 'wallet') {
-         // Add amount to user's wallet
-         const { data: profile, error: profileError } = await supabase
-           .from('profiles')
-           .select('balance')
-           .eq('id', reservation.user_id)
-           .single();
- 
-         if (profileError) throw profileError;
- 
-         const newBalance = (profile?.balance || 0) + reservation.total_price;
- 
-         const { error: updateError } = await supabase
-           .from('profiles')
-           .update({ balance: newBalance })
-           .eq('id', reservation.user_id);
- 
-         if (updateError) throw updateError;
- 
-         // Create transaction record
-         const { error: transactionError } = await supabase
-           .from('transactions')
-           .insert({
-             user_id: reservation.user_id,
-             type: 'refund',
-             amount: reservation.total_price,
-             description: `بازگشت وجه رزرو ${reservation.reservation_code}`,
-             reference_id: reservation.id,
-           });
- 
-         if (transactionError) throw transactionError;
-       }
+        if (refundMethod === 'wallet') {
+          // Atomic balance increment to avoid race conditions
+          const { error: updateError } = await supabase.rpc('increment_balance', {
+            _user_id: reservation.user_id,
+            _amount: reservation.total_price,
+          });
+
+          if (updateError) throw updateError;
+
+          // Create transaction record
+          const { error: transactionError } = await supabase
+            .from('transactions')
+            .insert({
+              user_id: reservation.user_id,
+              type: 'refund',
+              amount: reservation.total_price,
+              description: `بازگشت وجه رزرو ${reservation.reservation_code}`,
+              reference_id: reservation.id,
+            });
+
+          if (transactionError) throw transactionError;
+        }
  
        // Update reservation with refund info
        const { error: reservationError } = await supabase

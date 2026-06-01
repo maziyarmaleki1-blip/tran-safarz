@@ -1,5 +1,5 @@
 import { MainLayout } from '@/components/layout/MainLayout';
-import { SearchBox } from '@/components/search/SearchBox';
+import { ServiceTabs } from '@/components/search/ServiceTabs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import heroImage from '@/assets/hero-train.jpg';
 
@@ -33,7 +33,7 @@ const Index = () => {
             </h1>
             <p className="text-xl text-white/80 max-w-2xl mx-auto">{t('heroSubtitle')}</p>
           </div>
-          <SearchBox />
+          <ServiceTabs />
         </div>
       </section>
 
